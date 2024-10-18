@@ -33,7 +33,6 @@ const APISubmit = async () => {
 };
 
 //----------------註冊帳號end-------------------------------------
-
 //----------------帳號登入----------------------------------------
 const LoginData = ref({
   account: "",
@@ -87,6 +86,27 @@ const Istrueinput = async () => {
 };
 //---------------忘記密碼end---------------------------------------
 
+//---------------聯絡我們------------------------------------------
+const API_URLfeedback = `${Base_URL}/Feedbacks/PostFeedback`;
+const feedbackdata = ref({
+  Email: "",
+  Content: "",
+});
+const feedbacksub = async()=>{
+  const response = await fetch(API_URLfeedback, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(feedbackdata.value),
+    });
+    if (response.ok) {
+      const feedbackresponseData = await response.json();  // 解析 JSON 回應
+      alert(feedbackresponseData.message);
+    } else {
+      alert("發生錯誤，請重新填寫表單");
+    }
+}
+
+//---------------聯絡我們end---------------------------------------
 onMounted(() => {
   $(document).ready(function () {
     // 檢查密碼與確認密碼
@@ -501,10 +521,10 @@ onMounted(() => {
             ></button>
           </div>
           <div class="modal-body">
-            <form class="needs-validation" style="font: size 12px" novalidate>
+            <form class="needs-validation" name="feedbackdata" style="font: size 12px" novalidate @submit.prevent="feedbacksub">
               <div>
                 <div style="margin-top: 10px">
-                  <label for="Email" style="width: 15%; text-align: right"
+                  <label for="Email" style="width: 15%; text-align: right" 
                     >信箱 &nbsp;</label
                   >
                   <input
@@ -514,6 +534,8 @@ onMounted(() => {
                     style="display: inline-block; margin-left: 5px; width: 80%"
                     placeholder="請輸入可聯絡之信箱"
                     required
+                    name="feedbackdataemail"
+                    v-model="feedbackdata.Email"
                   />
 
                   <div class="invalid-feedback">請輸入正確信箱</div>
@@ -534,6 +556,7 @@ onMounted(() => {
                         height: 200px;
                       "
                       required
+                      v-model="feedbackdata.Content"
                     ></textarea>
                     <div
                       class="invalid-feedback"

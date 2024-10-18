@@ -10,6 +10,8 @@ import DressView from "./views/DressView.vue";
 import ReportView from "./views/ReportView.vue";
 import SystemView from "./views/SystemView.vue";
 import ForgetPassword from "./components/ForgetPasswordComponent.vue";
+import Feedback from "./components/Feedback.vue";
+import ChangePassword from "./components/ChangePassword.vue";
 
 const routes = [
   {
@@ -58,6 +60,18 @@ const routes = [
         path: "system",
         component: SystemView,
         name: "out-system",
+        children: [
+          {
+            path: "feedback",
+            component: Feedback,
+            name: "out-systemfeedback",
+          },
+          {
+            path: "changepassword",
+            component: ChangePassword,
+            name: "out-changepassword",
+          }
+        ]
       },
       {
         path: "report",
@@ -100,6 +114,18 @@ const routes = [
         path: "system",
         component: SystemView,
         name: "in-system",
+        children: [
+          {
+            path: "feedback",
+            component: Feedback,
+            name: "in-systemfeedback",
+          },
+          {
+            path: "changepassword",
+            component: ChangePassword,
+            name: "in-changepassword",
+          }
+        ]
       },
       {
         path: "report",
