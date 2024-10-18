@@ -17,14 +17,23 @@ const goBack = () => {
 
 <template>
     <div id="formborder">
-        <button id="back" class="bi bi-x-circle" @click="goBack"></button>
+        
+        <RouterLink :to="{name: $route.name.startsWith('in-') ? 'in-changepassword' : 'out-changepassword',   params: { ...$route.params }}"> <button class="sysbtnchange">更改密碼 </button></RouterLink>
+
+        <RouterLink  :to="{name: $route.name.startsWith('in-') ? 'in-systemfeedback' : 'out-systemfeedback',   params: { ...$route.params }}"> <button class="sysbtnfeed">聯絡我們 </button></RouterLink>
+
+        <button id="backbtn" class="bi bi-x-circle" @click="goBack"></button>
+    </div>
+    <div> 
+        <router-view></router-view>  
     </div>
 </template>
 
 <style lang="css" scoped>
+
 #formborder {
-    display: flex;
-    justify-content: flex-end;
+    /* display: flex;
+    justify-content: flex-end; */
     border: 1px solid rgb(12, 61, 70);
     background-color: rgb(245, 235, 225);
     width: 912px;
@@ -33,12 +42,31 @@ const goBack = () => {
     top: 50px;
     left: 350px;
 }
-
-#back {
-    height: 30px;
-    border: none;
-    justify-content: flex-end;
-    margin-right: 5px;
+.sysbtnchange{
+    position: absolute;
+    size: 16px;
+    color: rgb(153, 42, 42);
     background-color: white;
+    border: 1px solid rgb(12, 61, 70);
+    top: 60%;
+    left: 45%;
+}
+
+.sysbtnfeed{
+    position: absolute;
+    size: 16px;
+    color: rgb(153, 42, 42);
+    background-color: white;
+    border: 1px solid rgb(12, 61, 70);
+    top: 70%;
+    left: 45%;
+}
+
+#backbtn {
+    position: absolute;
+    border:none;
+    top: 0px;
+    right: 5px;
+    z-index: 1;
 }
 </style>
