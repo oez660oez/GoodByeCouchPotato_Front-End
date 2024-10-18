@@ -2,27 +2,33 @@
 import "bootstrap/dist/css/bootstrap.css";
 import { ref } from "vue";
 
+const emit = defineEmits(["goback"]); //子傳父
+const closeComponent = () => {
+  emit("goback");
+};
+
 const Base_URL = import.meta.env.VITE_API_BASEURL;
-const API_URL = `${Base_URL}/IndexPlayers`;
+const API_URL = `${Base_URL}/IndexPlayers/NewPassword`;
 
 const props = defineProps({
   forgetemail: String,
 });
 
-const useremail = 0;
-if (forgetemail != null) {
-  useremail = forgetemail; //如果直接讓信箱的value是它的話，沒有填寫的時候會產生bug
+let useremail = props.forgetemail; //如果直接讓信箱的value是它的話，沒有填寫的時候會產生bug
+if (useremail == null) {
+  useremail = "讀取信箱失敗，請重試";
 }
 
 const usernewpassword = ref({
-  email: "",
+  email: useremail,
   account: "",
-  newpassword: "",
-  verification: "",
+  password: "",
+  Verificationnumber: "",
 });
 
 const postnewpassword = async () => {
-  const userdata = new FormData(Document.usernewpassword);
+  console.log(usernewpassword.value);
+  const userdata = new FormData(document.usernewpassword);
   const postforgerdata = await fetch(API_URL, {
     method: "POST",
     body: userdata,
@@ -30,6 +36,7 @@ const postnewpassword = async () => {
   if (postforgerdata.ok) {
     const response = await postforgerdata.json();
     alert(response.message);
+    emit("goback");
   }
 };
 </script>
@@ -46,11 +53,11 @@ const postnewpassword = async () => {
       <div>
         <label id="email" class="form-label toplabel">電子信箱</label>
         <input
+          id="email"
           name="email"
           type="text"
           readonly
           class="form-control"
-          value="useremail"
           v-model="usernewpassword.email"
         />
       </div>
@@ -67,11 +74,11 @@ const postnewpassword = async () => {
       <div>
         <label for="newpassword" class="form-label">重設密碼</label>
         <input
-          name="newpassword"
+          name="password"
           id="newpassword"
-          type="text"
+          type="password"
           class="form-control"
-          v-model.trim="usernewpassword.newpassword"
+          v-model.trim="usernewpassword.password"
         />
       </div>
       <div>
@@ -79,14 +86,14 @@ const postnewpassword = async () => {
         <input
           id="verificationnumber"
           name="verificationnumber"
-          v-model.trim="usernewpassword.verification"
-          type="text"
+          v-model.trim="usernewpassword.Verificationnumber"
+          type="number"
           class="form-control"
         />
       </div>
       <div>
-        <button type="submit"></button>>
-        <button>取消</button>
+        <button type="submit">送出</button>
+        <button @click="closeComponent" type="reset">取消</button>
       </div>
     </form>
   </div>

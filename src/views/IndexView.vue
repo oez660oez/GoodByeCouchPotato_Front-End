@@ -63,6 +63,7 @@ const Login = async () => {
 //----------------帳號登入end-------------------------------------
 
 //---------------忘記密碼------------------------------------------
+
 const submitok = ref(false);
 const API_URLForget = `${Base_URL}/IndexPlayers/ForgetPasswordEmail`;
 const FORUemail = ref({
@@ -78,12 +79,22 @@ const Istrueinput = async () => {
   if (PostEmail.ok) {
     const response = await PostEmail.json(); // 取得後端回傳回來的內容
     console.log(response);
-    if (response.message) {
+    if (response.message != "Noaccount") {
+      //Noaccount是後端回傳回來的內容
       submitok.value = true;
       console.log(submitok.value);
+      console.log(FORUemail.value.forgetEmail);
       alert(response.message);
+    } else {
+      alert("此信箱尚未註冊帳號");
+      submitok.value = false;
     }
   }
+};
+
+const goback = () => {
+  //子傳父，關閉component
+  submitok.value = false;
 };
 //---------------忘記密碼end---------------------------------------
 
@@ -191,6 +202,12 @@ onMounted(() => {
       </p>
     </div>
 
+    <div v-if="submitok" class="forgetpassword">
+      <ForgetPasswordComponent
+        :forgetemail="FORUemail.forgetEmail"
+        @goback="goback"
+      ></ForgetPasswordComponent>
+    </div>
     <div
       class="login-container col-4"
       style="border: solid, 1px; text-align: center"
@@ -406,6 +423,7 @@ onMounted(() => {
     </div>
 
     <!-- 忘記密碼(forgetpassword)Modal -->
+
     <div
       class="modal fade"
       id="modal_forgetpassword"
@@ -469,12 +487,6 @@ onMounted(() => {
           </div>
         </div>
       </div>
-    </div>
-    <div v-if="submitok">
-      <ForgetPasswordComponent
-        class="forgetpassword"
-        :forgetemail="FORUemail.forgetEmail"
-      ></ForgetPasswordComponent>
     </div>
 
     <!-- 聯絡我們(feedback)Modal -->
@@ -758,7 +770,7 @@ body {
 
 .forgetpassword {
   position: absolute;
-  top: 90px;
+  top: 13%;
   left: 37%;
   z-index: 10;
 }
