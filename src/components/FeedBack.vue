@@ -24,7 +24,6 @@ async function getmail(account) {
         });
         if (response.ok) {
           const feedbackresponseData = await response.json();  // 解析 JSON 回應
-          console.log(feedbackresponseData);
           feedbackdata.value.Email = feedbackresponseData.message;
         }
   }
@@ -35,7 +34,6 @@ async function getmail(account) {
 }
 onMounted(() => {
   const account = localStorage.getItem("Account");
-  console.log('從 localStorage 取出的 account 是：', account);
   getmail(account);
 });
 
