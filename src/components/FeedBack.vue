@@ -61,6 +61,8 @@ const feedbacksub = async (event) => {
 
     if (response.ok) {
       const feedbackresponseData = await response.json();
+      feedbackdata.value.Content = "";
+      goBack();
       alert(feedbackresponseData.message);
     } else {
       alert("發生錯誤，請重新填寫表單");
