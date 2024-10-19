@@ -19,10 +19,18 @@ const goBack = () => {
 const BASE_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${BASE_URL}/dailyhealthrecords`;
 
+//取得當天日期
+const today = new Date();
+const year = today.getFullYear();
+const month = String(today.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始
+const day = String(today.getDate()).padStart(2, '0');
+const todayDate = `${year}-${month}-${day}`;
+// alert(todayDate);
+
 // 表單初始數據
 const dailyHealthData = ref({
   cId: 199,
-  hrecordDate: '2024-10-17',
+  hrecordDate: todayDate,
   water: null,
   steps: null,
   sleep: '00:00',
@@ -34,7 +42,7 @@ const dailyHealthData = ref({
 // 表單提交數據
 const dailyHealthDataSubmit = ref({
   cId: 199, // 預設 CId
-  hrecordDate: '2024-10-17',
+  hrecordDate: todayDate,
   water: null,
   steps: null,
   sleep: null,
@@ -53,7 +61,7 @@ onMounted(() => {
 
 const checkDataExists = async () => {
   try {
-    const response = await fetch(`${API_URL}/199/2024-10-17`, {
+    const response = await fetch(`${API_URL}/199/${todayDate}`, {
       method: 'GET'
     });
     if (response.ok) {
@@ -74,7 +82,9 @@ const checkDataExists = async () => {
 const submitData = async () => {
   try {
     const method = isExistingRecord.value ? 'PATCH' : 'POST';
-    const url = isExistingRecord.value ? `${API_URL}/199` : API_URL;
+    const url = isExistingRecord.value
+      ? `${API_URL}/199/${todayDate} `
+      : API_URL;
 
     // 檢查 water 是否超過最大值
     checkWaterValue();
@@ -104,7 +114,7 @@ const submitData = async () => {
 const resetForm = () => {
   dailyHealthDataSubmit.value = {
     cId: 199, // 保持 cId
-    hrecordDate: '2024-10-17', // 保持日期
+    hrecordDate: todayDate, // 保持日期
     water: null,
     steps: null,
     sleep: null,
@@ -277,13 +287,7 @@ const moodOptions = ref([
         </div>
 
         <!-- 提交按鈕 -->
-        <button
-          type="submit"
-          class="btn btn-primary w-100"
-          @click="updateDisplay"
-        >
-          更新
-        </button>
+        <button type="submit" class="btn btn-primary w-100">更新</button>
       </form>
     </div>
     <button id="back" class="bi bi-x-circle" @click="goBack"></button>
