@@ -2,6 +2,8 @@
 import ForgetPasswordComponent from "@/components/ForgetPasswordComponent.vue";
 import { ref } from "vue";
 import { onMounted } from "vue";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+
 //----------------註冊帳號-------------------------------------
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/IndexPlayers`;
@@ -34,6 +36,7 @@ const APISubmit = async () => {
 
 //----------------註冊帳號end-------------------------------------
 //----------------帳號登入----------------------------------------
+const PiniaPlayer = Playerinformation(); //初始化
 const LoginData = ref({
   account: "",
   password: "",
@@ -42,23 +45,27 @@ const LoginData = ref({
 const API_URLlogin = `${Base_URL}/IndexPlayers/Login`;
 const Login = async () => {
   try {
-    const response = await fetch(API_URLlogin, {
+    const POSTLogin = await fetch(API_URLlogin, {
       method: "POST",
       body: JSON.stringify(LoginData.value),
       headers: { "Content-Type": "application/json" },
     });
-    if (response.ok) {
-      localStorage.setItem("Account", LoginData.value.account);
-      alert("登入成功");
-      window.location.href = "/roommap";
-    } else {
-      alert("帳號或密碼錯誤");
+    if (POSTLogin.ok) {
+      const data = await POSTLogin.json();
+      if (data.message == "success") {
+        PiniaPlayer.updatePlayerData(data.playerCharacter); //要放入的是物件，playerCharacter是我請求api之後回傳的對象，要指定是對象
+        PiniaPlayer.updateCharacterBody(data.characterAccessorie);
+        alert("登入成功");
+        console.log(data);
+        window.location.href = "/roommap";
+      } else {
+        alert(data.message);
+      }
     }
   } catch (error) {
     console.error("Fetch error: ", error);
   }
 };
-
 //----------------帳號登入end-------------------------------------
 
 //---------------忘記密碼------------------------------------------
@@ -103,19 +110,19 @@ const feedbackdata = ref({
   Email: "",
   Content: "",
 });
-const feedbacksub = async()=>{
+const feedbacksub = async () => {
   const response = await fetch(API_URLfeedback, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(feedbackdata.value),
-    });
-    if (response.ok) {
-      const feedbackresponseData = await response.json();  // 解析 JSON 回應
-      alert(feedbackresponseData.message);
-    } else {
-      alert("發生錯誤，請重新填寫表單");
-    }
-}
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(feedbackdata.value),
+  });
+  if (response.ok) {
+    const feedbackresponseData = await response.json(); // 解析 JSON 回應
+    alert(feedbackresponseData.message);
+  } else {
+    alert("發生錯誤，請重新填寫表單");
+  }
+};
 
 //---------------聯絡我們end---------------------------------------
 onMounted(() => {
@@ -234,6 +241,24 @@ onMounted(() => {
     >
       <h3 style="text-align: center">登入</h3>
       <hr />
+      <!-- 用來確認有抓到資料 -->
+      <!-- <h1>**{{ PiniaPlayer.playerAccount }}**</h1>
+      <h1>**{{ PiniaPlayer.isLoggedIn }}**</h1>
+      <h1>**{{ PiniaPlayer.characterID }}**</h1>
+      <h1>**{{ PiniaPlayer.characterName }}**</h1>
+      <h1>**{{ PiniaPlayer.characterLevel }}**</h1>
+      <h1>**{{ PiniaPlayer.characterExperience }}**</h1>
+      <h1>**{{ PiniaPlayer.characterEnvironment }}**</h1>
+      <h1>**{{ PiniaPlayer.characterCoins }}**</h1>
+      <h1>**{{ PiniaPlayer.characterTargetWater }}**</h1>
+      <h1>**{{ PiniaPlayer.characterTargetStep }}**</h1>
+      <h1>**{{ PiniaPlayer.characterGetEnvironment }}**</h1>
+      <h1>**{{ PiniaPlayer.characterGetExperience }}**</h1>
+      <h1>**{{ PiniaPlayer.characterGetCoins }}**</h1> -->
+      <!-- <h1>**{{ PiniaPlayer.Head }}**</h1>
+      <h1>**{{ PiniaPlayer.Upper }}**</h1>
+      <h1>**{{ PiniaPlayer.Lower }}**</h1> -->
+
       <form style="font: size 12px" name="LoginData" @submit.prevent="Login">
         <div>
           <label for="account">帳號</label>
@@ -533,10 +558,16 @@ onMounted(() => {
             ></button>
           </div>
           <div class="modal-body">
-            <form class="needs-validation" name="feedbackdata" style="font: size 12px" novalidate @submit.prevent="feedbacksub">
+            <form
+              class="needs-validation"
+              name="feedbackdata"
+              style="font: size 12px"
+              novalidate
+              @submit.prevent="feedbacksub"
+            >
               <div>
                 <div style="margin-top: 10px">
-                  <label for="Email" style="width: 15%; text-align: right" 
+                  <label for="Email" style="width: 15%; text-align: right"
                     >信箱 &nbsp;</label
                   >
                   <input
