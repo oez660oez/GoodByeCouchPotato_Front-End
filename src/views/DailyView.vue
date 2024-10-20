@@ -1,10 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { Playerinformation } from '@/Stores/PlayerCharacter';
 
 // 使用 Vue 路由
 const router = useRouter();
 const route = useRoute();
+// 使用 Pinia
+const playerStore = Playerinformation();
 
 // 返回功能
 const goBack = () => {
@@ -19,6 +22,11 @@ const goBack = () => {
 const BASE_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${BASE_URL}/dailyhealthrecords`;
 
+//取得ID及健康目標
+const targetID = playerStore.characterID;
+const targetWater = playerStore.characterTargetWater;
+const targetStep = playerStore.characterTargetStep;
+
 // 取得當天日期
 const today = new Date();
 const year = today.getFullYear();
@@ -28,7 +36,7 @@ const todayDate = `${year}-${month}-${day}`;
 
 // 表單初始數據
 const dailyHealthData = ref({
-  cId: 199,
+  cId: targetID,
   hrecordDate: todayDate,
   water: null,
   steps: null,
@@ -40,7 +48,7 @@ const dailyHealthData = ref({
 
 // 表單提交數據
 const dailyHealthDataSubmit = ref({
-  cId: 199,
+  cId: targetID,
   hrecordDate: todayDate,
   water: null,
   steps: null,
@@ -60,7 +68,7 @@ onMounted(() => {
 // 檢查是否已有紀錄
 const checkDataExists = async () => {
   try {
-    const response = await fetch(`${API_URL}/199/${todayDate}`, {
+    const response = await fetch(`${API_URL}/${targetID}/${todayDate}`, {
       method: 'GET'
     });
     if (response.ok) {
@@ -124,7 +132,7 @@ const submitData = async () => {
   try {
     const method = isExistingRecord.value ? 'PATCH' : 'POST';
     const url = isExistingRecord.value
-      ? `${API_URL}/199/${todayDate}`
+      ? `${API_URL}/${targetID}/${todayDate}`
       : API_URL;
 
     checkWaterValue();
@@ -154,7 +162,7 @@ const submitData = async () => {
 // 重置表單
 const resetForm = () => {
   dailyHealthDataSubmit.value = {
-    cId: 199,
+    cId: targetID,
     hrecordDate: todayDate,
     water: null,
     steps: null,
@@ -218,7 +226,7 @@ const moodOptions = ref([
               <span class="input-group-text">c.c.</span>
             </div>
             <small class="small-text"
-              >{{ dailyHealthData.water }}c.c. / 3000c.c.</small
+              >{{ dailyHealthData.water }}c.c. /{{ targetWater }} c.c.</small
             >
           </div>
           <div class="col-md-6">
@@ -238,7 +246,9 @@ const moodOptions = ref([
               <div class="invalid-feedback">僅能輸入數字，最大長度為7位</div>
               <span class="input-group-text">步</span>
             </div>
-            <small class="small-text">{{ dailyHealthData.steps }}步</small>
+            <small class="small-text"
+              >{{ dailyHealthData.steps }}步 /{{ targetStep }}步</small
+            >
           </div>
         </div>
 
