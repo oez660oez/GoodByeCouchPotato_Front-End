@@ -225,9 +225,10 @@ const moodOptions = ref([
               <div class="invalid-feedback">僅能輸入數字，最大長度為5位</div>
               <span class="input-group-text">c.c.</span>
             </div>
-            <small class="small-text"
-              >{{ dailyHealthData.water }}c.c. /{{ targetWater }} c.c.</small
+            <span v-if="isExistingRecord" class="small-text"
+              >{{ dailyHealthData.water }}c.c. /{{ targetWater }} c.c.</span
             >
+            <span v-else class="small-text">0c.c. /{{ targetWater }} c.c.</span>
           </div>
           <div class="col-md-6">
             <label for="steps" class="form-label">步數</label>
@@ -246,9 +247,10 @@ const moodOptions = ref([
               <div class="invalid-feedback">僅能輸入數字，最大長度為7位</div>
               <span class="input-group-text">步</span>
             </div>
-            <small class="small-text"
-              >{{ dailyHealthData.steps }}步 /{{ targetStep }}步</small
+            <span v-if="isExistingRecord" class="small-text"
+              >{{ dailyHealthData.steps }}步 /{{ targetStep }}步</span
             >
+            <span v-else class="small-text">0步 /{{ targetStep }}步</span>
           </div>
         </div>
 
@@ -265,7 +267,7 @@ const moodOptions = ref([
                 v-model="dailyHealthDataSubmit.sleep"
               />
             </div>
-            <small class="small-text">{{ dailyHealthData.sleep }}</small>
+            <span class="small-text">{{ dailyHealthData.sleep }}</span>
           </div>
           <div class="col-md-6 d-flex align-items-end">
             <button type="button" @click="getCurrentTime">取得現在時間</button>
@@ -313,7 +315,11 @@ const moodOptions = ref([
               maxlength="2"
               min="0"
             />
-            <small class="small-text">{{ dailyHealthData.vegetables }}份</small>
+            <span v-if="isExistingRecord" class="small-text"
+              >{{ dailyHealthData.vegetables }}份</span
+            >
+            <span v-else class="small-text">0份</span>
+
             <div class="invalid-feedback">一日最多輸入10份</div>
           </div>
 
@@ -333,7 +339,11 @@ const moodOptions = ref([
               maxlength="2"
               min="0"
             />
-            <small class="small-text">{{ dailyHealthData.snacks }}份</small>
+            <span v-if="isExistingRecord" class="small-text"
+              >{{ dailyHealthData.snacks }}份</span
+            >
+            <span v-else class="small-text">0份</span>
+
             <div class="invalid-feedback">一日最多輸入10份</div>
           </div>
         </div>
