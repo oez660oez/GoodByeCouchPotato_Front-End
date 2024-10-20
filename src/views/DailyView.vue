@@ -19,13 +19,12 @@ const goBack = () => {
 const BASE_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${BASE_URL}/dailyhealthrecords`;
 
-//取得當天日期
+// 取得當天日期
 const today = new Date();
 const year = today.getFullYear();
-const month = String(today.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始
+const month = String(today.getMonth() + 1).padStart(2, '0');
 const day = String(today.getDate()).padStart(2, '0');
 const todayDate = `${year}-${month}-${day}`;
-// alert(todayDate);
 
 // 表單初始數據
 const dailyHealthData = ref({
@@ -41,7 +40,7 @@ const dailyHealthData = ref({
 
 // 表單提交數據
 const dailyHealthDataSubmit = ref({
-  cId: 199, // 預設 CId
+  cId: 199,
   hrecordDate: todayDate,
   water: null,
   steps: null,
@@ -51,14 +50,14 @@ const dailyHealthDataSubmit = ref({
   snacks: null
 });
 
-// 判斷是否已有記錄
+// 判斷當天是否已有記錄
 const isExistingRecord = ref(false);
 
-// 檢查是否已有紀錄
 onMounted(() => {
   checkDataExists();
 });
 
+// 檢查是否已有紀錄
 const checkDataExists = async () => {
   try {
     const response = await fetch(`${API_URL}/199/${todayDate}`, {
@@ -66,11 +65,11 @@ const checkDataExists = async () => {
     });
     if (response.ok) {
       const data = await response.json();
-      dailyHealthData.value = data; // 更新已存在的資料
-      dailyHealthDataSubmit.value.mood = dailyHealthData.value.mood; // 同步表單資料
-      isExistingRecord.value = true; // 設置已有紀錄
+      dailyHealthData.value = data;
+      dailyHealthDataSubmit.value.mood = dailyHealthData.value.mood;
+      isExistingRecord.value = true;
     } else {
-      isExistingRecord.value = false; // 若無紀錄
+      isExistingRecord.value = false;
     }
   } catch (error) {
     console.error('Error fetching data:', error.message);
@@ -78,15 +77,56 @@ const checkDataExists = async () => {
   }
 };
 
+// 初始化驗證狀態
+const isValid = ref(true);
+const snacksisValid = ref(false);
+const vegetablesisValid = ref(false);
+
+// 表單驗證
+const validateForm = () => {
+  isValid.value = true;
+  validateVegetables();
+  validateSnacks();
+};
+
+// 驗證零食輸入
+const validateSnacks = () => {
+  const snacksValue = dailyHealthDataSubmit.value.snacks;
+  if (snacksValue > 10 || snacksValue < 0) {
+    isValid.value = false;
+    snacksisValid.value = true;
+  } else {
+    snacksisValid.value = false;
+  }
+};
+
+// 驗證蔬果輸入
+const validateVegetables = () => {
+  const vegetablesValue = dailyHealthDataSubmit.value.vegetables;
+  if (vegetablesValue > 10 || vegetablesValue < 0) {
+    isValid.value = false;
+    vegetablesisValid.value = true;
+  } else {
+    vegetablesisValid.value = false;
+  }
+};
+
 // 提交表單資料
 const submitData = async () => {
+  // 執行驗證
+  validateForm();
+
+  if (!isValid.value) {
+    alert('請修正表單中的錯誤後再提交');
+    return;
+  }
+
   try {
     const method = isExistingRecord.value ? 'PATCH' : 'POST';
     const url = isExistingRecord.value
-      ? `${API_URL}/199/${todayDate} `
+      ? `${API_URL}/199/${todayDate}`
       : API_URL;
 
-    // 檢查 water 是否超過最大值
     checkWaterValue();
 
     const response = await fetch(url, {
@@ -97,7 +137,7 @@ const submitData = async () => {
 
     if (response.ok) {
       console.log('Data submitted successfully');
-      await checkDataExists(); // 提交成功後，刷新數據
+      await checkDataExists();
       alert('資料更新成功');
     } else {
       const errorMsg = await response.text();
@@ -107,31 +147,22 @@ const submitData = async () => {
   } catch (error) {
     console.error('Error:', error.message);
   }
-  resetForm(); // 提交後重置表單
+
+  resetForm();
 };
 
 // 重置表單
 const resetForm = () => {
   dailyHealthDataSubmit.value = {
-    cId: 199, // 保持 cId
-    hrecordDate: todayDate, // 保持日期
+    cId: 199,
+    hrecordDate: todayDate,
     water: null,
     steps: null,
     sleep: null,
-    mood: dailyHealthData.value.mood, // 保持 mood
+    mood: dailyHealthData.value.mood,
     vegetables: null,
     snacks: null
   };
-};
-
-// 取得當前時間並格式化為 HH:mm
-const currentTime = ref('');
-const getCurrentTime = () => {
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  currentTime.value = `${hours}:${minutes}`;
-  dailyHealthDataSubmit.value.sleep = `${hours}:${minutes}`;
 };
 
 // 檢查 water 值是否超過 99999
@@ -141,7 +172,17 @@ const checkWaterValue = () => {
   }
 };
 
-// 心情選項列表
+// 取得當前時間
+const currentTime = ref('');
+const getCurrentTime = () => {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  currentTime.value = `${hours}:${minutes}`;
+  dailyHealthDataSubmit.value.sleep = `${hours}:${minutes}`;
+};
+
+// 心情選項
 const moodOptions = ref([
   { label: '非常開心', value: '非常開心' },
   { label: '開心', value: '開心' },
@@ -156,7 +197,7 @@ const moodOptions = ref([
   <div id="formborder">
     <div class="container mt-5 form-container">
       <h3 class="header-text">每日健康紀錄表</h3>
-      <form @submit.prevent="submitData">
+      <form @submit.prevent="submitData" novalidate>
         <!-- 飲水量和步數 -->
         <div class="row mb-3">
           <div class="col-md-6">
@@ -246,6 +287,7 @@ const moodOptions = ref([
         </div>
 
         <!-- 飲食記錄 -->
+        <!-- 飲食記錄 -->
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="fruits" class="form-label">蔬果</label>
@@ -256,11 +298,13 @@ const moodOptions = ref([
               id="fruits"
               v-model="dailyHealthDataSubmit.vegetables"
               placeholder="0"
-              pattern="^([0-9]|10)$"
+              @input="validateVegetables"
+              :class="{ 'is-invalid': vegetablesisValid }"
               maxlength="2"
               min="0"
             />
             <small class="small-text">{{ dailyHealthData.vegetables }}份</small>
+            <div class="invalid-feedback">一日最多輸入10份</div>
           </div>
 
           <div class="col-md-6">
@@ -274,15 +318,13 @@ const moodOptions = ref([
               id="sugar-drinks"
               v-model="dailyHealthDataSubmit.snacks"
               placeholder="0"
-              pattern="^([0-9]|10)$"
+              @input="validateSnacks"
+              :class="{ 'is-invalid': snacksisValid }"
               maxlength="2"
               min="0"
             />
             <small class="small-text">{{ dailyHealthData.snacks }}份</small>
-
-            <div class="invalid-feedback">
-              僅能輸入數字，最大長度為2位，範圍為0~10
-            </div>
+            <div class="invalid-feedback">一日最多輸入10份</div>
           </div>
         </div>
 
