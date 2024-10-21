@@ -87,20 +87,46 @@ const checkDataExists = async () => {
 
 // 初始化驗證狀態
 const isValid = ref(true);
+const waterisValid = ref(false);
+const stepsisValid = ref(false);
 const snacksisValid = ref(false);
 const vegetablesisValid = ref(false);
 
 // 表單驗證
 const validateForm = () => {
   isValid.value = true;
+  validateWater();
+  validateSteps();
   validateVegetables();
   validateSnacks();
+};
+
+//驗證飲水量輸入
+const validateWater = () => {
+  const waterValue = dailyHealthDataSubmit.value.water;
+  if (isNaN(waterValue) || waterValue < 0 || waterValue > 99999) {
+    isValid.value = false;
+    waterisValid.value = true;
+  } else {
+    waterisValid.value = false;
+  }
+};
+
+//驗證步數輸入
+const validateSteps = () => {
+  const stepsValue = dailyHealthDataSubmit.value.steps;
+  if (isNaN(stepsValue) || stepsValue < 0) {
+    isValid.value = false;
+    stepsisValid.value = true;
+  } else {
+    stepsisValid.value = false;
+  }
 };
 
 // 驗證零食輸入
 const validateSnacks = () => {
   const snacksValue = dailyHealthDataSubmit.value.snacks;
-  if (snacksValue > 10 || snacksValue < 0) {
+  if (isNaN(snacksValue) || snacksValue > 10 || snacksValue < 0) {
     isValid.value = false;
     snacksisValid.value = true;
   } else {
@@ -111,7 +137,7 @@ const validateSnacks = () => {
 // 驗證蔬果輸入
 const validateVegetables = () => {
   const vegetablesValue = dailyHealthDataSubmit.value.vegetables;
-  if (vegetablesValue > 10 || vegetablesValue < 0) {
+  if (isNaN(vegetablesValue) || vegetablesValue > 10 || vegetablesValue < 0) {
     isValid.value = false;
     vegetablesisValid.value = true;
   } else {
@@ -217,18 +243,19 @@ const moodOptions = ref([
                 name="water"
                 id="water"
                 v-model="dailyHealthDataSubmit.water"
-                pattern="\d{1,5}"
                 placeholder="0"
+                @input="validateWater"
+                :class="{ 'is-invalid': waterisValid }"
                 maxlength="5"
                 min="0"
               />
-              <div class="invalid-feedback">僅能輸入數字，最大長度為5位</div>
               <span class="input-group-text">c.c.</span>
             </div>
             <span v-if="isExistingRecord" class="small-text"
               >{{ dailyHealthData.water }}c.c. /{{ targetWater }} c.c.</span
             >
             <span v-else class="small-text">0c.c. /{{ targetWater }} c.c.</span>
+            <div class="invalid-feedback">僅能輸入數字，最大長度為5位</div>
           </div>
           <div class="col-md-6">
             <label for="steps" class="form-label">步數</label>
@@ -240,17 +267,18 @@ const moodOptions = ref([
                 id="steps"
                 v-model="dailyHealthDataSubmit.steps"
                 placeholder="0"
-                pattern="\d{1,7}"
+                @input="validateSteps"
+                :class="{ 'is-invalid': stepsisValid }"
                 maxlength="7"
                 min="0"
               />
-              <div class="invalid-feedback">僅能輸入數字，最大長度為7位</div>
               <span class="input-group-text">步</span>
             </div>
             <span v-if="isExistingRecord" class="small-text"
               >{{ dailyHealthData.steps }}步 /{{ targetStep }}步</span
             >
             <span v-else class="small-text">0步 /{{ targetStep }}步</span>
+            <div class="invalid-feedback">僅能輸入數字，最大長度為7位</div>
           </div>
         </div>
 
@@ -298,7 +326,6 @@ const moodOptions = ref([
           </div>
         </div>
 
-        <!-- 飲食記錄 -->
         <!-- 飲食記錄 -->
         <div class="row mb-3">
           <div class="col-md-6">
@@ -349,7 +376,14 @@ const moodOptions = ref([
         </div>
 
         <!-- 提交按鈕 -->
-        <button type="submit" class="btn btn-primary w-100">更新</button>
+        <button
+          v-if="isExistingRecord"
+          type="submit"
+          class="btn btn-primary w-100"
+        >
+          更新
+        </button>
+        <button v-else type="submit" class="btn btn-primary w-100">Done</button>
       </form>
     </div>
     <button id="back" class="bi bi-x-circle" @click="goBack"></button>
