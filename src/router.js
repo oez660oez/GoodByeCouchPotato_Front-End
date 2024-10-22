@@ -12,6 +12,7 @@ import SystemView from "./views/SystemView.vue";
 import ForgetPassword from "./components/ForgetPasswordComponent.vue";
 import Feedback from "./components/Feedback.vue";
 import ChangePassword from "./components/ChangePassword.vue";
+import BodyＭerchandiseComponent from "./components/BodyＭerchandiseComponent.vue";
 
 const routes = [
   {
@@ -70,8 +71,8 @@ const routes = [
             path: "changepassword",
             component: ChangePassword,
             name: "out-changepassword",
-          }
-        ]
+          },
+        ],
       },
       {
         path: "report",
@@ -89,6 +90,13 @@ const routes = [
         path: "shop",
         component: ShopView,
         name: "in-shop",
+        children: [
+          {
+            path: "Ｍerchandise",
+            component: BodyＭerchandiseComponent,
+            name: "in-bodyMerchandise",
+          },
+        ],
       },
       {
         path: "daily",
@@ -124,8 +132,8 @@ const routes = [
             path: "changepassword",
             component: ChangePassword,
             name: "in-changepassword",
-          }
-        ]
+          },
+        ],
       },
       {
         path: "report",

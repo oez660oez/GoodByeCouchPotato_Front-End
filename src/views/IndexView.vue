@@ -3,7 +3,6 @@ import ForgetPasswordComponent from "@/components/ForgetPasswordComponent.vue";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
-
 //----------------註冊帳號-------------------------------------
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/IndexPlayers`;
@@ -15,22 +14,28 @@ const UserData = ref({
   UserState: false, //他因為預設是bool的false，所以本來沒有送出name就是false，但token是字串，送出沒有name的話，預設值會送不出去，會變成null而發生400錯誤
   Token: "temporary-token",
 });
-const APISubmit = async () => {
-  try {
-    console.log(UserData.value);
-    const UserRegisterformData = new FormData(document.UserData); //如果有檔案，使用formdata比較好，沒有檔案的話打包成json比較好
-    const response = await fetch(API_URL, {
-      method: "POST",
-      body: UserRegisterformData,
-    });
-    if (response.ok) {
-      alert("註冊成功！");
-    } else {
-      alert(`此帳號已被註冊: ${errorMessage}`);
+const APISubmit = async (event) => {
+  const form = event.target;
+  if (!form.checkValidity()) {
+    event.preventDefault();
+    event.stopPropagation();
+  } else {
+    try {
+      const UserRegisterformData = new FormData(document.UserData); //如果有檔案，使用formdata比較好，沒有檔案的話打包成json比較好
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: UserRegisterformData,
+      });
+      if (response.ok) {
+        alert("註冊成功！");
+      } else {
+        alert(`此帳號已被註冊: ${errorMessage}`);
+      }
+      console.log(UserData.value);
+    } catch (error) {
+      console.error("Fetch error: ", error);
+      alert("註冊失敗");
     }
-  } catch (error) {
-    console.error("Fetch error: ", error);
-    alert("註冊失敗");
   }
 };
 
@@ -376,8 +381,8 @@ onMounted(() => {
                     style="display: inline-block; margin-left: 5px; width: 80%"
                     maxlength="30"
                     placeholder="請輸入英文字母、數字"
-                    required
                     pattern="[0-9a-zA-Z]+"
+                    required
                     v-model.trim="UserData.Useraccount"
                   />
                   <div class="invalid-feedback">
