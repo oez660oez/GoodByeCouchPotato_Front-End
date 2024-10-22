@@ -110,7 +110,13 @@ const feedbackdata = ref({
   Email: "",
   Content: "",
 });
-const feedbacksub = async () => {
+const feedbacksub = async (event) => {
+  const form = event.target;
+  if (!form.checkValidity()) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  else{
   const response = await fetch(API_URLfeedback, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -121,7 +127,9 @@ const feedbacksub = async () => {
     alert(feedbackresponseData.message);
   } else {
     alert("發生錯誤，請重新填寫表單");
-  }
+  }}
+
+  form.classList.add('was-validated');  // 添加檢核標記，只有提交後才檢核
 };
 
 //---------------聯絡我們end---------------------------------------

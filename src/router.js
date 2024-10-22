@@ -10,7 +10,7 @@ import DressView from "./views/DressView.vue";
 import ReportView from "./views/ReportView.vue";
 import SystemView from "./views/SystemView.vue";
 import ForgetPassword from "./components/ForgetPasswordComponent.vue";
-import Feedback from "./components/Feedback.vue";
+import Feedback from "./components/FeedBack.vue";
 import ChangePassword from "./components/ChangePassword.vue";
 
 const routes = [
@@ -135,6 +135,7 @@ const routes = [
     ],
   },
 ];
+
 
 const router = createRouter({
   history: createWebHistory(),
