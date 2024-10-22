@@ -1,47 +1,59 @@
 <script setup>
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
 const router = useRouter();
 const route = useRoute();
 
-const sportdone = ref('12');
-const cleandone = ref('20');
+const sportdone = ref("12");
+const cleandone = ref("20");
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 
-
 //-------------獲取每日任務--------------------
 const API_URLgettask = `${Base_URL}/DailyTaskRecords/GetDailyTaskRecords`;
-const gettask = async(CId)=>{
-var response = await fetch(API_URLgettask,{
-method:"POST",
-headers: { "Content-Type": "application/json" },
-body:JSON.stringify({CId:CId})//也可以直接簡寫成{ CId }
-});
-if(response.ok){
-  const dailytaskData = await response.json(); // 解析 JSON 響應
-  console.log(dailytaskData);
-  //放資料
-  document.getElementById("task1lbl").textContent = dailytaskData.t1name;
-  document.getElementById("task2lbl").textContent = dailytaskData.t2name;
-  document.getElementById("task3lbl").textContent = dailytaskData.t3name;
-  document.getElementById("T1reward").textContent =  `任務獎勵 ${dailytaskData.t1Reward}金幣`;
-  document.getElementById("T2reward").textContent =  `任務獎勵 ${dailytaskData.t2Reward}金幣`;
-  document.getElementById("T3reward").textContent =  `任務獎勵 ${dailytaskData.t3Reward}金幣`;
-  document.getElementById("task1").checked = dailytaskData.t1completed;
-  document.getElementById("task2").checked = dailytaskData.t2completed;
-  document.getElementById("task3").checked = dailytaskData.t3completed;
-  //已經達成的 checkbox變成disable
-  document.getElementById("task1").disabled = dailytaskData.t1completed === true;
-  document.getElementById("task2").disabled = dailytaskData.t2completed === true;
-  if (dailytaskData.t3completed==true){
-    document.getElementById("task3").disabled = true;
+const gettask = async (CId) => {
+  var response = await fetch(API_URLgettask, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ CId: CId }), //也可以直接簡寫成{ CId }
+  });
+  if (response.ok) {
+    const dailytaskData = await response.json(); // 解析 JSON 響應
+    console.log(dailytaskData);
+    //放資料
+    document.getElementById("task1lbl").textContent = dailytaskData.t1name;
+    document.getElementById("task2lbl").textContent = dailytaskData.t2name;
+    document.getElementById("task3lbl").textContent = dailytaskData.t3name;
+    document.getElementById(
+      "T1reward"
+    ).textContent = `任務獎勵 ${dailytaskData.t1Reward}金幣`;
+    document.getElementById(
+      "T2reward"
+    ).textContent = `任務獎勵 ${dailytaskData.t2Reward}金幣`;
+    document.getElementById(
+      "T3reward"
+    ).textContent = `任務獎勵 ${dailytaskData.t3Reward}金幣`;
+    document.getElementById("task1").checked = dailytaskData.t1completed;
+    document.getElementById("task2").checked = dailytaskData.t2completed;
+    document.getElementById("task3").checked = dailytaskData.t3completed;
+    //已經達成的 checkbox變成disable
+    document.getElementById("task1").disabled =
+      dailytaskData.t1completed === true;
+    document.getElementById("task2").disabled =
+      dailytaskData.t2completed === true;
+    if (dailytaskData.t3completed == true) {
+      document.getElementById("task3").disabled = true;
+    }
+    //三個都達成的 更新btn變成disable
+    if (
+      dailytaskData.t1completed === true &&
+      dailytaskData.t3completed == true &&
+      dailytaskData.t2completed === true
+    ) {
+      document.getElementById("btndaily").disabled = true;
+    }
   }
-  //三個都達成的 更新btn變成disable
-  if(dailytaskData.t1completed === true && dailytaskData.t3completed==true && dailytaskData.t2completed === true){
-    document.getElementById("btndaily").disabled=true
-  }
-}}
+};
 //-------------獲取每日任務end--------------------
 //-------------更新每日任務--------------------
 
@@ -51,21 +63,20 @@ onMounted(() => {
   const userAccountString = localStorage.getItem("UserAccount");
   const userAccount = JSON.parse(userAccountString);
   const CId = userAccount.characterID;
-  console.log(CId)
-  
+  console.log(CId);
+
   gettask(CId);
 });
 
-
 const goBack = () => {
-    if (route.matched.length > 1) {
-        // 如果當前路由有父路由，返回到父路由
-        router.push({ name: route.matched[route.matched.length - 2].name });
-    } else {
-        // 否則，使用瀏覽器的後退功能
-        router.go(-1);
-    }
-}
+  if (route.matched.length > 1) {
+    // 如果當前路由有父路由，返回到父路由
+    router.push({ name: route.matched[route.matched.length - 2].name });
+  } else {
+    // 否則，使用瀏覽器的後退功能
+    router.go(-1);
+  }
+};
 </script>
 
 <template>
@@ -78,22 +89,22 @@ const goBack = () => {
     <!-- 每日任務區塊 -->
     <div id="Dailytaskblock">
       <form class="needs-validation" name="feedbackdata">
-        <h4 style="padding-left: 100px;">每日任務</h4>
+        <h4 style="padding-left: 100px">每日任務</h4>
         <div class="task-group">
           <div class="task-list">
             <div class="task-item">
               <input type="checkbox" id="task1" />
-              <label for="task1" id="task1lbl">task1</label>
+              <label for="task1" id="task1lbl"></label>
               <i id="T1reward"></i>
             </div>
             <div class="task-item">
               <input type="checkbox" id="task2" />
-              <label for="task2" id="task2lbl">task2</label>
+              <label for="task2" id="task2lbl"></label>
               <i id="T2reward"></i>
             </div>
             <div class="task-item">
               <input type="checkbox" id="task3" />
-              <label for="task3" id="task3lbl">task3</label>
+              <label for="task3" id="task3lbl"></label>
               <i id="T3reward"></i>
             </div>
           </div>
@@ -107,18 +118,18 @@ const goBack = () => {
     <!-- 每週任務區塊 -->
     <div id="weeklytaskblock">
       <form class="needs-validation" name="feedbackdata">
-        <h4 style="padding-left: 100px;margin-top: 3%;">每週任務</h4>
+        <h4 style="padding-left: 100px; margin-top: 3%">每週任務</h4>
         <div class="weeklytask-group">
           <div class="task-list">
             <div class="task-item">
               <input type="checkbox" id="sport" />
-              <label id="sportdonelbl" for="sport">運動  </label>
-              <span>進度：{{ sportdone }}/7    &nbsp;&nbsp;目標：每週三次</span>
+              <label id="sportdonelbl" for="sport">運動 </label>
+              <span>進度：{{ sportdone }}/7 &nbsp;&nbsp;目標：每週三次</span>
             </div>
             <div class="task-item">
               <input type="checkbox" id="clean" />
               <label id="cleandonelbl" for="clean">整理環境 </label>
-              <span>進度：{{ cleandone }}/7    &nbsp;&nbsp;目標：每週一次</span>
+              <span>進度：{{ cleandone }}/7 &nbsp;&nbsp;目標：每週一次</span>
             </div>
           </div>
           <button class="update-btn">更新</button>
@@ -162,7 +173,7 @@ const goBack = () => {
   position: relative;
 }
 
-.weeklytask-group{
+.weeklytask-group {
   display: flex;
   justify-content: space-between; /* 讓任務列表和按鈕在水平兩側 */
   align-items: center;
@@ -175,8 +186,6 @@ const goBack = () => {
 .task-list {
   display: flex;
   flex-direction: column;
-  
- 
 }
 
 .task-item {
@@ -187,7 +196,7 @@ const goBack = () => {
   margin-left: 40%;
   width: 500px; /* 固定寬度，避免因為 label 長度影響排版 */
   position: relative;
-  
+
   padding-top: 10px;
 }
 
@@ -200,7 +209,8 @@ const goBack = () => {
   width: 250px; /* 設定 label 固定寬度 */
 }
 
-#sportdonelbl,#cleandonelbl {
+#sportdonelbl,
+#cleandonelbl {
   flex-shrink: 0; /* 防止 label 擠壓 checkbox */
   width: 200px; /* 設定 label 固定寬度 */
 }
