@@ -10,8 +10,9 @@ import DressView from "./views/DressView.vue";
 import ReportView from "./views/ReportView.vue";
 import SystemView from "./views/SystemView.vue";
 import ForgetPassword from "./components/ForgetPasswordComponent.vue";
-import Feedback from "./components/Feedback.vue";
+import Feedback from "./components/FeedBack.vue";
 import ChangePassword from "./components/ChangePassword.vue";
+import CreateCharacter from "./views/CreateCharacter.vue";
 
 const routes = [
   {
@@ -70,8 +71,8 @@ const routes = [
             path: "changepassword",
             component: ChangePassword,
             name: "out-changepassword",
-          }
-        ]
+          },
+        ],
       },
       {
         path: "report",
@@ -124,8 +125,8 @@ const routes = [
             path: "changepassword",
             component: ChangePassword,
             name: "in-changepassword",
-          }
-        ]
+          },
+        ],
       },
       {
         path: "report",
@@ -134,6 +135,11 @@ const routes = [
       },
     ],
   },
+  {
+      path: "/createcharacter",
+      component: CreateCharacter,
+      name: "createcharacter",
+  }
 ];
 
 const router = createRouter({
