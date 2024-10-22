@@ -153,7 +153,7 @@ const feedbacksub = async (event) => {
   left: 0;
   font-size: 0.875em;
   color: #dc3545;
-  padding-left: 16%;
+  padding-left: 13%;
   visibility: hidden; /* 預設隱藏，避免出現時干擾佈局 */
 }
 

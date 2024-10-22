@@ -2,7 +2,6 @@
 const links = document.querySelectorAll('.nav-link');
 
 import { onMounted } from 'vue';
-import ShopView from './ShopView.vue';
 
 onMounted(() => {
   const links = document.querySelectorAll('.nav-link');
