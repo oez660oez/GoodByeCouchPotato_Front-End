@@ -172,9 +172,18 @@ const handleSubmit = async () => {
     console.error("發生錯誤:", error);
     errors.value.general = "發生錯誤，請稍後再試";
     await Swal.fire({
-      icon: "error",
-      title: "錯誤",
-      text: errors.value.general,
+      //icon: "error",
+      //title: "錯誤",
+      //text: errors.value.general,
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'  // 更改類別名稱
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background: 'transparent',
+      confirmButtonText: '',
     });
   }
 };
@@ -192,10 +201,10 @@ const handleSubmit = async () => {
       <!-- end -->
       <!-- start -->
       <div class="row mb-3 d-flex align-items-center">
-        <div class="col-12 col-xl-2 text-center p-0 offset-xl-3">
+        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="name" class="form-label">角色名稱</label>
         </div>
-        <div class="col-12 col-xl-3">
+        <div class="col-4 col-xl-3">
           <input
             v-model="form.name"
             type="text"
@@ -211,10 +220,10 @@ const handleSubmit = async () => {
       <!-- end -->
       <!-- start -->
       <div class="row mb-3 d-flex align-items-center">
-        <div class="col-12 col-xl-2 text-center p-0 offset-xl-3">
+        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="height" class="form-label">身高</label>
         </div>
-        <div class="col-12 col-xl-3">
+        <div class="col-4 col-xl-3">
           <!-- <input type="tel" id="tel" class="form-control" pattern="[A-Z]{1}[0-9]{9}" placeholder="請輸入身分證字號" required> -->
           <input
             v-model="form.height"
@@ -240,10 +249,10 @@ const handleSubmit = async () => {
       <!-- end -->
       <!-- start -->
       <div class="row mb-3 d-flex align-items-center">
-        <div class="col-12 col-xl-2 text-center p-0 offset-xl-3">
+        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="weight" class="form-label">體重</label>
         </div>
-        <div class="col-12 col-xl-3">
+        <div class="col-4 col-xl-3">
           <input
             v-model="form.weight"
             type="text"
@@ -268,10 +277,10 @@ const handleSubmit = async () => {
       <!-- end -->
       <!-- start -->
       <div class="row mb-3 d-flex align-items-center">
-        <div class="col-12 col-xl-2 text-center p-0 offset-xl-3">
+        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="exercise" class="form-label">運動強度</label>
         </div>
-        <div class="col-12 col-xl-3">
+        <div class="col-4 col-xl-3">
           <select
             v-model="form.exerciseIntensity"
             class="form-control"
@@ -311,7 +320,7 @@ const handleSubmit = async () => {
   </form>
 </template>
 
-<style lang="css" scoped>
+<style lang="css">
 .container {
   width: 900px;
   height: 500px;
@@ -321,6 +330,23 @@ const handleSubmit = async () => {
   border-radius: 20px;
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
 }
+/* 修改後的 SweetAlert2 自訂樣式 */
+.swal2-popup.swal-custom-popup {
+  background-image: url('/images/SweetAlert2_Background_test.png') !important;
+  width: 500px;
+  height: 300px;
+}
+
+/* 如果需要調整按鈕樣式 */
+.swal2-popup.swal-custom-popup .swal2-confirm {
+  background-image: url('/images/SweetAlert2_Button_test.png') !important;
+  background-color: transparent !important;
+  border: none;
+  border-radius: 12px;
+  width:86px;
+  height: 40px;
+}
+
 .form-control.is-invalid {
   border-color: #dc3545;
   padding-right: calc(1.5em + 0.75rem);
