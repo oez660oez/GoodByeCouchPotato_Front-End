@@ -1,14 +1,17 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import Swal from "sweetalert2";
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
-const API_URL = `${Base_URL}/CreateCharacter`;
+const API_URL = `${Base_URL}/WeightRecord`;
 
 //玩家在input填入的資訊儲存在這裡
 const form = ref({
   weight: "",
 });
+
+//上個月的體重紀錄
+const LastMonthRecord = ref("暫無體重紀錄")
 
 //填入錯誤訊息
 const errors = ref({
@@ -16,6 +19,26 @@ const errors = ref({
   general: "",
 });
 
+// 載入上個月的體重記錄
+const loadLastMonthRecord = async () => {
+  try{
+    const userAccountJson = localStorage.getItem("UserAccount");
+    if (!userAccountJson) return;
+
+    const userAccount = JSON.parse(userAccountJson);
+    const response = await fetch(`${API_URL}/Status/${userAccount.playerAccount}`);
+    const data = await response.json();
+
+    if(data.weight){
+      LastMonthRecord.value = `${data.weight}`;
+    }else{
+      LastMonthRecord.value = "暫無體重紀錄";
+    }
+  }catch{
+    console.error("載入上個月體重記錄失敗:", error);
+    LastMonthRecord.value = "暫無體重紀錄";
+  }
+}
 const validateWeight = () => {
   const weight = Number(form.value.weight);
   if (weight <= 0 || weight > 600) {
@@ -40,7 +63,6 @@ const handleSubmit = async () => {
     return;
   }
   // 撈登入時儲存於localStorage的UserAccount
-  let playerAccount = null;
   try {
     const userAccountJson = localStorage.getItem("UserAccount");
     if (!userAccountJson) {
@@ -52,7 +74,7 @@ const handleSubmit = async () => {
       return;
     }
     const userAccount = JSON.parse(userAccountJson);
-    playerAccount = userAccount.playerAccount;
+    const playerAccount = userAccount.playerAccount;
 
     if (!playerAccount) {
       await Swal.fire({
@@ -81,6 +103,10 @@ try {
       title: "成功",
       text: "送出表單成功！",
     });
+    //重新載入上個月紀錄
+    await loadLastMonthRecord();
+    //清空表單
+    form.value.weight = "";
     // 可以在這裡添加導航到其他頁面的邏輯
   } else {
     const errorData = await response.json();
@@ -119,6 +145,11 @@ try {
     return;
   }
 };
+
+//當組件掛載時載入上個月紀錄
+onMounted(()=>{
+  loadLastMonthRecord();
+});
 </script>
 
 <template>
@@ -157,6 +188,9 @@ try {
         <div class="col-12 col-xl-1">
           <label class="form-label d-none d-xl-block">公斤</label>
         </div>
+        <div class="row col-4 offset-4 col-xl-4 text-center p-0 offset-xl-4 mt-5">
+          <span>上個月的體重: {{ LastMonthRecord }} 公斤</span>
+        </div>
       </div>
       <!-- end -->
       <!-- start -->
@@ -180,7 +214,7 @@ try {
 <style lang="css">
 .container {
   width: 900px;
-  height: 500px;
+  height: 400px;
   background: linear-gradient(161.98deg, #fff9e6 13.65%, #fdbdbd 87.85%);
   margin: 100px auto;
   position: relative;
