@@ -45,6 +45,10 @@ export const Playerinformation = defineStore(
       Upper.value = data.upper;
     };
 
+    const changecoins = (data) => {
+      characterCoins.value = data.coins;
+    };
+
     //設定一個將所有資料清空的方法
     const logout = () => {
       Playerinformation.value.PlayerAccount = "";
@@ -85,6 +89,7 @@ export const Playerinformation = defineStore(
       updatePlayerData,
       updateCharacterBody,
       logout,
+      changecoins,
     };
   },
   {

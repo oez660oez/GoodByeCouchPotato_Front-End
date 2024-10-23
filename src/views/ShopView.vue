@@ -51,9 +51,11 @@ const goBack = () => {
                 >
               </li>
             </ul>
-            <KeepAlive>
-              <component :is="currentTab"></component>
-            </KeepAlive>
+            <div class="MerchandiseItem">
+              <KeepAlive>
+                <component :is="currentTab"></component>
+              </KeepAlive>
+            </div>
           </div>
         </div>
       </div>
@@ -113,5 +115,8 @@ a:visited,
 a:link,
 a:active {
   color: black;
+}
+.MerchandiseItem {
+  margin-left: -10px;
 }
 </style>
