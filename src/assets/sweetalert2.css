@@ -1,0 +1,17 @@
+/* 自定義彈窗樣式 */
+.swal2-popup {
+    height: 300px !important;
+    width: 500px !important;
+    background: #fff url('/images/SweetAlert2_Background_test.png') !important;
+    background-size: cover !important;
+  }
+
+  /* 自定義確認按鈕樣式 */
+  .swal2-confirm {
+    background-image: url('/images/SweetAlert2_Button_test.png') !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 12px !important;
+    width: 86px !important;
+    height: 40px !important;
+  }

@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import Swal from "sweetalert2";
 
+
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/CreateCharacter`;
 
@@ -172,9 +173,6 @@ const handleSubmit = async () => {
     console.error("發生錯誤:", error);
     errors.value.general = "發生錯誤，請稍後再試";
     await Swal.fire({
-      //icon: "error",
-      //title: "錯誤",
-      //text: errors.value.general,
       imageUrl: "/images/SweetAlert2_test.png",
       customClass: {
         popup: 'swal-custom-popup'  // 更改類別名稱
@@ -182,7 +180,7 @@ const handleSubmit = async () => {
       imageHeight: 100,
       imageWidth: 380,
       imageAlt: "A Error image",
-      background: 'transparent',
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
       confirmButtonText: '',
     });
   }
@@ -320,7 +318,7 @@ const handleSubmit = async () => {
   </form>
 </template>
 
-<style lang="css">
+<style lang="css" scoped>
 .container {
   width: 900px;
   height: 500px;
@@ -332,9 +330,7 @@ const handleSubmit = async () => {
 }
 /* 修改後的 SweetAlert2 自訂樣式 */
 .swal2-popup.swal-custom-popup {
-  background-image: url('/images/SweetAlert2_Background_test.png') !important;
-  width: 500px;
-  height: 300px;
+  height: 300px !important;
 }
 
 /* 如果需要調整按鈕樣式 */

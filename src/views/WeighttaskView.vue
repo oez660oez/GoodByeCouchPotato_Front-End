@@ -30,7 +30,7 @@ const loadLastMonthRecord = async () => {
     const data = await response.json();
 
     if(data.weight){
-      LastMonthRecord.value = `${data.weight}`;
+      LastMonthRecord.value = `上個月的體重: ${data.weight} 公斤`;
     }else{
       LastMonthRecord.value = "暫無體重紀錄";
     }
@@ -120,20 +120,17 @@ try {
 } catch (error) {
   console.error("發生錯誤:", error);
   errors.value.general = "發生錯誤，請稍後再試";
-  await Swal.fire({
-    //icon: "error",
-    //title: "錯誤",
-    //text: errors.value.general,
-    imageUrl: "/images/SweetAlert2_test.png",
-    customClass: {
-      popup: "swal-custom-popup", // 更改類別名稱
-    },
-    imageHeight: 100,
-    imageWidth: 380,
-    imageAlt: "A Error image",
-    background: "transparent",
-    confirmButtonText: "",
-  });
+    await Swal.fire({
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'  // 更改類別名稱
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
+    });
 }
   } catch (error) {
     console.error("解析 UserAccount 失敗:", error);
@@ -189,7 +186,7 @@ onMounted(()=>{
           <label class="form-label d-none d-xl-block">公斤</label>
         </div>
         <div class="row col-4 offset-4 col-xl-4 text-center p-0 offset-xl-4 mt-5">
-          <span>上個月的體重: {{ LastMonthRecord }} 公斤</span>
+          <span>{{ LastMonthRecord }}</span>
         </div>
       </div>
       <!-- end -->
@@ -211,7 +208,7 @@ onMounted(()=>{
   </form>
 </template>
 
-<style lang="css">
+<style lang="css" scoped>
 .container {
   width: 900px;
   height: 400px;
