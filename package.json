@@ -12,10 +12,12 @@
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.5",
     "font-awesome": "^4.7.0",
     "pinia": "^2.2.4",
     "pinia-plugin-persistedstate": "^4.1.1",
     "vue": "^3.4.29",
+    "vue-chartjs": "^5.3.1",
     "vue-router": "^4.4.5"
   },
   "devDependencies": {

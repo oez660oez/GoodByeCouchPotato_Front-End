@@ -15,6 +15,7 @@ import ChangePassword from "./components/ChangePassword.vue";
 import BodyＭerchandiseComponent from "./components/BodyＭerchandiseComponent.vue";
 import CreateCharacter from "./views/CreateCharacter.vue";
 import NowReport from "./views/NowReport.vue";
+import Reportdata from "./components/Reportdata.vue";
 
 const routes = [
   {
@@ -80,6 +81,13 @@ const routes = [
         path: "report",
         component: ReportView,
         name: "out-report",
+        children: [
+          {
+            path: "reportdata",
+            component: Reportdata,
+            name: "out-reportdata",
+          },
+        ],
       },
       {
         path: "nowreport",
@@ -146,6 +154,13 @@ const routes = [
         path: "report",
         component: ReportView,
         name: "in-report",
+        children: [
+          {
+            path: "reportdata",
+            component: Reportdata,
+            name: "in-reportdata",
+          },
+        ],
       },
       {
         path: "nowreport",
@@ -160,7 +175,6 @@ const routes = [
     name: "createcharacter",
   },
 ];
-
 
 const router = createRouter({
   history: createWebHistory(),
