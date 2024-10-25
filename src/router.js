@@ -16,6 +16,8 @@ import BodyＭerchandiseComponent from "./components/BodyＭerchandiseComponent.
 import CreateCharacter from "./views/CreateCharacter.vue";
 import NowReport from "./views/NowReport.vue";
 import Reportdata from "./components/Reportdata.vue";
+import WeighttaskView from "./views/WeighttaskView.vue";
+import GameView from "./views/GameView.vue";
 
 const routes = [
   {
@@ -173,6 +175,16 @@ const routes = [
     path: "/createcharacter",
     component: CreateCharacter,
     name: "createcharacter",
+  },
+  {
+    path: "/weighttask",
+    component: WeighttaskView,
+    name: "weighttask",
+  },
+  {
+    path: "/gameview",
+    component: GameView,
+    name: "gameview",
   },
 ];
 
