@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { Playerinformation } from '@/Stores/PlayerCharacter';
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
 
 // 使用 Vue 路由
 const router = useRouter();
@@ -30,8 +30,8 @@ const targetStep = playerStore.characterTargetStep;
 // 取得當天日期
 const today = new Date();
 const year = today.getFullYear();
-const month = String(today.getMonth() + 1).padStart(2, '0');
-const day = String(today.getDate()).padStart(2, '0');
+const month = String(today.getMonth() + 1).padStart(2, "0");
+const day = String(today.getDate()).padStart(2, "0");
 const todayDate = `${year}-${month}-${day}`;
 
 // 表單初始數據
@@ -40,10 +40,10 @@ const dailyHealthData = ref({
   hrecordDate: todayDate,
   water: null,
   steps: null,
-  sleep: '00:00',
-  mood: '不透露',
+  sleep: "00:00",
+  mood: "不透露",
   vegetables: null,
-  snacks: null
+  snacks: null,
 });
 
 // 表單提交數據
@@ -53,9 +53,9 @@ const dailyHealthDataSubmit = ref({
   water: null,
   steps: null,
   sleep: null,
-  mood: '不透露',
+  mood: "不透露",
   vegetables: null,
-  snacks: null
+  snacks: null,
 });
 
 // 判斷當天是否已有記錄
@@ -69,7 +69,7 @@ onMounted(() => {
 const checkDataExists = async () => {
   try {
     const response = await fetch(`${API_URL}/${targetID}/${todayDate}`, {
-      method: 'GET'
+      method: "GET",
     });
     if (response.ok) {
       const data = await response.json();
@@ -80,7 +80,7 @@ const checkDataExists = async () => {
       isExistingRecord.value = false;
     }
   } catch (error) {
-    console.error('Error fetching data:', error.message);
+    console.error("Error fetching data:", error.message);
     isExistingRecord.value = false;
   }
 };
@@ -151,12 +151,12 @@ const submitData = async () => {
   validateForm();
 
   if (!isValid.value) {
-    alert('請修正表單中的錯誤後再提交');
+    alert("請修正表單中的錯誤後再提交");
     return;
   }
 
   try {
-    const method = isExistingRecord.value ? 'PATCH' : 'POST';
+    const method = isExistingRecord.value ? "PATCH" : "POST";
     const url = isExistingRecord.value
       ? `${API_URL}/${targetID}/${todayDate}`
       : API_URL;
@@ -166,20 +166,20 @@ const submitData = async () => {
     const response = await fetch(url, {
       method: method,
       body: JSON.stringify(dailyHealthDataSubmit.value),
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
 
     if (response.ok) {
-      console.log('Data submitted successfully');
+      console.log("Data submitted successfully");
       await checkDataExists();
-      alert('資料更新成功');
+      alert("資料更新成功");
     } else {
       const errorMsg = await response.text();
-      console.error('Error submitting data:', errorMsg);
-      alert('資料提交失敗');
+      console.error("Error submitting data:", errorMsg);
+      alert("資料提交失敗");
     }
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error("Error:", error.message);
   }
 
   resetForm();
@@ -195,7 +195,7 @@ const resetForm = () => {
     sleep: null,
     mood: dailyHealthData.value.mood,
     vegetables: null,
-    snacks: null
+    snacks: null,
   };
 };
 
@@ -207,23 +207,23 @@ const checkWaterValue = () => {
 };
 
 // 取得當前時間
-const currentTime = ref('');
+const currentTime = ref("");
 const getCurrentTime = () => {
   const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
   currentTime.value = `${hours}:${minutes}`;
   dailyHealthDataSubmit.value.sleep = `${hours}:${minutes}`;
 };
 
 // 心情選項
 const moodOptions = ref([
-  { label: '非常開心', value: '非常開心' },
-  { label: '開心', value: '開心' },
-  { label: '普通', value: '普通' },
-  { label: '有點不開心', value: '有點不開心' },
-  { label: '不開心', value: '不開心' },
-  { label: '不透露', value: '不透露' }
+  { label: "非常開心", value: "非常開心" },
+  { label: "開心", value: "開心" },
+  { label: "普通", value: "普通" },
+  { label: "有點不開心", value: "有點不開心" },
+  { label: "不開心", value: "不開心" },
+  { label: "不透露", value: "不透露" },
 ]);
 </script>
 
@@ -401,6 +401,7 @@ const moodOptions = ref([
   position: fixed;
   top: 50px;
   left: 350px;
+  /* background-image: url("@/components/image/form.png"); */
 }
 
 #back {

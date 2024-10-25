@@ -1,10 +1,12 @@
 <script setup>
+import { ref } from "vue";
 const props = defineProps({
-  currentpage: Number, //直接使用而不要用變數，如果使用變數可能會抓不到新的內容，defineprops本來就自帶響應式，父改變了子也會改變
+  allitem: Object, //直接使用而不要用變數，如果使用變數可能會抓不到新的內容，defineprops本來就自帶響應式，父改變了子也會改變
   allclass: Array,
+  selectedLevel: Object,
 });
 
-const emit = defineEmits(["lastpage", "nextpage"]);
+const emit = defineEmits(["lastpage", "nextpage", "changeselect"]);
 
 const lastpage = () => {
   emit("lastpage");
@@ -13,27 +15,44 @@ const lastpage = () => {
 const nextpage = () => {
   emit("nextpage");
 };
+
+const changeselect = (type, value) => {
+  emit("changeselect", type, value);
+};
 </script>
 
 <template>
   <div class="merchandiseclass">
-    <select>
-      <option>顯示全部商品</option>
-      <option v-for="(item, index) in props.allclass" :key="index">
+    <select @change="(event) => changeselect('Class', event.target.value)">
+      <option value="">顯示全部商品</option>
+      <option
+        v-for="(item, index) in props.allclass"
+        :key="index"
+        :value="item"
+      >
         {{ item }}
       </option>
     </select>
-
-    <select>
-      <option>顯示全部等級</option>
-      <option>Lv1-10</option>
-      <option>Lv11-20</option>
+    <!-- event.target.value用來獲取選擇的value -->
+    <select @change="(event) => changeselect('Level', event.target.value)">
+      <option value="">{{ selectedLevel.Nochoose }}</option>
+      <option
+        v-for="range in selectedLevel.levelRanges"
+        :key="range"
+        :value="range"
+      >
+        Lv{{ range }} - Lv{{ range + 9 }}
+      </option>
     </select>
 
-    <input type="text" @keyup="searchitem" placeholder="請輸入商品名稱" />
+    <input
+      type="text"
+      @keyup="(event) => changeselect('input', event.target.value)"
+      placeholder="請輸入商品名稱"
+    />
 
     <button @click="lastpage">上</button>
-    <h4>{{ props.currentpage }}</h4>
+    <h4>{{ allitem.currentpage }}</h4>
     <button @click="nextpage">下</button>
   </div>
 </template>
