@@ -33,7 +33,9 @@ async function getmail(account) {
     }
 }
 onMounted(() => {
-  const account = localStorage.getItem("Account");
+  const userAccountString = localStorage.getItem("UserAccount");
+  const userAccount = JSON.parse(userAccountString);
+  const account = userAccount.playerAccount;
   getmail(account);
 });
 

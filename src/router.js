@@ -14,6 +14,7 @@ import Feedback from "./components/FeedBack.vue";
 import ChangePassword from "./components/ChangePassword.vue";
 import BodyＭerchandiseComponent from "./components/BodyＭerchandiseComponent.vue";
 import CreateCharacter from "./views/CreateCharacter.vue";
+import NowReport from "./views/NowReport.vue";
 
 const routes = [
   {
@@ -80,6 +81,11 @@ const routes = [
         component: ReportView,
         name: "out-report",
       },
+      {
+        path: "nowreport",
+        component: NowReport,
+        name: "out-nowreport",
+      },
     ],
   },
   {
@@ -140,6 +146,11 @@ const routes = [
         path: "report",
         component: ReportView,
         name: "in-report",
+      },
+      {
+        path: "nowreport",
+        component: NowReport,
+        name: "in-nowreport",
       },
     ],
   },
