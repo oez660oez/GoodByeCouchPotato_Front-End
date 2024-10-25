@@ -1,18 +1,34 @@
 <script setup>
-import SidebarView from './SidebarView.vue';
+import SidebarView from "./SidebarView.vue";
+import GameCanvas from "@/components/game/GameCanvas.vue";
 </script>
 
 <template>
-    <RouterLink class="nav-link" :to="{ name: 'roommap' }"> <i class="fa-regular fa-map"></i> </RouterLink>
+  <RouterLink class="nav-link" :to="{ name: 'roommap' }">
+    <i class="fa-regular fa-map"></i>
+  </RouterLink>
 
-    <body id="formborder">
-        <SidebarView></SidebarView>
-    </body>
+  <div class="sidebarview">
+    <SidebarView></SidebarView>
+  </div>
+  <div class="game-view">
+    <GameCanvas />
+  </div>
 </template>
 
 <style lang="css" scoped>
-#formborder {
-    height: 900px;
-    background-color: rgb(194, 234, 228);
+.game-view {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+  z-index: 1;
+  position: relative;
+}
+.sidebarview {
+  z-index: 10;
+  position: absolute;
 }
 </style>
