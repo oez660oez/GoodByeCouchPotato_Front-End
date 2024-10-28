@@ -89,12 +89,16 @@ function setupEventListeners(canvas) {
     console.error('Canvas is undefined in setupEventListeners');
     return;
   }
-
-  // 添加事件監聽
+  //監聽事件
   window.addEventListener('keydown', handleKeyPress);
   canvas.addEventListener('dblclick', handleCanvasClick);
   window.addEventListener('resize', () => handleResize(canvas));
-
+  // 新增拖曳相關的事件監聽
+  canvas.addEventListener('mousedown', handleMouseDown);
+  canvas.addEventListener('mousemove', handleMouseMove);
+  canvas.addEventListener('mouseup', handleMouseUp);
+  // 防止拖曳時選中文字
+  canvas.addEventListener('dragstart', (e) => e.preventDefault());
   console.log('Event listeners setup completed');
 }
 
@@ -102,7 +106,90 @@ function cleanupEventListeners(canvas) {
   window.removeEventListener('keydown', handleKeyPress);
   canvas?.removeEventListener('dblclick', handleCanvasClick);
   window.removeEventListener('resize', handleResize);
+  canvas?.removeEventListener('mousedown', handleMouseDown);
+  canvas?.removeEventListener('mousemove', handleMouseMove);
+  canvas?.removeEventListener('mouseup', handleMouseUp);
+  canvas?.removeEventListener('dragstart', (e) => e.preventDefault());
 }
+
+// 新增滑鼠事件處理函數
+const handleMouseDown = (e) => {
+  if (!gameStore.inventoryOpen) return;
+
+  const canvas = gameCanvasRef.value?.getCanvas();
+  if (!canvas) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // 檢查是否點擊到物品欄的物品
+  gameStore.itemSlots.forEach((slot, index) => {
+    if (
+      x >= slot.x &&
+      x <= slot.x + gameStore.slotConfig.size &&
+      y >= slot.y &&
+      y <= slot.y + gameStore.slotConfig.size &&
+      gameStore.inventoryItems[index]
+    ) {
+      const mouseEvent = {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        target: canvas
+      };
+      gameStore.startDrag(mouseEvent, gameStore.inventoryItems[index], index, 'inventory');
+    }
+  });
+
+  // 檢查是否點擊到裝備欄的物品
+  gameStore.equipmentSlotsPosition.forEach((slot, index) => {
+    if (
+      x >= slot.x &&
+      x <= slot.x + gameStore.slotConfig.size &&
+      y >= slot.y &&
+      y <= slot.y + gameStore.slotConfig.size &&
+      gameStore.equipmentSlots[index]
+    ) {
+      const mouseEvent = {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        target: canvas
+      };
+      gameStore.startDrag(mouseEvent, gameStore.equipmentSlots[index], index, 'equipment');
+    }
+  });
+};
+
+
+const handleMouseMove = (e) => {
+  if (!gameStore.inventoryOpen || !gameStore.dragState.isDragging) return;
+
+  const canvas = gameCanvasRef.value?.getCanvas();
+  if (!canvas) return;
+
+  const mouseEvent = {
+    clientX: e.clientX,
+    clientY: e.clientY,
+    target: canvas
+  };
+
+  gameStore.updateDrag(mouseEvent);
+};
+
+const handleMouseUp = (e) => {
+  if (!gameStore.inventoryOpen) return;
+
+  const canvas = gameCanvasRef.value?.getCanvas();
+  if (!canvas) return;
+
+  const mouseEvent = {
+    clientX: e.clientX,
+    clientY: e.clientY,
+    target: canvas
+  };
+
+  gameStore.endDrag(mouseEvent);
+};
 
 // 處理視窗大小改變
 function handleResize(canvas) {
