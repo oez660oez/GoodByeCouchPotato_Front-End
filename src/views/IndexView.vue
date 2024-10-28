@@ -61,10 +61,17 @@ const Login = async () => {
         PiniaPlayer.updatePlayerData(data.playerCharacter); //要放入的是物件，playerCharacter是我請求api之後回傳的對象，要指定是對象
         PiniaPlayer.updateCharacterBody(data.characterAccessorie);
         alert("登入成功");
+
         console.log(data);
-        window.location.href = "/roommap";
+        window.location.href = "/outdoor";
       } else {
         alert(data.message);
+        PiniaPlayer.logout();
+        if (data.respond == "newcharacter") {
+          PiniaPlayer.playerAccount = LoginData.value.account;
+          PiniaPlayer.isLoggedIn = true;
+          window.location.href = "/createcharacter/";
+        }
       }
     }
   } catch (error) {

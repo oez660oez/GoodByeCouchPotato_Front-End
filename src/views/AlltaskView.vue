@@ -1,11 +1,10 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
-import { onMounted, ref, computed  } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 const PiniaPlayer = Playerinformation();
 const router = useRouter();
 const route = useRoute();
-
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 //-------------獲取每日任務--------------------
@@ -24,7 +23,7 @@ const gettask = async (CId) => {
   if (response.ok) {
     const dailytaskData = await response.json(); // 解析 JSON 響應
     console.log(dailytaskData);
-    
+
     //放資料
     document.getElementById("task1lbl").textContent = dailytaskData.t1name;
     document.getElementById("task2lbl").textContent = dailytaskData.t2name;
@@ -48,7 +47,7 @@ const gettask = async (CId) => {
     temreward.t3Reward = dailytaskData.t3Reward;
 
     //已經達成的 checkbox變成disable
-    document.getElementById("task1").disabled = 
+    document.getElementById("task1").disabled =
       dailytaskData.t1completed === true;
     document.getElementById("task2").disabled =
       dailytaskData.t2completed === true;
@@ -77,125 +76,128 @@ const todaysport = ref(false); // 當前運動狀態
 const todayclean = ref(false); // 當前清理狀態
 const isDisabledSport = computed(() => tempSportStatus.value === true);
 const isDisabledClean = computed(() => tempCleanStatus.value === true);
-const isDisabledUpdate = computed(() => tempSportStatus.value === true && tempCleanStatus.value === true);
+const isDisabledUpdate = computed(
+  () => tempSportStatus.value === true && tempCleanStatus.value === true
+);
 
-const getweeklytask= async (CId) => {
-  var response = await fetch (API_URLgetweektask,
-    {
-      method: "POST",
+const getweeklytask = async (CId) => {
+  var response = await fetch(API_URLgetweektask, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ CId }), //也可以直接簡寫成{ CId }
-    })
-    if(response.ok){
-      const WeeklytaskData = await response.json(); // 解析 JSON 響應
-      console.log(WeeklytaskData);
-      sportdone.value = WeeklytaskData.countsport
-      cleandone.value = WeeklytaskData.countclean
-      
-      todaysport.value = WeeklytaskData.todaysport;
-      todayclean.value = WeeklytaskData.todayclean;
-      tempSportStatus.value = WeeklytaskData.todaysport;
-      tempCleanStatus.value = WeeklytaskData.todayclean;
-    }
-    }
+  });
+  if (response.ok) {
+    const WeeklytaskData = await response.json(); // 解析 JSON 響應
+    console.log(WeeklytaskData);
+    sportdone.value = WeeklytaskData.countsport;
+    cleandone.value = WeeklytaskData.countclean;
+
+    todaysport.value = WeeklytaskData.todaysport;
+    todayclean.value = WeeklytaskData.todayclean;
+    tempSportStatus.value = WeeklytaskData.todaysport;
+    tempCleanStatus.value = WeeklytaskData.todayclean;
+  }
+};
 
 //-------------獲取每週任務end--------------------
 // -------------打開表單時------------------
 onMounted(() => {
-  const userAccountString = localStorage.getItem("UserAccount");
+  const userAccountString = sessionStorage.getItem("UserAccount");
   const userAccount = JSON.parse(userAccountString);
   const CId = userAccount.characterID;
   console.log(CId);
   gettask(CId);
   getweeklytask(CId);
-// --------------打開表單end--------------------
+  // --------------打開表單end--------------------
 
-//-------------更新每日任務--------------------
-const API_URLDailyupdate = `${Base_URL}/DailyTaskRecords`;
-var dailyupdate = document.getElementById("btndaily");
-dailyupdate.addEventListener("click",async function(event){
-  event.preventDefault(); 
-//建要傳送的資料
-const updatedata= {
-    CId:  userAccount.characterID,
-    t1name: document.getElementById("task1lbl").textContent,
-    t1completed: document.getElementById("task1").checked,
-    t1Reward:temreward.t1Reward,
-    t2name: document.getElementById("task2lbl").textContent,
-    t2completed: document.getElementById("task2").checked,
-    t2Reward:temreward.t2Reward,
-    t3name: document.getElementById("task3lbl").textContent,
-    t3completed: document.getElementById("task3").checked,
-    t3Reward:temreward.t3Reward,
-}
-console.log(updatedata);
-//呼叫API
-  var response = await fetch(API_URLDailyupdate,{
-    method:"POST",
-    headers: { "Content-Type": "application/json" },
-    body:JSON.stringify(updatedata),
-  })
-  if(response.ok){
-    const feedbackresponseData = await response.json();
-    alert(feedbackresponseData.returnword);
-    if (updatedata.t1completed) {
-    document.getElementById("task1").disabled = true;
+  //-------------更新每日任務--------------------
+  const API_URLDailyupdate = `${Base_URL}/DailyTaskRecords`;
+  var dailyupdate = document.getElementById("btndaily");
+  dailyupdate.addEventListener("click", async function (event) {
+    event.preventDefault();
+    //建要傳送的資料
+    const updatedata = {
+      CId: userAccount.characterID,
+      t1name: document.getElementById("task1lbl").textContent,
+      t1completed: document.getElementById("task1").checked,
+      t1Reward: temreward.t1Reward,
+      t2name: document.getElementById("task2lbl").textContent,
+      t2completed: document.getElementById("task2").checked,
+      t2Reward: temreward.t2Reward,
+      t3name: document.getElementById("task3lbl").textContent,
+      t3completed: document.getElementById("task3").checked,
+      t3Reward: temreward.t3Reward,
+    };
+    console.log(updatedata);
+    //呼叫API
+    var response = await fetch(API_URLDailyupdate, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedata),
+    });
+    if (response.ok) {
+      const feedbackresponseData = await response.json();
+      alert(feedbackresponseData.returnword);
+      if (updatedata.t1completed) {
+        document.getElementById("task1").disabled = true;
+      }
+      if (updatedata.t2completed) {
+        document.getElementById("task2").disabled = true;
+      }
+      if (updatedata.t3completed) {
+        document.getElementById("task3").disabled = true;
+      }
+      if (
+        updatedata.t1completed == true &&
+        updatedata.t3completed == true &&
+        updatedata.t2completed == true
+      ) {
+        document.getElementById("btndaily").disabled = true;
+      }
+      //更新Pinia的金幣
+      PiniaPlayer.characterCoins = feedbackresponseData.coin;
+    } else {
+      alert("更新失敗，請稍後再試");
     }
-    if (updatedata.t2completed) {
-    document.getElementById("task2").disabled = true;
-    }
-    if (updatedata.t3completed) {
-    document.getElementById("task3").disabled = true;
-    }
-    if (
-      updatedata.t1completed == true &&
-      updatedata.t3completed == true &&
-      updatedata.t2completed == true
-    ) {
-      document.getElementById("btndaily").disabled = true;
-    }
-    //更新Pinia的金幣
-    PiniaPlayer.characterCoins = feedbackresponseData.coin;
-  }
-  else {alert("更新失敗，請稍後再試");}
-});
-//-------------更新每日任務end--------------------
+  });
+  //-------------更新每日任務end--------------------
 });
 
 //-------------更新每週任務--------------------
 
 const API_URLWeeklyupdate = `${Base_URL}/WeeklyHealthRecords`;
 const weeklyupdate = async () => {
-  console.log("OK")
+  console.log("OK");
   const userAccountString = localStorage.getItem("UserAccount");
   const userAccount = JSON.parse(userAccountString);
   const CId = userAccount.characterID;
-  const weeklyupdatedata= {
-    CId:  CId,
-    countsport : sportdone.value,
-    countclean : cleandone.value,
-    todaysport : todaysport.value,
-    todayclean : todayclean.value,
-}
-var response = await fetch(API_URLWeeklyupdate,{
+  const weeklyupdatedata = {
+    CId: CId,
+    countsport: sportdone.value,
+    countclean: cleandone.value,
+    todaysport: todaysport.value,
+    todayclean: todayclean.value,
+  };
+  var response = await fetch(API_URLWeeklyupdate, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(weeklyupdatedata),})
-    if (response.ok){
-      const weeklyupdateresult = await response.json(); 
-      alert(weeklyupdateresult.returnword);
-      sportdone.value = weeklyupdateresult.countsport;
-      cleandone.value = weeklyupdateresult.countclean;
-      todaysport.value = weeklyupdateresult.todaysport;
-      todayclean.value = weeklyupdateresult.todayclean;
-      tempSportStatus.value = todaysport.value;
-      tempCleanStatus.value = todayclean.value;
-    }
-    else {alert("更新失敗，請稍後再試");}
+    body: JSON.stringify(weeklyupdatedata),
+  });
+  if (response.ok) {
+    const weeklyupdateresult = await response.json();
+    alert(weeklyupdateresult.returnword);
+    sportdone.value = weeklyupdateresult.countsport;
+    cleandone.value = weeklyupdateresult.countclean;
+    todaysport.value = weeklyupdateresult.todaysport;
+    todayclean.value = weeklyupdateresult.todayclean;
+    tempSportStatus.value = todaysport.value;
+    tempCleanStatus.value = todayclean.value;
+  } else {
+    alert("更新失敗，請稍後再試");
+  }
 };
 
 //-------------更新每週任務end--------------------
-
 
 //-------------回上一層--------------------
 const goBack = () => {
@@ -248,22 +250,47 @@ const goBack = () => {
 
     <!-- 每週任務區塊 -->
     <div id="weeklytaskblock">
-      <form @submit.prevent="weeklyupdate" class="needs-validation" name="feedbackdata" >
+      <form
+        @submit.prevent="weeklyupdate"
+        class="needs-validation"
+        name="feedbackdata"
+      >
         <h4 style="padding-left: 100px; margin-top: 3%">每週任務</h4>
         <div class="weeklytask-group">
           <div class="task-list">
             <div class="task-item">
-              <input  type="checkbox" id="sport" v-model="todaysport" :disabled="isDisabledSport"/>
+              <input
+                type="checkbox"
+                id="sport"
+                v-model="todaysport"
+                :disabled="isDisabledSport"
+              />
               <label id="sportdonelbl" for="sport">運動 </label>
-              <span>本週累積：{{ sportdone }}/7 &nbsp;&nbsp;目標：每週三次</span>
+              <span
+                >本週累積：{{ sportdone }}/7 &nbsp;&nbsp;目標：每週三次</span
+              >
             </div>
             <div class="task-item">
-              <input type="checkbox" id="clean" v-model="todayclean" :disabled="isDisabledClean"/>
+              <input
+                type="checkbox"
+                id="clean"
+                v-model="todayclean"
+                :disabled="isDisabledClean"
+              />
               <label id="cleandonelbl" for="clean">整理環境 </label>
-              <span>本週累積：{{ cleandone }}/7 &nbsp;&nbsp;目標：每週一次</span>
+              <span
+                >本週累積：{{ cleandone }}/7 &nbsp;&nbsp;目標：每週一次</span
+              >
             </div>
           </div>
-          <button type="submit" id="btnweekly" class="update-btn" :disabled="isDisabledUpdate">更新</button>
+          <button
+            type="submit"
+            id="btnweekly"
+            class="update-btn"
+            :disabled="isDisabledUpdate"
+          >
+            更新
+          </button>
         </div>
       </form>
     </div>
@@ -356,6 +383,4 @@ const goBack = () => {
   position: relative;
   right: 15%; /* 保證按鈕在 task-group 的右方 */
 }
-
-
 </style>

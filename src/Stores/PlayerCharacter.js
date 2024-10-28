@@ -18,9 +18,9 @@ export const Playerinformation = defineStore(
     const characterGetEnvironment = ref(""); // 角色前一日結算取得的環境值
     const characterGetExperience = ref(""); // 角色前一日結算取得的經驗值
     const characterGetCoins = ref(""); // 角色前一日結算取得的金幣
-    const Head = ref("");
-    const Upper = ref("");
-    const Lower = ref("");
+    const Head = ref(""); //頭
+    const Upper = ref(""); //衣服
+    const Lower = ref(""); //配件
 
     // 建立一個方法，把資料更新到狀態裡
     const updatePlayerData = (data) => {
@@ -51,22 +51,19 @@ export const Playerinformation = defineStore(
 
     //設定一個將所有資料清空的方法
     const logout = () => {
-      Playerinformation.value.PlayerAccount = "";
-      Playerinformation.value.IsLoggedIn = false;
-      Playerinformation.value.CharacterID = "";
-      Playerinformation.value.CharacterName = "";
-      Playerinformation.value.CharacterLevel = "";
-      Playerinformation.value.CharacterExperience = "";
-      Playerinformation.value.CharacterEnvironment = "";
-      Playerinformation.value.CharacterCoins = "";
-      Playerinformation.value.CharacterTargetWater = "";
-      Playerinformation.value.CharacterTargetStep = "";
-      Playerinformation.value.CharacterGetEnvironment = "";
-      Playerinformation.value.CharacterGetExperience = "";
-      Playerinformation.value.CharacterGetCoins = "";
-      Playerinformation.value.Head = "";
-      Playerinformation.value.Upper = "";
-      Playerinformation.value.Lower = "";
+      playerAccount.value = "";
+      isLoggedIn.value = "";
+      characterID.value = "";
+      characterName.value = "";
+      characterLevel.value = "";
+      characterExperience.value = "";
+      characterEnvironment.value = "";
+      characterCoins.value = "";
+      characterTargetWater.value = "";
+      characterTargetStep.value = "";
+      characterGetEnvironment.value = "";
+      characterGetExperience.value = "";
+      characterGetCoins.value = "";
     };
     // 返回ref及方法，外部才可以引用
     return {
@@ -93,6 +90,10 @@ export const Playerinformation = defineStore(
     };
   },
   {
-    persist: true, //在這裡啟用pinia持久化
+    persist: {
+      enabled: true,
+      storage: sessionStorage, // 使用sessionStorage來存儲資料
+    },
+    //在這裡啟用pinia持久化
   }
 );

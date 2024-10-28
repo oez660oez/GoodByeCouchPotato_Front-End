@@ -62,7 +62,7 @@ async function loadImage(src, imageType) {
     const img = new Image();
     const loadPromise = new Promise((resolve, reject) => {
       img.onload = () => {
-        console.log(`Successfully loaded image: ${src}`);
+        // console.log(`Successfully loaded image: ${src}`);
         debugState.value.imagesLoaded[imageType] = true;
         resolve(img);
       };
@@ -188,7 +188,7 @@ function gameLoop() {
       debugState.value.currentPositions.background = {
         ...background.value.position,
       };
-      console.log("Drew background successfully");
+      // console.log("Drew background successfully");
     } catch (error) {
       console.error("Error drawing background:", error);
     }
@@ -211,7 +211,7 @@ function gameLoop() {
     try {
       player.value.draw(ctx);
       debugState.value.currentPositions.player = { ...player.value.position };
-      console.log("Drew player successfully");
+      // console.log("Drew player successfully");
     } catch (error) {
       console.error("Error drawing player:", error);
     }
@@ -224,7 +224,7 @@ function gameLoop() {
       debugState.value.currentPositions.foreground = {
         ...foreground.value.position,
       };
-      console.log("Drew foreground successfully");
+      // console.log("Drew foreground successfully");
     } catch (error) {
       console.error("Error drawing foreground:", error);
     }
@@ -305,19 +305,19 @@ onMounted(async () => {
       ...boundaries.value,
       foreground.value,
     ].filter(Boolean);
-    console.log(`Initialized ${movables.value.length} movable objects`);
+    // console.log(`Initialized ${movables.value.length} movable objects`);
 
     // Mark assets as loaded
     assetsLoaded.value = true;
-    console.log("All assets loaded successfully");
+    // console.log("All assets loaded successfully");
 
     // Start game loop with debug logging
     startGameLoop(gameLoop);
     debugState.value.gameLoopStarted = true;
-    console.log("Game loop started");
+    // console.log("Game loop started");
 
     // Log final debug state
-    console.log("Final debug state:", debugState.value);
+    // console.log("Final debug state:", debugState.value);
   } catch (error) {
     console.error("Failed to initialize game:", error);
     assetsLoaded.value = false;

@@ -4,6 +4,8 @@ import { ref } from "vue";
 import ShopselectComponentVue from "./ShopselectComponent.vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import { computed } from "vue";
+import { Merchandiselist } from "@/Stores/Merchandiselist";
+const PiniaMerchandise = Merchandiselist();
 const PiniaPlayer = Playerinformation();
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
@@ -84,6 +86,7 @@ const RenewtheList = async () => {
 //載入頁面後執行
 onMounted(async () => {
   RenewtheList(); //顯示商品清單
+
   console.log(selectedLevel.value);
 });
 
@@ -113,6 +116,18 @@ const nextpage = () => {
         GettheAccessoriesList(requestBody.value);
     }
   }
+};
+
+//試穿事件
+const MerchandiseOnBody = (pCode) => {
+  PiniaMerchandise.setPcode(pCode);
+  const Getchoosemerchandise = GetItem.value.allqualifiedItem.filter(
+    (item) => item.pCode === pCode
+  );
+  PiniaMerchandise.Getmerchandise(Getchoosemerchandise);
+  console.log(PiniaMerchandise.Choose);
+  console.log(PiniaMerchandise.Getpcode);
+  console.log(PiniaMerchandise.Choosemerchandise);
 };
 
 //購買商品
@@ -245,7 +260,11 @@ const changeselect = (type, value) => {
   <div class="container">
     <div class="merchandiselist">
       <div class="row">
-        <div class="photoborder" v-for="item in GetItem.qualifiedItem">
+        <div
+          class="photoborder"
+          @dblclick="MerchandiseOnBody(item.pCode)"
+          v-for="item in GetItem.qualifiedItem"
+        >
           <div class="playerhaveitem" v-if="item.ishaveitem"></div>
           <img :src="item.pImageShop" :alt="item.pName" />
           <div class="namelevel">

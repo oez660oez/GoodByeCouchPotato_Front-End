@@ -2,6 +2,7 @@
 import { useRouter, useRoute } from "vue-router";
 import BodymerchandiseComponent from "@/components/BodyＭerchandiseComponent.vue";
 import { ref } from "vue";
+import ChacterBodyComponent from "@/components/ChacterBodyComponent.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -29,7 +30,11 @@ const goBack = () => {
 <template>
   <div id="formborder">
     <div class="outborder col-4">
-      <div class="charbody"></div>
+      <div class="charbody">
+        <ChacterBodyComponent
+          :AccessoriesListsImageAll="AccessoriesListsImageAll"
+        ></ChacterBodyComponent>
+      </div>
     </div>
     <div class="outborder col-8">
       <div class="shoplist">
@@ -86,10 +91,10 @@ const goBack = () => {
 .charbody {
   width: 336px;
   height: 576px;
-  border: 2px solid rgb(34, 49, 51);
+  border: 1px solid rgb(34, 49, 51);
   margin-top: 16px;
   margin-left: 16px;
-  background-color: white;
+  background-color: rgb(199, 180, 154);
 }
 
 .shoplist {
@@ -101,7 +106,7 @@ const goBack = () => {
 }
 
 .outborder {
-  border: 1px solid rgb(244, 38, 38);
+  /* border: 1px solid rgb(244, 38, 38); */
   display: flex;
   justify-content: center;
 }
