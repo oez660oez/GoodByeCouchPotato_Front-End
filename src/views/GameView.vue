@@ -4,11 +4,12 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import GameCanvas from '@/components/game/GameCanvas.vue';
 import { useGameStore } from '@/Stores/gameStore';
 
-const playerAccount = "oez660oez";
+const userAccountJson = sessionStorage.getItem("UserAccount");
+const userAccount = JSON.parse(userAccountJson);
 const gameCanvasRef = ref(null);
 const gameStore = useGameStore();
 const isInitialized = ref(false);
-
+const playerAccount = userAccount.playerAccount;
 // 遊戲循環
 let animationFrameId = null;
 
