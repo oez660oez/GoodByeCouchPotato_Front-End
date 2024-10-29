@@ -33,7 +33,7 @@ async function getmail(account) {
     }
 }
 onMounted(() => {
-  const userAccountString = localStorage.getItem("UserAccount");
+  const userAccountString = sessionStorage.getItem("UserAccount");
   const userAccount = JSON.parse(userAccountString);
   const account = userAccount.playerAccount;
   getmail(account);
