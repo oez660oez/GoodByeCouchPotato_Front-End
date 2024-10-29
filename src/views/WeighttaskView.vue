@@ -31,6 +31,7 @@ const loadLastMonthRecord = async () => {
 
     if(data.weight){
       LastMonthRecord.value = `上個月的體重: ${data.weight} 公斤`;
+      form.value.weight = data.weight.toString(); // 預設顯示上個月體重
     }else{
       LastMonthRecord.value = "暫無體重紀錄";
     }

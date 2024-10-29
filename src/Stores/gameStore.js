@@ -422,7 +422,7 @@ async handleEquipmentInitialization(slot, item) {
   // 更新拖曳位置
   updateDrag(event) {
     if (!this.dragState.isDragging) return;
-    
+
     const rect = event.target.getBoundingClientRect();
     this.mousePosition = {
       x: event.clientX - rect.left,
@@ -439,6 +439,11 @@ async handleEquipmentInitialization(slot, item) {
 
     // 檢查是否放在裝備欄上
     if (this.dragState.sourceType === 'inventory') {
+      // 獲取被拖曳物品的類型
+      const draggedItemInfo = this.itemsData.get(this.dragState.draggedItem);
+      if (!draggedItemInfo) return;
+
+      const itemType = draggedItemInfo.type;
       this.equipmentSlotsPosition.forEach((slot, index) => {
         if (
           x >= slot.x &&
@@ -446,9 +451,23 @@ async handleEquipmentInitialization(slot, item) {
           y >= slot.y &&
           y <= slot.y + this.slotConfig.size
         ) {
+          // 檢查裝備槽位類型是否匹配
+          const slotTypes = ["accessory", "hairstyle", "outfit"];
+          const targetSlotType = slotTypes[index];
+
+          // 檢查物品類型是否匹配目標槽位
+          if (
+            (itemType === "accessory" && targetSlotType === "accessory") ||
+            (itemType === "hairstyle" && targetSlotType === "hairstyle") ||
+            (itemType === "outfit" && targetSlotType === "outfit") ||
+            (itemType === "飾品" && targetSlotType === "accessory") ||
+            (itemType === "髮型" && targetSlotType === "hairstyle") ||
+            (itemType === "衣服" && targetSlotType === "outfit")
+          ) {
           // 使用現有的裝備邏輯
           this.handleEquip(this.dragState.draggedItem, this.dragState.sourceIndex, index);
           targetFound = true;
+          }
         }
       });
     }
@@ -460,23 +479,37 @@ async handleEquipmentInitialization(slot, item) {
           x >= slot.x &&
           x <= slot.x + this.slotConfig.size &&
           y >= slot.y &&
-          y <= slot.y + this.slotConfig.size &&
-          !this.inventoryItems[index] // 確保目標格子是空的
+          y <= slot.y + this.slotConfig.size
         ) {
           // 處理卸下裝備
+          // 檢查目標格子是否有物品
+          const targetItem = this.inventoryItems[index];
           const equipmentIndex = this.dragState.sourceIndex;
-          const removedItem = this.equipmentSlots[equipmentIndex];
+          const draggedItem = this.equipmentSlots[equipmentIndex];
 
-          if (removedItem) {
-            this.inventoryItems[index] = removedItem;
-            this.equipmentSlots[equipmentIndex] = null;
-            this.equippedItems[["accessory", "hairstyle", "outfit"][equipmentIndex]] = null;
+          if (draggedItem) {
+            const draggedItemInfo = this.itemsData.get(draggedItem);
+            if (!draggedItemInfo) return;
+
+            if (!targetItem) {
+              // 如果目標格子是空的，直接移動
+              this.inventoryItems[index] = draggedItem;
+              this.equipmentSlots[equipmentIndex] = null;
+              this.equippedItems[["accessory", "hairstyle", "outfit"][equipmentIndex]] = null;
+            } else {
+              // 如果目標格子有物品，檢查類型是否匹配
+              const targetItemInfo = this.itemsData.get(targetItem);
+              if (targetItemInfo && targetItemInfo.type === draggedItemInfo.type) {
+                // 類型匹配，進行交換
+                this.inventoryItems[index] = draggedItem;
+                this.handleEquip(targetItem, index, equipmentIndex);
+              }
+            }
+            targetFound = true;
           }
-          targetFound = true;
         }
       });
     }
-
     // 重置拖曳狀態
     this.dragState = {
       isDragging: false,
