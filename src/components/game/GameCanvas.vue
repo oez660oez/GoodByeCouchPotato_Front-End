@@ -193,8 +193,8 @@ onMounted(async () => {
 
     player.value = new Sprite({
       position: {
-        x: canvasWidth / 2 - 288 / 4 / 2,
-        y: canvasHeight / 2 - 80 / 2,
+        x: 700,
+        y: 400,
       },
       image: playerImage,
       frames: { max: 6 },

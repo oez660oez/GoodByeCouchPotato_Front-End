@@ -1,4 +1,5 @@
 <script setup>
+import GameView from "./GameView.vue";
 import SidebarView from "./SidebarView.vue";
 import GameCanvas from "@/components/game/GameCanvas.vue";
 </script>
@@ -12,14 +13,19 @@ import GameCanvas from "@/components/game/GameCanvas.vue";
     <SidebarView></SidebarView>
   </div>
   <div class="game-view">
-    <GameCanvas />
+    <GameView />
   </div>
 </template>
 
 <style lang="css" scoped>
+.nav-link {
+  z-index: 10;
+  position: relative;
+  background-color: white;
+}
 .game-view {
   width: 100%;
-  height: 100vh;
+  height: 93vh;
   display: flex;
   justify-content: center;
   align-items: center;

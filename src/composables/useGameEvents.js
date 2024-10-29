@@ -1,6 +1,6 @@
 // useGameEvents.js
 // 處理所有用戶輸入和事件
-import { ref } from 'vue';
+import { ref } from "vue";
 
 export function useGameEvents(gameCanvasRef, gameStore) {
   const keys = ref({
@@ -8,10 +8,10 @@ export function useGameEvents(gameCanvasRef, gameStore) {
     a: { pressed: false },
     s: { pressed: false },
     d: { pressed: false },
-    i: { pressed: false }
+    i: { pressed: false },
   });
 
-  const lastKey = ref('');
+  const lastKey = ref("");
   const isInitialized = ref(false);
   let animationFrameId = null;
 
@@ -24,21 +24,25 @@ export function useGameEvents(gameCanvasRef, gameStore) {
 
     player.moving = false;
 
-    if (keys.value.w.pressed && lastKey.value === 'w') {
-      gameCanvasRef.value.handleMove('up');
-    } else if (keys.value.a.pressed && lastKey.value === 'a') {
-      gameCanvasRef.value.handleMove('left');
-    } else if (keys.value.s.pressed && lastKey.value === 's') {
-      gameCanvasRef.value.handleMove('down');
-    } else if (keys.value.d.pressed && lastKey.value === 'd') {
-      gameCanvasRef.value.handleMove('right');
+    if (keys.value.w.pressed && lastKey.value === "w") {
+      gameCanvasRef.value.handleMove("up");
+      console.log("w");
+    } else if (keys.value.a.pressed && lastKey.value === "a") {
+      gameCanvasRef.value.handleMove("left");
+      console.log("a");
+    } else if (keys.value.s.pressed && lastKey.value === "s") {
+      gameCanvasRef.value.handleMove("down");
+      console.log("s");
+    } else if (keys.value.d.pressed && lastKey.value === "d") {
+      gameCanvasRef.value.handleMove("right");
+      console.log("d");
     }
   }
 
-   // Game loop handling
-   function startGameLoop() {
+  // Game loop handling
+  function startGameLoop() {
     const canvas = gameCanvasRef.value?.getCanvas();
-    const context = canvas?.getContext('2d');
+    const context = canvas?.getContext("2d");
 
     function loop() {
       if (!canvas || !context) return;
@@ -75,7 +79,7 @@ export function useGameEvents(gameCanvasRef, gameStore) {
         lastKey.value = key;
       }
 
-      if (key === 'i') {
+      if (key === "i") {
         handleInventoryToggle();
       }
     },
@@ -105,30 +109,30 @@ export function useGameEvents(gameCanvasRef, gameStore) {
     dblclick: (e) => {
       if (!gameStore.inventoryOpen) return;
       handleInventoryClick(e);
-    }
+    },
   };
 
   // Inventory handlers
   const handleInventoryToggle = async () => {
     try {
       const canvas = gameCanvasRef.value?.getCanvas();
-      const context = canvas?.getContext('2d');
+      const context = canvas?.getContext("2d");
       const player = gameCanvasRef.value?.getPlayer();
 
       if (!canvas || !context || !player) {
-        console.error('Missing required elements for inventory toggle');
+        console.error("Missing required elements for inventory toggle");
         return;
       }
 
-      console.log('Toggling inventory...');
+      console.log("Toggling inventory...");
       await gameStore.toggleInventory();
-      console.log('Inventory state:', gameStore.inventoryOpen);
+      console.log("Inventory state:", gameStore.inventoryOpen);
 
       if (gameStore.inventoryOpen) {
         gameStore.renderInventory(context, player);
       }
     } catch (error) {
-      console.error('Error toggling inventory:', error);
+      console.error("Error toggling inventory:", error);
     }
   };
 
@@ -143,14 +147,24 @@ export function useGameEvents(gameCanvasRef, gameStore) {
     // Check inventory slots
     gameStore.itemSlots.forEach((slot, index) => {
       if (isWithinSlot(x, y, slot) && gameStore.inventoryItems[index]) {
-        gameStore.startDrag(createMouseEvent(e, canvas), gameStore.inventoryItems[index], index, 'inventory');
+        gameStore.startDrag(
+          createMouseEvent(e, canvas),
+          gameStore.inventoryItems[index],
+          index,
+          "inventory"
+        );
       }
     });
 
     // Check equipment slots
     gameStore.equipmentSlotsPosition.forEach((slot, index) => {
       if (isWithinSlot(x, y, slot) && gameStore.equipmentSlots[index]) {
-        gameStore.startDrag(createMouseEvent(e, canvas), gameStore.equipmentSlots[index], index, 'equipment');
+        gameStore.startDrag(
+          createMouseEvent(e, canvas),
+          gameStore.equipmentSlots[index],
+          index,
+          "equipment"
+        );
       }
     });
   };
@@ -182,16 +196,18 @@ export function useGameEvents(gameCanvasRef, gameStore) {
 
   // Helper functions
   const isWithinSlot = (x, y, slot) => {
-    return x >= slot.x &&
-           x <= slot.x + gameStore.slotConfig.size &&
-           y >= slot.y &&
-           y <= slot.y + gameStore.slotConfig.size;
+    return (
+      x >= slot.x &&
+      x <= slot.x + gameStore.slotConfig.size &&
+      y >= slot.y &&
+      y <= slot.y + gameStore.slotConfig.size
+    );
   };
 
   const createMouseEvent = (e, canvas) => ({
     clientX: e.clientX,
     clientY: e.clientY,
-    target: canvas
+    target: canvas,
   });
 
   // Setup and cleanup
@@ -201,7 +217,7 @@ export function useGameEvents(gameCanvasRef, gameStore) {
 
     // Add event listeners
     Object.entries(eventHandlers).forEach(([event, handler]) => {
-      if (event === 'keydown' || event === 'keyup') {
+      if (event === "keydown" || event === "keyup") {
         window.addEventListener(event, handler);
       } else {
         canvas.addEventListener(event, handler);
@@ -209,7 +225,7 @@ export function useGameEvents(gameCanvasRef, gameStore) {
     });
 
     // Handle window resize
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       gameStore.initializePositions(canvas);
@@ -224,7 +240,7 @@ export function useGameEvents(gameCanvasRef, gameStore) {
 
     // Remove event listeners
     Object.entries(eventHandlers).forEach(([event, handler]) => {
-      if (event === 'keydown' || event === 'keyup') {
+      if (event === "keydown" || event === "keyup") {
         window.removeEventListener(event, handler);
       } else if (canvas) {
         canvas.removeEventListener(event, handler);
@@ -242,6 +258,6 @@ export function useGameEvents(gameCanvasRef, gameStore) {
     lastKey,
     isInitialized,
     setupEventListeners,
-    cleanupEventListeners
+    cleanupEventListeners,
   };
 }

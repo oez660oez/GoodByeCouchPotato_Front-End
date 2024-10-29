@@ -1,7 +1,7 @@
 <script setup>
-import { useRouter, useRoute } from 'vue-router';
-import { onMounted, ref } from 'vue';
-import { Playerinformation } from '@/Stores/PlayerCharacter';
+import { useRouter, useRoute } from "vue-router";
+import { onMounted, ref } from "vue";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
 
 const router = useRouter();
 const route = useRoute();
@@ -65,16 +65,16 @@ const fetchPreviousCharacters = async () => {
     const response = await fetch(
       `${PREVIOUSCHARACTERS_API_URL}/${targetAccount}`,
       {
-        method: 'GET'
+        method: "GET",
       }
     );
     if (response.ok) {
       const data = await response.json();
       charactersAllData.value = data;
-      console.log('抓取到的資料:', charactersAllData.value);
+      console.log("抓取到的資料:", charactersAllData.value);
     }
   } catch (error) {
-    console.error('Error fetching data:', error.message);
+    console.error("Error fetching data:", error.message);
   }
 };
 </script>
@@ -113,9 +113,12 @@ const fetchPreviousCharacters = async () => {
             <!-- <p>{{ character }}</p> -->
             <RouterLink
               :to="{
-                name: 'in-reportdata',
+                name: $route.name.startsWith('in-')
+                  ? 'in-reportdata'
+                  : 'out-reportdata',
+                // 'in-reportdata',
                 // query: { data: JSON.stringify(character) }
-                query: { data: character.cId }
+                query: { data: character.cId },
               }"
             >
               <button>前往報告數據頁面</button>
