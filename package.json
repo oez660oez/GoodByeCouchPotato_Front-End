@@ -10,15 +10,21 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
+    "@fullcalendar/vue3": "^6.1.15",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.5",
+    "echarts": "^5.5.1",
     "font-awesome": "^4.7.0",
     "pinia": "^2.2.4",
     "pinia-plugin-persistedstate": "^4.1.1",
     "sweetalert2": "^11.14.4",
     "vue": "^3.4.29",
     "vue-chartjs": "^5.3.1",
+    "vue-echarts": "^7.0.3",
     "vue-router": "^4.4.5"
   },
   "devDependencies": {
