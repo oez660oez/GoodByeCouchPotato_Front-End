@@ -1,9 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { Chart, registerables } from 'chart.js';
-
-Chart.register(...registerables);
+import * as echarts from 'echarts';
+import ShadowCalendar from '@/views/ShadowCalendar.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -22,105 +21,223 @@ const API_URL = `${BASE_URL}/dailyhealthrecords`;
 
 const playerID = route.query.data;
 const playerData = ref([]);
+const chartRef = ref(null);
 
-onMounted(() => {
-  getPlayData();
+let chartInstance; // 單一圖表實例
+
+// 控制顯示哪個報表和動態傳入參數
+const currentChart = ref('water');
+
+// 動態更新的圖表配置
+const chartOptions = ref({
+  title: { text: '' },
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: [] },
+  yAxis: { type: 'value' },
+  series: [
+    {
+      name: '',
+      type: 'bar',
+      data: []
+    }
+  ]
 });
+
+// 將 "HH:mm" 時間格式轉換為小時數
+const convertTimeToHourDecimal = (timeString) => {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours + minutes / 60; // 轉換為小時數
+};
+
+const moodToValue = {
+  不透露: 0,
+  不開心: 1,
+  有點不開心: 2,
+  普通: 3,
+  開心: 4,
+  非常開心: 5
+};
 
 const getPlayData = async () => {
   try {
-    const response = await fetch(`${API_URL}/${playerID}`, {
-      method: 'GET'
-    });
+    const response = await fetch(`${API_URL}/${playerID}`, { method: 'GET' });
     if (response.ok) {
       const data = await response.json();
       playerData.value = data;
+
+      const waterData = playerData.value.map((record) => record.water);
+      const stepsData = playerData.value.map((record) => record.steps);
+      const sleepData = playerData.value.map((record) =>
+        convertTimeToHourDecimal(record.sleep)
+      );
+      const moodData = playerData.value.map(
+        (record) => moodToValue[record.mood]
+      );
+      const labels = playerData.value.map((record) => record.hrecordDate);
+      console.log(moodData);
+
+      // 根據當前的圖表類型更新動態配置
+      if (currentChart.value === 'water') {
+        chartOptions.value = {
+          title: { text: '飲水量' },
+          xAxis: { type: 'category', data: labels },
+          yAxis: {
+            type: 'value',
+            title: { text: 'Water Intake (ml)' },
+            min: '0',
+            max: '6000',
+            axisLabel: {
+              formatter: '{value} ml'
+            }
+          },
+          series: [
+            {
+              name: 'Water Intake (ml)',
+              type: 'bar',
+              data: waterData,
+              itemStyle: { color: 'rgba(75, 192, 192, 1)' }
+            }
+          ]
+        };
+      } else if (currentChart.value === 'steps') {
+        chartOptions.value = {
+          title: { text: '步數' },
+          xAxis: { type: 'category', data: labels },
+          yAxis: {
+            type: 'value',
+            title: { text: '步數' },
+            min: '0',
+            max: '10000',
+            axisLabel: {
+              formatter: '{value}步'
+            }
+          },
+          series: [
+            {
+              name: '步數',
+              type: 'bar',
+              data: stepsData,
+              itemStyle: { color: 'orange' }
+            }
+          ]
+        };
+      } else if (currentChart.value === 'sleep') {
+        chartOptions.value = {
+          title: { text: '入睡時間' },
+          xAxis: { type: 'category', data: labels },
+          yAxis: {
+            type: 'value',
+            title: { text: '入睡時間' },
+            min: 0,
+            max: 24,
+            axisLabel: {
+              formatter: (value) => {
+                const hours = Math.floor(value);
+                const minutes = Math.round((value - hours) * 60);
+                return `${hours.toString().padStart(2, '0')}:${minutes
+                  .toString()
+                  .padStart(2, '0')}`;
+              }
+            }
+          },
+          series: [
+            {
+              name: 'Sleep Start Time',
+              type: 'line',
+              data: sleepData,
+              itemStyle: { color: 'purple' }
+            }
+          ]
+        };
+      } else if (currentChart.value === 'mood') {
+        chartOptions.value = {
+          title: { text: '心情' },
+          xAxis: { type: 'category', data: labels },
+          yAxis: {
+            type: 'value',
+            title: { text: '心情' },
+            min: 0,
+            max: 5,
+            axisLabel: {
+              formatter: function (value) {
+                var moodLabels = [
+                  '不透露',
+                  '不開心',
+                  '有點不開心',
+                  '普通',
+                  '開心',
+                  '非常開心'
+                ];
+                return moodLabels[value];
+              }
+            }
+          },
+          series: [
+            {
+              title: { text: '心情' },
+              min: 0,
+              max: 5,
+              type: 'line',
+              data: moodData,
+              itemStyle: { color: 'blue' }
+            }
+          ]
+        };
+      }
+
+      chartInstance.setOption(chartOptions.value); // 更新圖表配置
     }
   } catch (error) {
     console.error('Error fetching data:', error.message);
   }
 };
 
-// 使用 map 函數提取 water 值
-// const waterData = playerData.map((record) => record.water);
-// console.log(waterData);
-
-const canvasRef = ref(null); // 取得 canvas 元素的參照
-
-const chartData = {
-  labels: [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday'
-  ],
-  datasets: [
-    {
-      label: 'Water',
-      data: [65, 59, 80, 81, 56, 55, 40],
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(255, 159, 64, 0.2)',
-        'rgba(255, 205, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(201, 203, 207, 0.2)'
-      ],
-      borderColor: [
-        'rgb(255, 99, 132)',
-        'rgb(255, 159, 64)',
-        'rgb(255, 205, 86)',
-        'rgb(75, 192, 192)',
-        'rgb(54, 162, 235)',
-        'rgb(153, 102, 255)',
-        'rgb(201, 203, 207)'
-      ],
-      borderWidth: 1
-    }
-  ]
-};
-
-const chartOptions = {
-  animation: {
-    x: {
-      easing: 'easeInQuad', // x軸動畫使用 easeInQuad
-      duration: 1000 // x軸動畫持續 1 秒
-    },
-    y: {
-      easing: 'easeOutBounce', // y軸動畫使用 easeOutBounce
-      duration: 2000 // y軸動畫持續 2 秒
-    }
-  }
-};
-
+// 初始化圖表
 onMounted(() => {
-  if (canvasRef.value) {
-    new Chart(canvasRef.value, {
-      type: 'bar',
-      data: chartData,
-      options: chartOptions
-    });
+  if (chartRef.value) {
+    chartInstance = echarts.init(chartRef.value);
+    getPlayData(); // 加載數據
   }
+});
+
+// 監聽 currentChart 變化，切換顯示的圖表後重新設置配置
+watch(currentChart, () => {
+  getPlayData();
 });
 </script>
 
 <template>
   <div id="formborder">
+    <!-- 使用 FullCalendar Vue 插件 -->
     <div class="chart-container">
-      <canvas ref="canvasRef"></canvas>
+      <!-- <div ref="chartRef" style="width: 100%; height: 100%" hidden></div> -->
+      <!-- Calendar position -->
+      <ShadowCalendar />
     </div>
-    <button id="back" class="bi bi-x-circle" @click="goBack"></button>
+
+    <!-- 使用 d-flex 和 gap 來橫向排列按鈕 -->
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" @click="currentChart = 'water'">
+        顯示飲水量
+      </button>
+      <button class="btn btn-primary" @click="currentChart = 'steps'">
+        顯示步數
+      </button>
+      <button class="btn btn-primary" @click="currentChart = 'sleep'">
+        顯示睡眠時長
+      </button>
+      <button class="btn btn-primary" @click="currentChart = 'mood'">
+        顯示心情
+      </button>
+    </div>
   </div>
 </template>
 
 <style lang="css" scoped>
 #formborder {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
   border: 1px solid rgb(33, 70, 12);
   background-color: rgb(251, 251, 251);
   width: 912px;
@@ -133,17 +250,16 @@ onMounted(() => {
 #back {
   height: 30px;
   border: none;
-  justify-content: flex-end;
-  margin-right: 5px;
   background-color: white;
+  margin-top: 10px;
 }
 
 .chart-container {
   position: relative;
-  width: 90%; /* 設定寬度 */
-  height: 80%; /* 設定高度 */
+  width: 90%;
+  height: 90%;
   display: flex;
-  justify-content: center; /* 左右置中 */
+  justify-content: center;
   align-items: center;
 }
 </style>
