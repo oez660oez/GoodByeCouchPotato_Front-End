@@ -89,6 +89,9 @@ export const Playerinformation = defineStore(
       changecoins,
     };
   },
+  // {
+  //   persist: true, //在這裡啟用pinia持久化
+  // }
   {
     persist: {
       enabled: true,

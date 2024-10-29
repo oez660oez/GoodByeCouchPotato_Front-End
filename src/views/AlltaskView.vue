@@ -70,10 +70,11 @@ const gettask = async (CId) => {
 const API_URLgetweektask = `${Base_URL}/WeeklyHealthRecords/GetWeeklyHealthRecords`;
 const sportdone = ref("");
 const cleandone = ref("");
-const tempSportStatus = ref(false);
+const tempSportStatus = ref(false); //負責控制前台的btn顯示
+//因為是響應式，isabled會變成只要使用者打勾，disabled就立刻轉成true，因此要一組是從後端傳來、一組為當前頁面(要傳回後端的)
 const tempCleanStatus = ref(false);
-const todaysport = ref(false); // 當前運動狀態
-const todayclean = ref(false); // 當前清理狀態
+const todaysport = ref(false); // 當前頁面的btn狀態
+const todayclean = ref(false);
 const isDisabledSport = computed(() => tempSportStatus.value === true);
 const isDisabledClean = computed(() => tempCleanStatus.value === true);
 const isDisabledUpdate = computed(
@@ -102,6 +103,7 @@ const getweeklytask = async (CId) => {
 //-------------獲取每週任務end--------------------
 // -------------打開表單時------------------
 onMounted(() => {
+  const userAccountString = sessionStorage.getItem("UserAccount");
   const userAccountString = sessionStorage.getItem("UserAccount");
   const userAccount = JSON.parse(userAccountString);
   const CId = userAccount.characterID;
