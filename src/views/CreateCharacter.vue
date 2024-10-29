@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from "vue";
 import Swal from "sweetalert2";
-
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+const PiniaPlayer = Playerinformation(); //初始化
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/CreateCharacter`;
@@ -101,16 +102,16 @@ const handleSubmit = async () => {
     const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
-      customClass: {
-        popup: 'swal-custom-popup'
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
-    });
+        imageUrl: "/images/SweetAlert2_test.png",
+        customClass: {
+          popup: "swal-custom-popup",
+        },
+        imageHeight: 100,
+        imageWidth: 380,
+        imageAlt: "A Error image",
+        background: "#fff url(/images/SweetAlert2_Background_test.png)",
+        confirmButtonText: "",
+      });
       return;
     }
     const userAccount = JSON.parse(userAccountJson);
@@ -118,16 +119,16 @@ const handleSubmit = async () => {
 
     if (!playerAccount) {
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
-      customClass: {
-        popup: 'swal-custom-popup'
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
-    });
+        imageUrl: "/images/SweetAlert2_test.png",
+        customClass: {
+          popup: "swal-custom-popup",
+        },
+        imageHeight: 100,
+        imageWidth: 380,
+        imageAlt: "A Error image",
+        background: "#fff url(/images/SweetAlert2_Background_test.png)",
+        confirmButtonText: "",
+      });
       return;
     }
   } catch (error) {
@@ -135,13 +136,13 @@ const handleSubmit = async () => {
     await Swal.fire({
       imageUrl: "/images/SweetAlert2_test.png",
       customClass: {
-        popup: 'swal-custom-popup'
+        popup: "swal-custom-popup",
       },
       imageHeight: 100,
       imageWidth: 380,
       imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
+      background: "#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: "",
     });
     return;
   }
@@ -150,16 +151,16 @@ const handleSubmit = async () => {
     const livingStatus = await checkExistingCharacter(playerAccount);
     if (livingStatus === "居住") {
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
-      customClass: {
-        popup: 'swal-custom-popup'
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
-    });
+        imageUrl: "/images/SweetAlert2_test.png",
+        customClass: {
+          popup: "swal-custom-popup",
+        },
+        imageHeight: 100,
+        imageWidth: 380,
+        imageAlt: "A Error image",
+        background: "#fff url(/images/SweetAlert2_Background_test.png)",
+        confirmButtonText: "",
+      });
       return;
     }
     //傳出到後端api
@@ -183,21 +184,26 @@ const handleSubmit = async () => {
         title: "成功",
         text: "角色創建成功！",
       });
+      // const res = response.json();
+      // console.log(res);
+      // PiniaPlayer.updatePlayerData(res.playercharacter);
+      // PiniaPlayer.updateCharacterBody(res.charactrtbody);
+      // window.location.href = "/outdoor";
       // 可以在這裡添加導航到其他頁面的邏輯
     } else {
       const errorData = await response.json();
       errors.value.general = errorData.message || "創建失敗，請稍後再試";
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
-      customClass: {
-        popup: 'swal-custom-popup'
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
-    });
+        imageUrl: "/images/SweetAlert2_test.png",
+        customClass: {
+          popup: "swal-custom-popup",
+        },
+        imageHeight: 100,
+        imageWidth: 380,
+        imageAlt: "A Error image",
+        background: "#fff url(/images/SweetAlert2_Background_test.png)",
+        confirmButtonText: "",
+      });
     }
   } catch (error) {
     console.error("發生錯誤:", error);
@@ -205,13 +211,13 @@ const handleSubmit = async () => {
     await Swal.fire({
       imageUrl: "/images/SweetAlert2_test.png",
       customClass: {
-        popup: 'swal-custom-popup'  // 更改類別名稱
+        popup: "swal-custom-popup", // 更改類別名稱
       },
       imageHeight: 100,
       imageWidth: 380,
       imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
+      background: "#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: "",
     });
   }
 };
@@ -365,11 +371,11 @@ const handleSubmit = async () => {
 
 /* 如果需要調整按鈕樣式 */
 .swal2-popup.swal-custom-popup .swal2-confirm {
-  background-image: url('/images/SweetAlert2_Button_test.png') !important;
+  background-image: url("/images/SweetAlert2_Button_test.png") !important;
   background-color: transparent !important;
   border: none;
   border-radius: 12px;
-  width:86px;
+  width: 86px;
   height: 40px;
 }
 
