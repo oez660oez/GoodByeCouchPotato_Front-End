@@ -95,16 +95,22 @@ const handleSubmit = async () => {
     return;
   }
 
-  // 撈登入時儲存於localStorage的UserAccount
+  // 撈登入時儲存於sessionStorage的UserAccount
   let playerAccount = null;
   try {
-    const userAccountJson = localStorage.getItem("UserAccount");
+    const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
       await Swal.fire({
-        icon: "error",
-        title: "錯誤",
-        text: "請先登入",
-      });
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
+    });
       return;
     }
     const userAccount = JSON.parse(userAccountJson);
@@ -112,18 +118,30 @@ const handleSubmit = async () => {
 
     if (!playerAccount) {
       await Swal.fire({
-        icon: "error",
-        title: "錯誤",
-        text: "無法獲取用戶帳號",
-      });
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
+    });
       return;
     }
   } catch (error) {
     console.error("解析 UserAccount 失敗:", error);
     await Swal.fire({
-      icon: "error",
-      title: "錯誤",
-      text: "獲取用戶失敗",
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
     });
     return;
   }
@@ -132,10 +150,16 @@ const handleSubmit = async () => {
     const livingStatus = await checkExistingCharacter(playerAccount);
     if (livingStatus === "居住") {
       await Swal.fire({
-        icon: "error",
-        title: "創建失敗",
-        text: "已有居住的角色存在",
-      });
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
+    });
       return;
     }
     //傳出到後端api
@@ -164,10 +188,16 @@ const handleSubmit = async () => {
       const errorData = await response.json();
       errors.value.general = errorData.message || "創建失敗，請稍後再試";
       await Swal.fire({
-        icon: "error",
-        title: "創建失敗",
-        text: errors.value.general,
-      });
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
+    });
     }
   } catch (error) {
     console.error("發生錯誤:", error);

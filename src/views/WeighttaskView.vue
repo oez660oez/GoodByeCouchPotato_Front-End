@@ -22,7 +22,7 @@ const errors = ref({
 // 載入上個月的體重記錄
 const loadLastMonthRecord = async () => {
   try{
-    const userAccountJson = localStorage.getItem("UserAccount");
+    const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) return;
 
     const userAccount = JSON.parse(userAccountJson);
@@ -31,6 +31,7 @@ const loadLastMonthRecord = async () => {
 
     if(data.weight){
       LastMonthRecord.value = `上個月的體重: ${data.weight} 公斤`;
+      form.value.weight = data.weight.toString(); // 預設顯示上個月體重
     }else{
       LastMonthRecord.value = "暫無體重紀錄";
     }
@@ -62,15 +63,21 @@ const handleSubmit = async () => {
   if (!isWeightValid) {
     return;
   }
-  // 撈登入時儲存於localStorage的UserAccount
+  // 撈登入時儲存於sessionStorage的UserAccount
   try {
-    const userAccountJson = localStorage.getItem("UserAccount");
+    const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
       await Swal.fire({
-        icon: "error",
-        title: "錯誤",
-        text: "請先登入",
-      });
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
+    });
       return;
     }
     const userAccount = JSON.parse(userAccountJson);
@@ -78,10 +85,16 @@ const handleSubmit = async () => {
 
     if (!playerAccount) {
       await Swal.fire({
-        icon: "error",
-        title: "錯誤",
-        text: "無法獲取用戶帳號",
-      });
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
+    });
       return;
     }
     //傳出到後端api，移動位置確保playerAccount可用
@@ -112,9 +125,15 @@ try {
     const errorData = await response.json();
     errors.value.general = errorData.message || "送出表單失敗，請稍後再試";
     await Swal.fire({
-      icon: "error",
-      title: "送出表單失敗",
-      text: errors.value.general,
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
     });
   }
 } catch (error) {
@@ -123,7 +142,7 @@ try {
     await Swal.fire({
       imageUrl: "/images/SweetAlert2_test.png",
       customClass: {
-        popup: 'swal-custom-popup'  // 更改類別名稱
+        popup: 'swal-custom-popup'
       },
       imageHeight: 100,
       imageWidth: 380,
@@ -135,9 +154,15 @@ try {
   } catch (error) {
     console.error("解析 UserAccount 失敗:", error);
     await Swal.fire({
-      icon: "error",
-      title: "錯誤",
-      text: "獲取用戶失敗",
+      imageUrl: "/images/SweetAlert2_test.png",
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      imageHeight: 100,
+      imageWidth: 380,
+      imageAlt: "A Error image",
+      background:"#fff url(/images/SweetAlert2_Background_test.png)",
+      confirmButtonText: '',
     });
     return;
   }
