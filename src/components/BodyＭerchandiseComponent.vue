@@ -268,7 +268,7 @@ const changeselect = (type, value) => {
           <div class="playerhaveitem" v-if="item.ishaveitem"></div>
           <img :src="item.pImageShop" :alt="item.pName" />
           <div class="namelevel">
-            <input type="text" name="PCode" :value="item.pCode" hidden />
+            <!-- <input type="text" name="PCode" :value="item.pCode" hidden />  -->
             <div class="merchandisname itemdetail">{{ item.pName }}</div>
             <div class="level itemdetail">LV {{ item.pLevel }}</div>
           </div>

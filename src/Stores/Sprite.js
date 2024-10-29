@@ -9,14 +9,6 @@ class Sprite {
       this.height = this.image.height;
     };
   }
-  setDirection(dir) {
-    this.direction = dir; // 設定方向
-  }
-
-  getDirection() {
-    return this.direction; // 獲取方向
-  }
-
   draw(ctx) {
     ctx.drawImage(
       this.image,
