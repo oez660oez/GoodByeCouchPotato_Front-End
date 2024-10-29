@@ -104,7 +104,6 @@ const getweeklytask = async (CId) => {
 // -------------打開表單時------------------
 onMounted(() => {
   const userAccountString = sessionStorage.getItem("UserAccount");
-  const userAccountString = sessionStorage.getItem("UserAccount");
   const userAccount = JSON.parse(userAccountString);
   const CId = userAccount.characterID;
   console.log(CId);
