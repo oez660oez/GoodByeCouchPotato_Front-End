@@ -106,7 +106,7 @@ export function useGameEvents(gameCanvasRef, gameStore) {
       handleInventoryMouseUp(e);
     },
 
-    dblclick: (e) => {
+    click: (e) => {
       if (!gameStore.inventoryOpen) return;
       handleInventoryClick(e);
     },

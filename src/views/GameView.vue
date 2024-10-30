@@ -4,14 +4,13 @@ import { ref, onMounted, onUnmounted, watch } from "vue";
 import GameCanvas from "@/components/game/GameCanvas.vue";
 import { useGameStore } from "@/Stores/gameStore";
 import { useGameEvents } from "@/composables/useGameEvents";
-import { useRouter, useRoute } from "vue-router";
+
 
 const userAccountJson = sessionStorage.getItem("UserAccount");
 const userAccount = JSON.parse(userAccountJson);
 const gameCanvasRef = ref(null);
 const gameStore = useGameStore();
 const playerAccount = userAccount.playerAccount;
-
 // 使用重構後的事件系統
 const { isInitialized, setupEventListeners, cleanupEventListeners } =
   useGameEvents(gameCanvasRef, gameStore);

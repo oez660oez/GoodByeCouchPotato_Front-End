@@ -87,7 +87,7 @@ function handleMove(direction) {
 }
 
 // Asset loading
-async function loadImage(src, imageType) {
+async function loadImage(src) {
   try {
     const img = new Image();
     return new Promise((resolve, reject) => {
