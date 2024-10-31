@@ -34,14 +34,6 @@ async function initializeGame() {
 
     gameStore.initializePositions(canvas);
 
-    try {
-      await gameStore.initializeInventory(playerAccount);
-      console.log("Inventory initialized successfully");
-    } catch (error) {
-      console.error("Failed to initialize inventory:", error);
-      throw error;
-    }
-
     isInitialized.value = true;
     console.log("Game initialized successfully");
 

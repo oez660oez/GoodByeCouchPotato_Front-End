@@ -1,43 +1,120 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from 'vue-router';
+import { useGameStore } from "@/Stores/gameStore";
+import { useGameEvents } from "@/composables/useGameEvents";
+import InventoryCanvas from '@/components/game/InventoryCanvas.vue';
 
 const router = useRouter();
 const route = useRoute();
+const gameStore = useGameStore();
+const inventoryCanvasRef = ref(null);
 
-const goBack = () => {
-    if (route.matched.length > 1) {
-        // 如果當前路由有父路由，返回到父路由
-        router.push({ name: route.matched[route.matched.length - 2].name });
-    } else {
-        // 否則，使用瀏覽器的後退功能
-        router.go(-1);
-    }
-}
+// Get user account from session storage
+const userAccountJson = sessionStorage.getItem("UserAccount");
+const userAccount = JSON.parse(userAccountJson);
+const playerAccount = userAccount.playerAccount;
+
+// 遊戲事件處理
+const gameEventsRef = ref(null);
+const { setupEventListeners, cleanupEventListeners } = useGameEvents(inventoryCanvasRef, gameStore);
+
+// 初始化背包的函數
+const initializeInventory = async () => {
+  try {
+    gameStore.grayImageCache.clear();
+    await gameStore.initializeInventory(playerAccount);
+    gameStore.inventoryOpen = true; // 確保背包是開啟的
+
+
+    console.log("Inventory initialized successfully");
+  } catch (error) {
+    console.error("Failed to initialize inventory:", error);
+    throw error;
+  }
+};
+
+
+onMounted(async () => {
+  try {
+    await initializeInventory();
+    setupEventListeners();
+  } catch (error) {
+    console.error("Error in onMounted:", error);
+  }
+});
+
+onUnmounted(async () => {
+  try {
+    await gameStore.saveInventoryState();
+    gameStore.inventoryOpen = false;
+    cleanupEventListeners();
+    gameStore.grayImageCache.clear();
+  } catch (error) {
+    console.error("Failed to save inventory state:", error);
+  }
+});
+
+const goBack = async () => {
+  try {
+    await gameStore.saveInventoryState();
+  } catch (error) {
+    console.error("Failed to save inventory state:", error);
+  }
+
+  if (route.matched.length > 1) {
+    router.push({ name: route.matched[route.matched.length - 2].name });
+  } else {
+    router.go(-1);
+  }
+};
 </script>
 
 <template>
-    <div id="formborder">
-        <button id="back" class="bi bi-x-circle" @click="goBack"></button>
+  <div id="formborder">
+    <div class="canvas-container">
+      <button id="back" @click="goBack"></button>
+      <InventoryCanvas
+        ref="inventoryCanvasRef"
+        :width="1092"
+        :height="622"
+      />
     </div>
+  </div>
 </template>
+
 <style lang="css" scoped>
 #formborder {
-    display: flex;
-    justify-content: flex-end;
-    border: 1px solid rgb(70, 12, 46);
-    background-color: rgb(245, 225, 231);
-    width: 912px;
-    height: 608px;
-    position: fixed;
-    top: 50px;
-    left: 350px;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  width: 1092px;
+  height: 622px;
+  position: fixed;
+  top: 40px;
+  left: 332px;
 }
 
 #back {
-    height: 30px;
-    border: none;
-    justify-content: flex-end;
-    margin-right: 5px;
-    background-color: white;
+  border: none;
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  top: 5px;
+  right: 5px;
+  background-color: transparent;
+}
+
+.canvas-container {
+  display: flex;
+  width: 100%;
+  height: calc(100% - 30px); /* 減去返回按鈕的高度 */
+  position: relative;
+  overflow: hidden;
+}
+
+.canvas-container :deep(canvas) {
+  width: 100%;
+  height: 100%;
 }
 </style>

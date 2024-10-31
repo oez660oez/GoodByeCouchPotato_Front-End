@@ -3,7 +3,8 @@ import { defineStore } from "pinia";
 import { itemApi } from "@/api/itemApi";
 import { EquippedSprite } from "@/core/EquippedSprite";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 export const useGameStore = defineStore("game", {
   state: () => ({
     inventoryItems: new Array(15).fill(null),
@@ -107,6 +108,8 @@ export const useGameStore = defineStore("game", {
       try {
         this.account = account;
         this.loadedSprites.clear();
+        this.equippedItemsMap.clear(); // 確保先清空
+        this.grayImageCache.clear(); // 清空灰色圖片緩存
         this.inventoryBackground = await this.loadImage(
           "/images/BackPack_Test.png"
         );
@@ -149,6 +152,9 @@ export const useGameStore = defineStore("game", {
                   fullImagePath: itemData.pImageAll,
                 });
                 this.inventoryItems[inventoryIndex] = shopImage;
+                if (isEquipped) {
+                  this.equippedItemsMap.set(shopImage, true);
+                }
                 inventoryIndex++;
               }
             }
@@ -261,9 +267,15 @@ export const useGameStore = defineStore("game", {
         if (!equipmentData) return;
 
         // 取得各裝備的 P_Code
-        const accessoryCode = await this.getItemPCode(equipmentData.accessory?.imageName);
-        const hairstyleCode = await this.getItemPCode(equipmentData.hairstyle?.imageName);
-        const outfitCode = await this.getItemPCode(equipmentData.outfit?.imageName);
+        const accessoryCode = await this.getItemPCode(
+          equipmentData.accessory?.imageName
+        );
+        const hairstyleCode = await this.getItemPCode(
+          equipmentData.hairstyle?.imageName
+        );
+        const outfitCode = await this.getItemPCode(
+          equipmentData.outfit?.imageName
+        );
 
         // 更新 Pinia store
         playerCharacterStore.Head = accessoryCode?.toString() || "";
@@ -755,6 +767,10 @@ export const useGameStore = defineStore("game", {
         try {
           await this.saveInventoryState();
           await this.syncEquipmentToPinia();
+          this.inventoryOpen = false;
+          if (router.currentRoute.value.name === "out-dress") {
+            router.push("/outdoor");
+          }
         } catch (error) {
           console.error("Failed to save inventory state:", error);
         }
@@ -811,7 +827,8 @@ export const useGameStore = defineStore("game", {
 
                   if (itemData) {
                     this.itemsData.set(shopImage, {
-                      type: this.typeMapping[itemData.pClass] || itemData.pClass,
+                      type:
+                        this.typeMapping[itemData.pClass] || itemData.pClass,
                       imageName: imageName,
                       fullImagePath: itemData.pImageAll,
                     });
@@ -832,6 +849,7 @@ export const useGameStore = defineStore("game", {
             }
           }
           this.inventoryOpen = true;
+          router.push("/outdoor/dress");
           await this.syncEquipmentToPinia();
         } catch (error) {
           console.error("Failed to refresh inventory data:", error);
