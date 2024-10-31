@@ -3,6 +3,9 @@ import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import * as echarts from 'echarts';
 import ShadowCalendar from '@/views/ShadowCalendar.vue';
+import { useReportDataStore } from '@/Stores/reportDataStore';
+
+const getreportData = useReportDataStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -19,8 +22,9 @@ const goBack = () => {
 const BASE_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${BASE_URL}/dailyhealthrecords`;
 
-const playerID = route.query.data;
+// const playerID = route.query.data;
 const playerData = ref([]);
+const dailyhealthData = ref([]);
 const chartRef = ref(null);
 
 let chartInstance; // 單一圖表實例
@@ -58,12 +62,16 @@ const moodToValue = {
   非常開心: 5
 };
 
+const getData = () => {
+  dailyhealthData.value = getreportData.Data;
+  // console.log('25454545', dailyhealthData.value);
+};
+
 const getPlayData = async () => {
   try {
     const response = await fetch(`${API_URL}/${playerID}`, { method: 'GET' });
     if (response.ok) {
       const data = await response.json();
-      playerData.value = data;
 
       const waterData = playerData.value.map((record) => record.water);
       const stepsData = playerData.value.map((record) => record.steps);
@@ -194,16 +202,26 @@ const getPlayData = async () => {
 
 // 初始化圖表
 onMounted(() => {
+  getData();
+  // getPlayData(); // 加載數據
   if (chartRef.value) {
     chartInstance = echarts.init(chartRef.value);
     getPlayData(); // 加載數據
   }
 });
 
-// 監聽 currentChart 變化，切換顯示的圖表後重新設置配置
+// 監聽 currentChart 的變化
 watch(currentChart, () => {
-  getPlayData();
+  getPlayData(); // 當 currentChart 改變時執行 getPlayData
 });
+
+// 監聽 getreportData.Data 的變化
+watch(
+  () => getreportData.Data,
+  () => {
+    getData(); // 當 getreportData.Data 改變時執行 getData
+  }
+);
 </script>
 
 <template>
@@ -229,6 +247,7 @@ watch(currentChart, () => {
       <button class="btn btn-primary" @click="currentChart = 'mood'">
         顯示心情
       </button>
+      <button id="back" class="bi bi-x-circle" @click="goBack"></button>
     </div>
   </div>
 </template>

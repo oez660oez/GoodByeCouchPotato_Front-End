@@ -1,13 +1,15 @@
 <script setup>
-import { useRouter, useRoute } from "vue-router";
-import { onMounted, ref } from "vue";
-import { Playerinformation } from "@/Stores/PlayerCharacter";
-
+import { useRouter, useRoute } from 'vue-router';
+import { onMounted, ref, watch } from 'vue';
+import { Playerinformation } from '@/Stores/PlayerCharacter';
+import { useReportDataStore } from '@/Stores/reportDataStore';
 const router = useRouter();
 const route = useRoute();
 
 // 使用pinia
 const playerStore = Playerinformation();
+const reportData = useReportDataStore();
+const oldData = ref(null); // 用來記錄上一次的值
 
 const goBack = () => {
   if (route.matched.length > 1) {
@@ -32,32 +34,41 @@ const targetAccount = playerStore.playerAccount;
 const charactersData = ref([]);
 const charactersAllData = ref([]);
 
+// 使用 setReportData 保存數據
+
+// const test = ref([]);
+
 onMounted(() => {
   // fetchCharacters();
-  // fetchCharacterAccessories();
+  firstload();
   fetchPreviousCharacters();
 });
 
+const firstload = () => {
+  oldData.value = reportData.Data;
+};
+
 //取過往角色Data
-// const fetchCharacters = async () => {
-//   try {
-//     const response = await fetch(`${CHARACTER_API_URL}/${targetAccount}`, {
-//       method: 'GET'
-//     });
-//     if (response.ok) {
-//       const { characters: fetchedCharacters, cIds: fetchedCIds } =
-//         await response.json();
+const fetchCharacters = async (cId) => {
+  try {
+    const response = await fetch(`${DAILYHEALTHRECORDS_API_URL}/${cId}`, {
+      method: 'GET'
+    });
+    if (response.ok) {
+      const data = await response.json();
+      charactersData.value = data;
+      reportData.setReportData(data); // 將 apiData 保存到 Pinia
 
-//       charactersData.value = fetchedCharacters;
-//       charactersID.value = fetchedCIds;
-//       // console.log('抓取到的資料:', charactersData.value);
+      console.log('抓取到的資料:', charactersData.value);
 
-//       // console.log('抓取到的資料:', charactersID.value);
-//     }
-//   } catch (error) {
-//     console.error('Error fetching data:', error.message);
-//   }
-// };
+      // test.value = reportData.Data;
+      // console.log('000', test.value);
+      // console.log('抓取到的資料:', charactersData.value);
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error.message);
+  }
+};
 
 //取過往角色的所有data
 const fetchPreviousCharacters = async () => {
@@ -65,18 +76,36 @@ const fetchPreviousCharacters = async () => {
     const response = await fetch(
       `${PREVIOUSCHARACTERS_API_URL}/${targetAccount}`,
       {
-        method: "GET",
+        method: 'GET'
       }
     );
     if (response.ok) {
       const data = await response.json();
       charactersAllData.value = data;
-      console.log("抓取到的資料:", charactersAllData.value);
+      // console.log('抓取到的資料:', charactersAllData.value);
     }
   } catch (error) {
-    console.error("Error fetching data:", error.message);
+    console.error('Error fetching data:', error.message);
   }
 };
+
+// 監聽 getreportData.Data 的變化
+// watch(
+//   () => reportData.Data,
+//   (newData) => {
+//     if (newData !== oldData) {
+//       reportData.setReportData(charactersData.value); // 當 reportData.Data 改變時執行 getData
+//       console.log('reportData', reportData.Data);
+//     }
+//   }
+// );
+
+// watch(
+//   () => reportData.Data,
+//   () => {
+//     reportData.setReportData(charactersData.value); // 當 getreportData.Data 改變時執行 getData
+//   }
+// );
 </script>
 
 <template>
@@ -110,18 +139,20 @@ const fetchPreviousCharacters = async () => {
             <strong>取得環境值:</strong> {{ character.getEnvironment }}<br />
             <strong>取得經驗值:</strong> {{ character.getExperience }}<br />
             <strong>取得金幣:</strong> {{ character.getCoins }}
-            <!-- <p>{{ character }}</p> -->
+            <!-- <p>{{ character.cId }}</p> -->
             <RouterLink
               :to="{
                 name: $route.name.startsWith('in-')
                   ? 'in-reportdata'
-                  : 'out-reportdata',
+                  : 'out-reportdata'
                 // 'in-reportdata',
                 // query: { data: JSON.stringify(character) }
-                query: { data: character.cId },
+                // query: { data: character.cId },
               }"
             >
-              <button>前往報告數據頁面</button>
+              <button @click="fetchCharacters(character.cId)">
+                前往報告數據頁面
+              </button>
             </RouterLink>
           </div>
         </div>
