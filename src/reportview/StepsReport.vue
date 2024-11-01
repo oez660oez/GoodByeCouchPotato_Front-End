@@ -7,7 +7,7 @@ const today = new Date();
 const todayString = today.toISOString().split('T')[0];
 //------呼叫API-----------------------------
 const Base_URL = import.meta.env.VITE_API_BASEURL;
-const API_URLgetsleep = `${Base_URL}/Report/step`;
+const API_URLgetstep = `${Base_URL}/Report/step`;
 const userAccountString = sessionStorage.getItem("UserAccount");
 const userAccount = JSON.parse(userAccountString);
 
@@ -18,7 +18,7 @@ const data=ref({
 })
 const getstep = async (data) => {
   console.log(data.value)
-  var response = await fetch(API_URLgetsleep, {
+  var response = await fetch(API_URLgetstep, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data.value),
@@ -54,7 +54,7 @@ const formatStepRecords = (stepRecords) => {
 
   // 填補缺失的日期
   return dateRange.map(date => {
-    const dateString = date.toISOString().split('T')[0]; // 取得日期部分
+    const dateString = formatDate(date);
     const record = stepRecords.find(record => record.hrecordDate.toString() === dateString);
     console.log('處理日期:', dateString, '找到的記錄:', record);
     
@@ -102,7 +102,7 @@ const handleStartDateChange = (event) => {
     
     endDate.value = maxEnd > today ? todayString : maxEnd.toISOString().split('T')[0];
   }
-  getstep(data);
+  
 };
 
 //@change="handleEndDateChange"時呼叫
@@ -120,7 +120,7 @@ const handleEndDateChange = (event) => {
     minStart.setDate(selectedEnd.getDate() - 31);
     startDate.value = minStart.toISOString().split('T')[0];
   }
-  getstep(data);
+  
 };
 //------日期end-----------------------------
 

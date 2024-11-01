@@ -7,17 +7,18 @@ const today = new Date();
 const todayString = today.toISOString().split('T')[0];
 //------呼叫API-----------------------------
 const Base_URL = import.meta.env.VITE_API_BASEURL;
-const API_URLgetmood = `${Base_URL}/Report/mood`;
+const API_URLgetwater = `${Base_URL}/Report/water`;
 const userAccountString = sessionStorage.getItem("UserAccount");
 const userAccount = JSON.parse(userAccountString);
+
 const data=ref({
    CId:  userAccount.characterID,
    StartDate:startDate.value,
    EndDate:endDate.value
 })
-const getmood = async (data) => {
+const getwater = async (data) => {
   console.log(data.value)
-  var response = await fetch(API_URLgetmood, {
+  var response = await fetch(API_URLgetwater, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data.value),
@@ -25,7 +26,7 @@ const getmood = async (data) => {
   if(response.ok){
     const result = await response.json();
     console.log(result);
-    const formattedData = formatMoodRecords(result);
+    const formattedData = formatWaterRecords(result);
     console.log(formattedData)
     updateChart(formattedData);
   }
@@ -40,9 +41,8 @@ const formatDate = (date) => {
 };
 
 
-// 將從後端獲取的數據轉換為圖表需要的格式
-const formatMoodRecords = (moodRecords) => {
-  console.log('收到的心情記錄:', moodRecords);
+const formatWaterRecords = (waterRecords) => {
+  console.log('收到飲水量記錄:', waterRecords);
   const start = new Date(startDate.value);
   const end = new Date(endDate.value);
   const dateRange = [];
@@ -55,29 +55,18 @@ const formatMoodRecords = (moodRecords) => {
   // 填補缺失的日期
   return dateRange.map(date => {
     const dateString = formatDate(date);
-    const record = moodRecords.find(record => record.hrecordDate.toString() === dateString);
+    const record = waterRecords.find(record => record.hrecordDate.toString() === dateString);
     console.log('處理日期:', dateString, '找到的記錄:', record);
-
-    let moodValue = 5;
-    let moodType = 'noRecord'; // 新增狀態標記，用於區分無記錄和不透露
-
-    if (record && record.mood) {
-      const moodMap = {
-        '非常開心': 4,
-        '開心': 3,
-        '普通': 2,
-        '有點不開心': 1,
-        '不開心': 0,
-        '不透露': 5
-      };
-      moodValue = moodMap[record.mood];
-      moodType = record.mood === '不透露' ? 'private' : 'normal';
+    
+    let waterValue = 0;
+    if (record && record.water) {
+      waterValue = record.water;
+      console.log(`日期 ${dateString} 的飲水量:`, waterValue);
     }
-
+    
     return {
       date: dateString,
-      mood: moodValue,
-      moodType: moodType 
+      water: waterValue
     };
   });
 };
@@ -98,7 +87,7 @@ onMounted(() => {
   endDate.value = todayString; // 今天的日期
   data.value.StartDate=startDate.value;
   data.value.EndDate=endDate.value;
-  getmood(data);
+  getwater(data);
   initChart();
 });
 
@@ -131,7 +120,7 @@ const handleEndDateChange = (event) => {
     minStart.setDate(selectedEnd.getDate() - 31);
     startDate.value = minStart.toISOString().split('T')[0];
   }
-  
+ 
 };
 //------日期end-----------------------------
 
@@ -154,33 +143,15 @@ const updateChart = (formattedData) => {
 
   const option = {
     title: {
-      text: '心情紀錄',
+      text: '飲水量統計',
       left: 'center'
     },
     tooltip: {
       trigger: 'axis',
       formatter: function(params) {
-        const item = formattedData[params[0].dataIndex];
-        const value = item.mood;
-        let displayText;
-
-        // 根據moodType決定顯示文字
-        if (item.moodType === 'noRecord') {
-          displayText = '無記錄';
-        } else if (item.moodType === 'private') {
-          displayText = '不透露';
-        } else {
-          const moodMap = {
-            0: '不開心',
-            1: '有點不開心',
-            2: '普通',
-            3: '開心',
-            4: '非常開心'
-          };
-          displayText = moodMap[value];
-        }
-
-        return `${params[0].name}<br/>心情: ${displayText}`;
+        if (!params[0].value && params[0].value !== 0) return `${params[0].name} 無記錄`;
+    // 這裡直接返回飲水量數值即可,不需要轉換時間格式
+    return `${params[0].name} 飲水量: ${params[0].value}`;
       }
     },
     xAxis: {
@@ -195,36 +166,13 @@ const updateChart = (formattedData) => {
         alignWithLabel: true  // 刻度線對齊標籤
     }
     },
-    // yAxis: {
-    //   type: 'value',
-    //   name: '心情',
-    //   min: 0,
-    //   max: 5,
-    //   interval: 1,
-    //   axisLabel: {
-    //     formatter: function (value) {
-    //       const labels = ['非常不開心', '有點不開心', '普通', '開心', '非常開心','不透露/無紀錄'];
-    //       return labels[value]
-    //     }
-    //   }
-    // },
     yAxis: {
-  type: 'value',
-  name: '心情',
-  min: 0,
-  max: 5,  // 改為6而不是5
-  interval: 1,
-  axisLabel: {
-    formatter: function (value) {
-      // 陣列索引要從0開始，所以要加一個空字串
-      const labels = [ '不開心', '有點不開心', '普通', '開心', '非常開心', '不透露/無紀錄'];
-      return labels[value] || '';
-    }
-  }
-},
+      type: 'value',
+      name: '飲水量(c.c.)',
+    },
     series: [{
-      data: formattedData.map(item => item.mood),
-      type: 'line',
+      data: formattedData.map(item => item.water),
+      type: 'bar',
       smooth: true,
       lineStyle: {
         width: 3,
@@ -251,7 +199,7 @@ const updateChart = (formattedData) => {
   setTimeout(() => {
     myChart.hideLoading();
     myChart.setOption(option);
-  }, 500);
+  }, 300);
 };
 
 // 修改監聽器
@@ -259,7 +207,7 @@ watch([startDate, endDate], ([newStart, newEnd]) => {
   if (newStart && newEnd) {
     data.value.StartDate = newStart;
     data.value.EndDate = newEnd;
-    getmood(data);
+    getwater(data);
   }
 });
 //------圖表end-----------------------------

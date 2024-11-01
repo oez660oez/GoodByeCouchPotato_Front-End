@@ -6,6 +6,9 @@ import SleepReport from "@/reportview/SleepReport.vue";
 import StepsReport from "@/reportview/StepsReport.vue";
 import MoodReport from "@/reportview/MoodReport.vue";
 import GoBackComponent from "@/components/GoBackComponent.vue";
+import WaterReport from "@/reportview/WaterReport.vue";
+import WeightReport from "@/reportview/WeightReport.vue";
+import EatingReport from "@/reportview/EatingReport.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -18,10 +21,11 @@ const activeButton = ref(null);
 // 組件映射
 const viewComponents = {
   shoes: StepsReport,
-  // drink: DrinkView,
-  // weight: WeightView,
+  drink: WaterReport,
+  weight: WeightReport,
   bed: SleepReport,
   smile: MoodReport,
+  food: EatingReport,
 };
 
 // 設置活動按鈕並切換視圖
@@ -30,14 +34,14 @@ const setActiveButton = (buttonId) => {
   currentView.value = viewComponents[buttonId];
 };
 
-// 定義按鈕名稱映射
-const buttonNameMap = {
-  shoes: "步數",
-  drink: "飲水量",
-  weight: "體重",
-  bed: "睡眠",
-  smile: "心情",
-};
+// // 定義按鈕名稱映射
+// const buttonNameMap = {
+//   shoes: '步數',
+//   drink: '飲水量',
+//   weight: '體重',
+//   bed: '睡眠',
+//   smile: '心情'
+// };
 
 const getButtonName = (buttonId) => {
   return buttonNameMap[buttonId];
@@ -59,9 +63,9 @@ onMounted(() => {});
     <!-- 動態組件區域 -->
     <div class="view-area">
       <!-- 顯示當前按鈕名稱 -->
-      <div v-if="activeButton" class="status-text">
-        <h5>{{ getButtonName(activeButton) }}</h5>
-      </div>
+      <!-- <div v-if="activeButton" class="status-text">
+      <h5>{{ getButtonName(activeButton) }}</h5> -->
+      <!-- </div> -->
       <component :is="currentView" v-if="currentView" />
     </div>
 
@@ -101,6 +105,20 @@ onMounted(() => {});
         @click="setActiveButton('smile')"
       >
         <i class="fa-regular fa-face-smile"></i>
+      </button>
+      <button
+        class="icon-button"
+        :class="{ active: activeButton === 'food' }"
+        @click="setActiveButton('food')"
+      >
+        <i class="fa-solid fa-utensils"></i>
+      </button>
+      <button
+        class="icon-button"
+        :class="{ active: activeButton === 'shoes' }"
+        @click="setActiveButton('shoes')"
+      >
+        <i class="fa-solid fa-shoe-prints fa-rotate-270"></i>
       </button>
     </div>
 
@@ -172,11 +190,11 @@ onMounted(() => {});
 
 .view-area {
   padding: 10px;
-  margin-top: 20px;
+  margin-top: 50px;
   margin-left: 10px;
   margin-right: 100px; /* 為右側按鈕預留空間 */
-  height: calc(100% - 30px); /* 減去標題的高度 */
+  /* height: calc(100% - 30px); 減去標題的高度 */
   overflow-y: auto; /* 內容過多時可以滾動 */
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
 </style>

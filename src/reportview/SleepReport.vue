@@ -111,7 +111,7 @@ const handleStartDateChange = (event) => {
     
     endDate.value = maxEnd > today ? todayString : maxEnd.toISOString().split('T')[0];
   }
-  getsleep(data);
+  
 };
 
 //@change="handleEndDateChange"時呼叫
@@ -129,7 +129,7 @@ const handleEndDateChange = (event) => {
     minStart.setDate(selectedEnd.getDate() - 31);
     startDate.value = minStart.toISOString().split('T')[0];
   }
-  getsleep(data);
+  
 };
 //------日期end-----------------------------
 
