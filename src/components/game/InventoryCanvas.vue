@@ -64,7 +64,7 @@ const initializePositions = () => {
     for (let col = 0; col < gameStore.slotConfig.cols; col++) {
       gameStore.itemSlots.push({
         x: x + 437 * scale + col * (slotSize + padding),
-        y: y + 163 * scale + row * (slotSize + padding),
+        y: y + 150 * scale + row * (slotSize + padding),
       });
     }
   }
@@ -73,17 +73,17 @@ const initializePositions = () => {
   gameStore.equipmentSlotsPosition = [];
   for (let i = 0; i < 3; i++) {
     gameStore.equipmentSlotsPosition.push({
-      x: x + 253 * scale,
-      y: y + 193 * scale + i * (slotSize + padding),
+      x: x + 285 * scale,
+      y: y + 147 * scale + i * (slotSize + padding),
     });
   }
 
   // 更新預覽框位置
   gameStore.previewBox = {
-    x: x + 40 * scale,
-    y: y + 200 * scale,
-    width: 185 * scale,
-    height: 300 * scale,
+    x: x + 75 * scale,
+    y: y + 150 * scale,
+    width: 160 * scale,
+    height: 270 * scale,
   };
 
   // 更新背包位置

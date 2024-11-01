@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 export const useGameStore = defineStore("game", {
   state: () => ({
-    inventoryItems: new Array(15).fill(null),
+    inventoryItems: new Array(9).fill(null),
     equipmentSlots: [null, null, null],
     equippedItems: {
       accessory: null,
@@ -19,10 +19,10 @@ export const useGameStore = defineStore("game", {
     inventoryBackground: null,
     account: null,
     slotConfig: {
-      size: 105,
-      cols: 5,
+      size: 70,
+      cols: 3,
       rows: 3,
-      padding: 15.5,
+      padding: 35,
     },
     inventoryPosition: {
       x: 0,
@@ -110,7 +110,7 @@ export const useGameStore = defineStore("game", {
         this.loadedSprites.clear();
         console.log("初始化背包 - 開始");
         this.inventoryBackground = await this.loadImage(
-          "/images/BackPack_Test.png"
+          "/images/BackPack.png"
         );
 
         const [equipment, userItems] = await Promise.all([
@@ -118,7 +118,7 @@ export const useGameStore = defineStore("game", {
           itemApi.getUserItems(account),
         ]);
         console.log("當前裝備狀態:", equipment);
-        this.inventoryItems = new Array(15).fill(null);
+        this.inventoryItems = new Array(9).fill(null);
         this.equipmentSlots = [null, null, null];
         this.equippedItems = {
           accessory: null,
@@ -278,10 +278,22 @@ export const useGameStore = defineStore("game", {
           equipmentData.outfit?.imageName
         );
 
+        console.log('更新前的 Pinia 狀態:', {
+          Head: playerCharacterStore.Head,
+          Upper: playerCharacterStore.Upper,
+          Lower: playerCharacterStore.Lower
+        });
+
         // 更新 Pinia store
         playerCharacterStore.Head = accessoryCode?.toString() || "";
         playerCharacterStore.Upper = hairstyleCode?.toString() || "";
         playerCharacterStore.Lower = outfitCode?.toString() || "";
+
+        console.log('更新後的 Pinia 狀態:', {
+          Head: playerCharacterStore.Head,
+          Upper: playerCharacterStore.Upper,
+          Lower: playerCharacterStore.Lower
+        });
 
         return true;
       } catch (error) {
@@ -788,7 +800,7 @@ export const useGameStore = defineStore("game", {
             ]);
 
             // 重置物品欄和裝備數據
-            this.inventoryItems = new Array(15).fill(null);
+            this.inventoryItems = new Array(9).fill(null);
             this.equippedItemsMap.clear(); // 重置已裝備物品的追蹤
             // 如果沒有現有裝備，才初始化裝備欄
             if (
