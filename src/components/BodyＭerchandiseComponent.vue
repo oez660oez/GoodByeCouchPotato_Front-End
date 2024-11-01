@@ -352,10 +352,10 @@ const changeselect = (type, value) => {
   flex-wrap: wrap;
 }
 .photoborder {
-  height: 80px;
-  width: 312px;
-  background-color: rgb(235, 219, 167);
-  border: 1px solid black;
+  height: 110px;
+  width: 310px;
+  /* background-color: rgb(235, 219, 167); */
+  /* border: 1px solid black; */
   display: flex;
   padding-top: 8px;
   padding-left: 8px;
@@ -364,8 +364,9 @@ const changeselect = (type, value) => {
   margin-left: 14px;
   border-radius: 10px;
   position: relative;
+  background-image: url("@/assets/merchandiseborder.png");
+  background-size: cover;
 }
-
 .photoborder button {
   height: 32px;
   width: 80px;

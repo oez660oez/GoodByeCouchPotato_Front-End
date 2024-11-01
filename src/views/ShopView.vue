@@ -29,7 +29,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <div id="formborder">
+  <div id="shopformborder">
     <div class="shopgoback">
       <GoBackComponent @goback="goBack"></GoBackComponent>
     </div>
@@ -73,32 +73,35 @@ const goBack = () => {
 </template>
 
 <style lang="css" scoped>
-#formborder {
+#shopformborder {
   display: flex;
-  border: 1px solid rgb(63, 12, 70);
-  background-color: rgb(242, 225, 245);
-  width: 1040px;
-  height: 608px;
+  /* border: 1px solid rgb(63, 12, 70); */
+  /* background-color: rgb(242, 225, 245); */
+  width: 1056px;
+  height: 624px;
   position: fixed;
   top: 50px;
-  left: 350px;
+  left: 320px;
+  background-image: url("@/assets/shopbackground.png");
+  background-size: cover;
 }
 
 .charbody {
-  width: 336px;
+  width: 320px;
   height: 576px;
-  border: 1px solid rgb(34, 49, 51);
-  margin-top: 16px;
-  margin-left: 16px;
-  background-color: rgb(199, 180, 154);
+  /* border: 1px solid rgb(34, 49, 51); */
+  margin-top: 30px;
+  margin-left: 50px;
+  /* background-color: rgb(199, 180, 154); */
 }
 
 .shoplist {
-  width: 656px;
-  height: 576px;
-  border: 1px solid rgb(21, 32, 5);
-  margin-top: 16px;
-  background-color: rgb(165, 134, 42);
+  width: 655px;
+  height: 570px;
+  /* border: 1px solid rgb(21, 32, 5); */
+  margin-top: 30px;
+  margin-left: 20px;
+  /* background-color: rgb(165, 134, 42); */
 }
 
 .outborder {

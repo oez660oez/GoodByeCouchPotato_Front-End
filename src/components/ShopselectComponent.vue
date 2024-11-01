@@ -65,6 +65,7 @@ const changeselect = (type, value) => {
   flex-direction: row;
   justify-content: space-around;
   margin: 15px;
+  margin-left: 2px;
 }
 
 select {
@@ -72,20 +73,24 @@ select {
   height: 35px;
 }
 
-.lastpage {
-  margin-top: -3%;
-  background-image: url("@/assets/lastpagebutton.png");
-  width: 66px;
-  height: 66px;
+input {
+  width: 150px;
+}
+
+.lastpage,
+.nextpage {
+  width: 32px;
+  height: 32px;
   background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.lastpage {
+  background-image: url("@/assets/lastpagebutton.png");
 }
 
 .nextpage {
-  margin-top: -3%;
   background-image: url("@/assets/nextpagebutton.png");
-  width: 66px;
-  height: 66px;
-  background-size: cover;
 }
 
 button {
@@ -94,5 +99,17 @@ button {
   padding: 0;
   outline: none;
   cursor: pointer;
+}
+
+h4 {
+  background-color: white;
+  width: 48px;
+  height: 35px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(82, 50, 50, 0.847);
+  color: rgba(82, 50, 50, 0.847);
 }
 </style>
