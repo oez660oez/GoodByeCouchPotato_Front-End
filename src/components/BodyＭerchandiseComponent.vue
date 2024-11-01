@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted } from "vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import ShopselectComponentVue from "./ShopselectComponent.vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import { computed } from "vue";
@@ -73,9 +73,10 @@ const GettheAccessoriesList = async (requestBody) => {
       //抓取已經穿著的衣服，如果在onMounted做，會因為加載未完成而抓不到，在這個方法內就一定能取到了
       if (GetItem.value.allqualifiedItem.length > 0) {
         //取得目前穿的編號
-        Mybody.value.head = PiniaPlayer.Head;
-        Mybody.value.body = PiniaPlayer.Upper;
-        Mybody.value.accessory = PiniaPlayer.Lower;
+        Mybody.value.head = PiniaPlayer.Upper;
+        Mybody.value.body = PiniaPlayer.Lower;
+        Mybody.value.accessory = PiniaPlayer.Head;
+        console.log(Mybody.value);
         GetMyClothes(); //將穿著的內容篩選出來
 
         console.log(PiniaMerchandise.Myaccessory);
@@ -99,11 +100,11 @@ const RenewtheList = async () => {
 };
 
 //取得目前穿著
-const Mybody = ref({
-  head: "",
-  body: "",
-  accessory: "",
-});
+const Mybody = computed(() => ({
+  head: PiniaPlayer.Upper,
+  body: PiniaPlayer.Lower,
+  accessory: PiniaPlayer.Head,
+}));
 
 const GetMyClothes = () => {
   const Gethead =

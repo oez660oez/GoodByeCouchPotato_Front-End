@@ -3,8 +3,9 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { Sprite } from "@/core/Player"; //裁切圖片並製作成動畫
 import { useGameLoop } from "@/composables/useGameLoop";
 import { Merchandiselist } from "@/Stores/Merchandiselist";
-import { Alert } from "bootstrap";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
 const PiniaMerchandise = Merchandiselist();
+const PiniaPlayer = Playerinformation();
 
 const canvasRef = ref(null);
 const canvasWidth = 74;
@@ -77,29 +78,32 @@ const GameLoop = async () => {
     PiniaMerchandise.Myaccessory.length > 0
   ) {
     if (PiniaMerchandise.First) {
+      PiniaMerchandise.First = false;
       GetMybody.value = PiniaMerchandise.Mybody;
       GetMyhead.value = PiniaMerchandise.Myhead;
       GetMyaccessory.value = PiniaMerchandise.Myaccessory;
 
-      let first = "";
+      let body = "";
+      let head = "";
+      let accessory = "";
       if (PiniaMerchandise.Mybody.length > 0) {
-        first = GetMybody.value[0];
-        equippedItems.value.body = first.pImageAll;
-        await GetImage(equippedItems.value.body, playerbody);
-        console.log(PiniaMerchandise.Myhead);
+        body = GetMybody.value[0];
+        equippedItems.value.body = body.pImageAll;
+        GetImage(equippedItems.value.body, playerbody);
+        console.log(body);
       }
       if (PiniaMerchandise.Myhead.length > 0) {
-        first = GetMyhead.value[0];
-        equippedItems.value.body = first.pImageAll;
-        await GetImage(equippedItems.value.head, playerhead);
+        head = GetMyhead.value[0];
+        equippedItems.value.body = head.pImageAll;
+        GetImage(equippedItems.value.head, playerhead);
       }
       if (PiniaMerchandise.Myaccessory.length > 0) {
-        first = GetMyaccessory.value[0];
-        equippedItems.value.accessory = first.pImageAll;
-        await GetImage(equippedItems.value.accessory, playeraccessory);
+        accessory = GetMyaccessory.value[0];
+        equippedItems.value.accessory = accessory.pImageAll;
+        GetImage(equippedItems.value.accessory, playeraccessory);
+        console.log(PiniaMerchandise.Myaccessory);
       }
     }
-    PiniaMerchandise.First = false;
   }
   if (PiniaMerchandise.Choosemerchandise) {
     console.log(PiniaMerchandise.First);
@@ -212,6 +216,9 @@ const reset = () => {
 //=====================事件end===============================
 
 onMounted(async () => {
+  console.log(PiniaPlayer.Head);
+  console.log(PiniaPlayer.Lower);
+  console.log(PiniaPlayer.Upper);
   const canvas = canvasRef.value;
   if (!canvas) throw new Error("Canvas not found");
   canvas.width = canvasWidth;

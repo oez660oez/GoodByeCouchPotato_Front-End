@@ -81,11 +81,6 @@ onMounted(() => {
         img1.src = imageUrl1;
         img1.alt = "Event Image 1";
         img1.className = "img1";
-        img1.style.width = "40%";
-        img1.style.height = "40%";
-        img1.style.position = "absolute";
-        img1.style.top = "10%";
-        img1.style.left = "10%";
         dayCell.appendChild(img1);
       }
 
@@ -97,11 +92,6 @@ onMounted(() => {
         img2.src = imageUrl2;
         img2.alt = "Event Image 2";
         img2.className = "img2";
-        img2.style.width = "40%";
-        img2.style.height = "40%";
-        img2.style.position = "absolute";
-        img2.style.top = "50%";
-        img2.style.left = "50%";
         dayCell.appendChild(img2);
       }
     });
@@ -135,18 +125,35 @@ watch(
   text-align: center;
 }
 
-/* 調整標題字體和日期格大小 */
-
 .fc-daygrid-day {
   overflow: hidden; /* 隱藏超出內容 */
   height: 10px; /* 調整高度 */
   width: 50px; /* 調整寬度 */
-  overflow: hidden;
   white-space: nowrap;
 }
 
 .fc .fc-scroller {
   overflow: hidden !important; /* 禁止 FullCalendar 滾動 */
+}
+
+/* 圖片樣式調整 */
+.img1,
+.img2 {
+  width: 40%;
+  height: 40%;
+  position: absolute;
+  z-index: 10; /* 確保圖片在其他元素之上 */
+}
+
+.img1 {
+  top: 10%;
+  left: 10%;
+}
+
+.img2 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 中心對齊 */
 }
 
 .fc-daygrid {
