@@ -3,6 +3,7 @@ import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import { useReportDataStore } from "@/Stores/reportDataStore";
+import GoBackComponent from "@/components/GoBackComponent.vue";
 const router = useRouter();
 const route = useRoute();
 
@@ -49,25 +50,25 @@ const firstload = () => {
 };
 
 //取過往角色Data
-// const fetchCharacters = async () => {
-//   try {
-//     const response = await fetch(`${CHARACTER_API_URL}/${targetAccount}`, {
-//       method: 'GET'
-//     });
-//     if (response.ok) {
-//       const { characters: fetchedCharacters, cIds: fetchedCIds } =
-//         await response.json();
+const fetchCharacters = async () => {
+  try {
+    const response = await fetch(`${CHARACTER_API_URL}/${targetAccount}`, {
+      method: "GET",
+    });
+    if (response.ok) {
+      const { characters: fetchedCharacters, cIds: fetchedCIds } =
+        await response.json();
 
-//       charactersData.value = fetchedCharacters;
-//       charactersID.value = fetchedCIds;
-//       // console.log('抓取到的資料:', charactersData.value);
+      charactersData.value = fetchedCharacters;
+      charactersID.value = fetchedCIds;
+      // console.log('抓取到的資料:', charactersData.value);
 
-//       // console.log('抓取到的資料:', charactersID.value);
-//     }
-//   } catch (error) {
-//     console.error('Error fetching data:', error.message);
-//   }
-// };
+      // console.log('抓取到的資料:', charactersID.value);
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+  }
+};
 
 //取過往角色的所有data
 const fetchPreviousCharacters = async () => {
@@ -89,22 +90,22 @@ const fetchPreviousCharacters = async () => {
 };
 
 // 監聽 getreportData.Data 的變化
-// watch(
-//   () => reportData.Data,
-//   (newData) => {
-//     if (newData !== oldData) {
-//       reportData.setReportData(charactersData.value); // 當 reportData.Data 改變時執行 getData
-//       console.log('reportData', reportData.Data);
-//     }
-//   }
-// );
+watch(
+  () => reportData.Data,
+  (newData) => {
+    if (newData !== oldData) {
+      reportData.setReportData(charactersData.value); // 當 reportData.Data 改變時執行 getData
+      console.log("reportData", reportData.Data);
+    }
+  }
+);
 
-// watch(
-//   () => reportData.Data,
-//   () => {
-//     reportData.setReportData(charactersData.value); // 當 getreportData.Data 改變時執行 getData
-//   }
-// );
+watch(
+  () => reportData.Data,
+  () => {
+    reportData.setReportData(charactersData.value); // 當 getreportData.Data 改變時執行 getData
+  }
+);
 </script>
 
 <template>
