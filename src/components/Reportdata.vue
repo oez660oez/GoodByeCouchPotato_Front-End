@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import * as echarts from 'echarts';
-import ShadowCalendar from '@/views/ShadowCalendar.vue';
-import { useReportDataStore } from '@/Stores/reportDataStore';
+import { ref, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import * as echarts from "echarts";
+import ShadowCalendar from "@/views/ShadowCalendar.vue";
+import { useReportDataStore } from "@/Stores/reportDataStore";
 
 const getreportData = useReportDataStore();
 
@@ -29,26 +29,26 @@ const chartRef = ref(null);
 let chartInstance; // 單一圖表實例
 
 // 控制顯示哪個報表和動態傳入參數
-const currentChart = ref('water');
+const currentChart = ref("water");
 
 // 動態更新的圖表配置
 const chartOptions = ref({
-  title: { text: '' },
-  tooltip: { trigger: 'axis' },
-  xAxis: { type: 'category', data: [] },
-  yAxis: { type: 'value' },
+  title: { text: "" },
+  tooltip: { trigger: "axis" },
+  xAxis: { type: "category", data: [] },
+  yAxis: { type: "value" },
   series: [
     {
-      name: '',
-      type: 'bar',
-      data: []
-    }
-  ]
+      name: "",
+      type: "bar",
+      data: [],
+    },
+  ],
 });
 
 // 將 "HH:mm" 時間格式轉換為小時數
 const convertTimeToHourDecimal = (timeString) => {
-  const [hours, minutes] = timeString.split(':').map(Number);
+  const [hours, minutes] = timeString.split(":").map(Number);
   return hours + minutes / 60; // 轉換為小時數
 };
 
@@ -58,12 +58,12 @@ const moodToValue = {
   有點不開心: 2,
   普通: 3,
   開心: 4,
-  非常開心: 5
+  非常開心: 5,
 };
 
 const getData = () => {
   dailyhealthData.value = getreportData.Data;
-  console.log('25454545', dailyhealthData.value);
+  console.log("25454545", dailyhealthData.value);
 };
 
 const getPlayData = async () => {
@@ -79,111 +79,111 @@ const getPlayData = async () => {
   console.log(moodData);
 
   // 根據當前的圖表類型更新動態配置
-  if (currentChart.value === 'water') {
+  if (currentChart.value === "water") {
     chartOptions.value = {
-      title: { text: '飲水量' },
-      xAxis: { type: 'category', data: labels },
+      title: { text: "飲水量" },
+      xAxis: { type: "category", data: labels },
       yAxis: {
-        type: 'value',
-        title: { text: 'Water Intake (ml)' },
-        min: '0',
-        max: '6000',
+        type: "value",
+        title: { text: "Water Intake (ml)" },
+        min: "0",
+        max: "6000",
         axisLabel: {
-          formatter: '{value} ml'
-        }
+          formatter: "{value} ml",
+        },
       },
       series: [
         {
-          name: 'Water Intake (ml)',
-          type: 'bar',
+          name: "Water Intake (ml)",
+          type: "bar",
           data: waterData,
-          itemStyle: { color: 'rgba(75, 192, 192, 1)' }
-        }
-      ]
+          itemStyle: { color: "rgba(75, 192, 192, 1)" },
+        },
+      ],
     };
-  } else if (currentChart.value === 'steps') {
+  } else if (currentChart.value === "steps") {
     chartOptions.value = {
-      title: { text: '步數' },
-      xAxis: { type: 'category', data: labels },
+      title: { text: "步數" },
+      xAxis: { type: "category", data: labels },
       yAxis: {
-        type: 'value',
-        title: { text: '步數' },
-        min: '0',
-        max: '10000',
+        type: "value",
+        title: { text: "步數" },
+        min: "0",
+        max: "10000",
         axisLabel: {
-          formatter: '{value}步'
-        }
+          formatter: "{value}步",
+        },
       },
       series: [
         {
-          name: '步數',
-          type: 'bar',
+          name: "步數",
+          type: "bar",
           data: stepsData,
-          itemStyle: { color: 'orange' }
-        }
-      ]
+          itemStyle: { color: "orange" },
+        },
+      ],
     };
-  } else if (currentChart.value === 'sleep') {
+  } else if (currentChart.value === "sleep") {
     chartOptions.value = {
-      title: { text: '入睡時間' },
-      xAxis: { type: 'category', data: labels },
+      title: { text: "入睡時間" },
+      xAxis: { type: "category", data: labels },
       yAxis: {
-        type: 'value',
-        title: { text: '入睡時間' },
+        type: "value",
+        title: { text: "入睡時間" },
         min: 0,
         max: 24,
         axisLabel: {
           formatter: (value) => {
             const hours = Math.floor(value);
             const minutes = Math.round((value - hours) * 60);
-            return `${hours.toString().padStart(2, '0')}:${minutes
+            return `${hours.toString().padStart(2, "0")}:${minutes
               .toString()
-              .padStart(2, '0')}`;
-          }
-        }
+              .padStart(2, "0")}`;
+          },
+        },
       },
       series: [
         {
-          name: 'Sleep Start Time',
-          type: 'line',
+          name: "Sleep Start Time",
+          type: "line",
           data: sleepData,
-          itemStyle: { color: 'purple' }
-        }
-      ]
+          itemStyle: { color: "purple" },
+        },
+      ],
     };
-  } else if (currentChart.value === 'mood') {
+  } else if (currentChart.value === "mood") {
     chartOptions.value = {
-      title: { text: '心情' },
-      xAxis: { type: 'category', data: labels },
+      title: { text: "心情" },
+      xAxis: { type: "category", data: labels },
       yAxis: {
-        type: 'value',
-        title: { text: '心情' },
+        type: "value",
+        title: { text: "心情" },
         min: 0,
         max: 5,
         axisLabel: {
           formatter: function (value) {
             var moodLabels = [
-              '不透露',
-              '不開心',
-              '有點不開心',
-              '普通',
-              '開心',
-              '非常開心'
+              "不透露",
+              "不開心",
+              "有點不開心",
+              "普通",
+              "開心",
+              "非常開心",
             ];
             return moodLabels[value];
-          }
-        }
+          },
+        },
       },
       series: [
         {
-          title: { text: '心情' },
+          title: { text: "心情" },
           min: 0,
           max: 5,
-          type: 'line',
+          type: "line",
           data: moodData,
-          itemStyle: { color: 'blue' }
-        }
-      ]
+          itemStyle: { color: "blue" },
+        },
+      ],
     };
   }
 

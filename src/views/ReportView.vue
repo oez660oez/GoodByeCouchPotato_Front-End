@@ -3,7 +3,6 @@ import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import { useReportDataStore } from "@/Stores/reportDataStore";
-import GoBackComponent from "@/components/GoBackComponent.vue";
 const router = useRouter();
 const route = useRoute();
 
@@ -50,20 +49,21 @@ const firstload = () => {
 };
 
 //取過往角色Data
-const fetchCharacters = async () => {
+const fetchCharacters = async (cId) => {
   try {
-    const response = await fetch(`${CHARACTER_API_URL}/${targetAccount}`, {
+    const response = await fetch(`${DAILYHEALTHRECORDS_API_URL}/${cId}`, {
       method: "GET",
     });
     if (response.ok) {
-      const { characters: fetchedCharacters, cIds: fetchedCIds } =
-        await response.json();
+      const data = await response.json();
+      charactersData.value = data;
+      reportData.setReportData(data); // 將 apiData 保存到 Pinia
 
-      charactersData.value = fetchedCharacters;
-      charactersID.value = fetchedCIds;
+      console.log("抓取到的資料:", charactersData.value);
+
+      // test.value = reportData.Data;
+      // console.log('000', test.value);
       // console.log('抓取到的資料:', charactersData.value);
-
-      // console.log('抓取到的資料:', charactersID.value);
     }
   } catch (error) {
     console.error("Error fetching data:", error.message);
@@ -90,29 +90,26 @@ const fetchPreviousCharacters = async () => {
 };
 
 // 監聽 getreportData.Data 的變化
-watch(
-  () => reportData.Data,
-  (newData) => {
-    if (newData !== oldData) {
-      reportData.setReportData(charactersData.value); // 當 reportData.Data 改變時執行 getData
-      console.log("reportData", reportData.Data);
-    }
-  }
-);
+// watch(
+//   () => reportData.Data,
+//   (newData) => {
+//     if (newData !== oldData) {
+//       reportData.setReportData(charactersData.value); // 當 reportData.Data 改變時執行 getData
+//       console.log('reportData', reportData.Data);
+//     }
+//   }
+// );
 
-watch(
-  () => reportData.Data,
-  () => {
-    reportData.setReportData(charactersData.value); // 當 getreportData.Data 改變時執行 getData
-  }
-);
+// watch(
+//   () => reportData.Data,
+//   () => {
+//     reportData.setReportData(charactersData.value); // 當 getreportData.Data 改變時執行 getData
+//   }
+// );
 </script>
 
 <template>
   <div class="container" id="formborder">
-    <div class="goback">
-      <GoBackComponent @goback="goBack"></GoBackComponent>
-    </div>
     <div class="accordion accordion-flush" id="accordionFlushExample">
       <!-- 使用 v-for 生成每個角色的 Accordion 項目 -->
       <div
