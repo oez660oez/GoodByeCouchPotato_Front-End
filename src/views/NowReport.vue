@@ -9,6 +9,7 @@ import GoBackComponent from "@/components/GoBackComponent.vue";
 import WaterReport from "@/reportview/WaterReport.vue";
 import WeightReport from "@/reportview/WeightReport.vue";
 import EatingReport from "@/reportview/EatingReport.vue";
+import WeeklyReport from "@/reportview/WeeklyReport.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -26,6 +27,7 @@ const viewComponents = {
   bed: SleepReport,
   smile: MoodReport,
   food: EatingReport,
+  weekiy: WeeklyReport
 };
 
 // 設置活動按鈕並切換視圖
@@ -115,10 +117,10 @@ onMounted(() => {});
       </button>
       <button
         class="icon-button"
-        :class="{ active: activeButton === 'shoes' }"
-        @click="setActiveButton('shoes')"
+        :class="{ active: activeButton === 'weekiy' }"
+        @click="setActiveButton('weekiy')"
       >
-        <i class="fa-solid fa-shoe-prints fa-rotate-270"></i>
+      <i class="fa-solid fa-bicycle"></i>
       </button>
     </div>
 
@@ -142,11 +144,11 @@ onMounted(() => {});
 .button-container {
   position: absolute;
   right: 20px;
-  top: 50%;
+  top: 55%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 5px;
 }
 
 .icon-button {
@@ -195,6 +197,6 @@ onMounted(() => {});
   margin-right: 100px; /* 為右側按鈕預留空間 */
   /* height: calc(100% - 30px); 減去標題的高度 */
   overflow-y: auto; /* 內容過多時可以滾動 */
-  /* border: 1px solid black; */
+  border: 1px solid black;
 }
 </style>
