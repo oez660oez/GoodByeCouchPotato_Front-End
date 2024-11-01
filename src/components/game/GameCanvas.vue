@@ -87,7 +87,7 @@ function handleMove(direction) {
 }
 
 // Asset loading
-async function loadImage(src, imageType) {
+async function loadImage(src) {
   try {
     const img = new Image();
     return new Promise((resolve, reject) => {
@@ -131,6 +131,9 @@ function gameLoop() {
 
   const ctx = context.value;
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+  // 設置全局玩家引用以供同步
+  window.gameWorldPlayer = player.value;
 
   // Draw background
   background.value?.draw(ctx);
@@ -222,6 +225,8 @@ onMounted(async () => {
 onUnmounted(() => {
   stopGameLoop();
   assetsLoaded.value = false;
+  // 清理全局玩家引用
+  window.gameWorldPlayer = null;
 });
 
 // Expose necessary methods to parent component

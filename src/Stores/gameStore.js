@@ -1,10 +1,11 @@
 //gameStore.js
-//負責狀態管理
-import { defineStore } from 'pinia';
-import { itemApi } from '@/api/itemApi';
-import { EquippedSprite } from '@/core/EquippedSprite';
-
-export const useGameStore = defineStore('game', {
+import { defineStore } from "pinia";
+import { itemApi } from "@/api/itemApi";
+import { EquippedSprite } from "@/core/EquippedSprite";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+import { useRouter } from "vue-router";
+const router = useRouter();
+export const useGameStore = defineStore("game", {
   state: () => ({
     inventoryItems: new Array(15).fill(null),
     equipmentSlots: [null, null, null],
@@ -40,78 +41,84 @@ export const useGameStore = defineStore('game', {
       accessory: "飾品",
       hairstyle: "髮型",
       outfit: "衣服",
-      "飾品": "accessory",
-      "髮型": "hairstyle",
-      "衣服": "outfit"
+      飾品: "accessory",
+      髮型: "hairstyle",
+      衣服: "outfit",
     },
     mousePosition: {
       x: 0,
-      y: 0
+      y: 0,
     },
     dragState: {
       isDragging: false,
       draggedItem: null,
       sourceIndex: null,
-      sourceType: null, // 'inventory' 或 'equipment'
+      sourceType: null,
       dragImage: null,
       offsetX: 0,
-      offsetY: 0
-    }
+      offsetY: 0,
+    },
+    equippedItemsMap: new Map(), // 追踪哪些物品已被裝備
+    grayImageCache: new Map(), // 緩存灰色版本的圖片
   }),
   actions: {
-        // 初始化欄位位置
-        initializePositions(canvas) {
-          if (!canvas) return;
+    initializePositions(canvas) {
+      if (!canvas) return;
 
-          // 設定物品欄位置（置中）
-          const inventoryX = (canvas.width / 3 - 200);
-          const inventoryY = (canvas.height / 3 - 200);
+      const inventoryX = canvas.width / 3 - 200;
+      const inventoryY = canvas.height / 3 - 200;
 
-          this.inventoryPosition = { x: inventoryX, y: inventoryY };
+      this.inventoryPosition = { x: inventoryX, y: inventoryY };
 
-          // 計算物品槽位置
-          this.itemSlots = [];
-          for (let row = 0; row < this.slotConfig.rows; row++) {
-            for (let col = 0; col < this.slotConfig.cols; col++) {
-              this.itemSlots.push({
-                x: inventoryX + 437 + col * (this.slotConfig.size + this.slotConfig.padding),
-                y: inventoryY + 163 + row * (this.slotConfig.size + this.slotConfig.padding)
-              });
-            }
-          }
+      this.itemSlots = [];
+      for (let row = 0; row < this.slotConfig.rows; row++) {
+        for (let col = 0; col < this.slotConfig.cols; col++) {
+          this.itemSlots.push({
+            x:
+              inventoryX +
+              437 +
+              col * (this.slotConfig.size + this.slotConfig.padding),
+            y:
+              inventoryY +
+              163 +
+              row * (this.slotConfig.size + this.slotConfig.padding),
+          });
+        }
+      }
 
-          // 設定裝備槽位置
-          this.equipmentSlotsPosition = [];
-          for (let i = 0; i < 3; i++) {
-            this.equipmentSlotsPosition.push({
-              x: inventoryX + 253,
-              y: inventoryY + 193 + i * (this.slotConfig.size + this.slotConfig.padding)
-            });
-          }
+      this.equipmentSlotsPosition = [];
+      for (let i = 0; i < 3; i++) {
+        this.equipmentSlotsPosition.push({
+          x: inventoryX + 253,
+          y:
+            inventoryY +
+            193 +
+            i * (this.slotConfig.size + this.slotConfig.padding),
+        });
+      }
 
-          // 設定角色預覽位置
-          this.previewBox = {
-            x: inventoryX + 40,
-            y: inventoryY + 200,
-            width: 185,
-            height: 300
-          };
-        },
+      this.previewBox = {
+        x: inventoryX + 40,
+        y: inventoryY + 200,
+        width: 185,
+        height: 300,
+      };
+    },
     async initializeInventory(account) {
       try {
-
         this.account = account;
-        this.loadedSprites.clear(); // 重置已加載的精靈，避免使用舊資料
+        this.loadedSprites.clear();
+        this.equippedItemsMap.clear(); // 確保先清空
+        this.grayImageCache.clear(); // 清空灰色圖片緩存
+        this.inventoryBackground = await this.loadImage(
+          "/images/BackPack_Test.png"
+        );
 
-        this.inventoryBackground = await this.loadImage('/images/BackPack_Test.png');
-
-        //從資料庫取得裝備欄與物品欄的資料，使用Promise.all確保同時執行這兩個請求，提高效率
         const [equipment, userItems] = await Promise.all([
           itemApi.getCharacterEquipment(account),
-          itemApi.getUserItems(account)
+          itemApi.getUserItems(account),
         ]);
 
-        // 重置所有槽位
         this.inventoryItems = new Array(15).fill(null);
         this.equipmentSlots = [null, null, null];
         this.equippedItems = {
@@ -120,181 +127,315 @@ export const useGameStore = defineStore('game', {
           outfit: null,
         };
 
-        // 先處理裝備槽
-        //Object.entries()是取key-value pair，此處key=slot、value=item
         for (const [slot, item] of Object.entries(equipment)) {
-          //確保只處理有圖片名稱的物品
           if (item && item.imageName) {
-            //呼叫函式處理
             await this.handleEquipmentInitialization(slot, item);
           }
         }
 
-    // 處理物品欄（只處理非裝備中的物品）
-    let inventoryIndex = 0;
-    for (const item of userItems) {
-      // 檢查該物品是否已經在裝備槽中
-      //Object.values是將物件所有值轉陣列，.some確認至少有一個元素符合條件
-      const isEquipped = Object.values(equipment).some(
-        //檢查裝備與物品的圖片名稱是否相同
-        equip => equip && equip.imageName === item.imageName
-      );
-      //物品不在裝備欄&背包物品欄沒裝滿
-      if (!isEquipped && inventoryIndex < 15) {
-        //載入物品圖片
-        const shopImage = await this.loadImage(`/images/${item.imageName}`);
-        if (shopImage) {
-          //透過該物品的圖片名稱取得資料
-          const itemData = await itemApi.getItemByShopImage(item.imageName);
-          if (itemData) {
-            //儲存對應格式資料進itemsData
-            this.itemsData.set(shopImage, {
-              type: this.typeMapping[itemData.pClass] || itemData.pClass,
-              imageName: item.imageName,
-              fullImagePath: itemData.pImageAll
-            });
-            this.inventoryItems[inventoryIndex] = shopImage;
-            inventoryIndex++;
+        let inventoryIndex = 0;
+        for (const item of userItems) {
+          const isEquipped = Object.values(equipment).some(
+            (equip) => equip && equip.imageName === item.imageName
+          );
+
+          if (!isEquipped && inventoryIndex < 15) {
+            const shopImage = await this.loadImage(item.imageName);
+            if (shopImage) {
+              const imageName = item.imageName.split("/").pop();
+              const itemData = await itemApi.getItemByShopImage(imageName);
+
+              if (itemData) {
+                this.itemsData.set(shopImage, {
+                  type: this.typeMapping[itemData.pClass] || itemData.pClass,
+                  imageName: imageName,
+                  fullImagePath: itemData.pImageAll,
+                });
+                this.inventoryItems[inventoryIndex] = shopImage;
+                if (isEquipped) {
+                  this.equippedItemsMap.set(shopImage, true);
+                }
+                inventoryIndex++;
+              }
+            }
           }
         }
+        await this.syncEquipmentToPinia();
+      } catch (error) {
+        console.error("Error in initializeInventory:", error);
+        throw error;
       }
-    }
-  } catch (error) {
-    console.error('Error in initializeInventory:', error);
-    throw error;
-  }
-},async createEquippedSprite(imageName) {
-  try{
-    //檢查itemData 是否存在，並確保其 pImageAll 屬性不為空
-    const itemData = await itemApi.getItemByShopImage(imageName);
-    if (!itemData?.pImageAll) {
-      return { success: false };
-    }
-  //載入物品完整圖片，失敗return
-  const fullImage = await this.loadImage(`/images/${itemData.pImageAll}`);
-  if (!fullImage) {
-    return { success: false };
-  }
-  //使用EquippedSprite裁切
-  const sprite = new EquippedSprite({
-    image: fullImage,
-    frames: { max: 6 }
-  });
-  //避免在未載入完成的情況下使用 sprite
-  await new Promise(resolve => {
-    //100毫秒就檢查，為true才resolve
-    const checkLoaded = () => {
-      if (sprite.loaded) resolve();
-      else setTimeout(checkLoaded, 100);
-    };
-    checkLoaded();
-  });
-  //返回成功結果
-  return {
-    success: true,
-    sprite,
-    itemData
-  };
-  }catch(error){
-    console.error('Error creating equipped sprite:', error);
-    return { success: false };
-  }
-},
-async handleEquipmentInitialization(slot, item) {
-  //檢查slot是否為指定裝備欄位類型，等於-1(false)return
-  const slotIndex = ["accessory", "hairstyle", "outfit"].indexOf(slot);
-  if (slotIndex === -1) return;
-
-  const result = await this.createEquippedSprite(item.imageName);
-  if (!result.success) return;
-
-  //載入物品縮圖
-  const shopImage = await this.loadImage(`/images/${item.imageName}`);
-  if (shopImage) {
-    //物品縮圖設定到裝備欄對應位置
-    this.equipmentSlots[slotIndex] = shopImage;
-    //對應裝備拿去裁切製作動畫
-    this.equippedItems[slot] = result.sprite;
-    this.itemsData.set(shopImage, {
-      type: slot,
-      imageName: item.imageName,
-      fullImagePath: result.itemData.pImageAll
-    });
-  }
-},
-    async loadImage(src) {
-      //不使用reject
-      return new Promise((resolve) => {
-        const img = new Image();
-        //載入成功丟回img
-        img.onload = () => resolve(img);
-        img.onerror = (e) => {
-          console.warn(`圖片載入失敗: ${src}`, e);
-          //載入失敗丟回null，沒使用reject
-          resolve(null);
+    },
+    async createEquippedSprite(imageName) {
+      try {
+        const fileName = imageName.split("/").pop();
+        const itemData = await itemApi.getItemByShopImage(fileName);
+        if (!itemData?.pImageAll) {
+          return { success: false };
+        }
+        const fullImage = await this.loadImage(itemData.pImageAll);
+        if (!fullImage) {
+          return { success: false };
+        }
+        const sprite = new EquippedSprite({
+          image: fullImage,
+          frames: { max: 6 },
+        });
+        await new Promise((resolve) => {
+          const checkLoaded = () => {
+            if (sprite.loaded) resolve();
+            else setTimeout(checkLoaded, 100);
+          };
+          checkLoaded();
+        });
+        return {
+          success: true,
+          sprite,
+          itemData,
         };
-        //圖片路徑設置
-        img.src = src;
-      });
+      } catch (error) {
+        console.error("Error creating equipped sprite:", error);
+        return { success: false };
+      }
+    },
+    // 新增：創建灰色版本的圖片
+    createGrayImage(originalImage) {
+      // 檢查緩存
+      if (this.grayImageCache.has(originalImage)) {
+        return this.grayImageCache.get(originalImage);
+      }
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = originalImage.width;
+      canvas.height = originalImage.height;
+
+      // 繪製原始圖片
+      ctx.drawImage(originalImage, 0, 0);
+
+      // 獲取圖片數據
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      // 轉換為灰度
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i] = gray; // R
+        data[i + 1] = gray; // G
+        data[i + 2] = gray; // B
+        // 保持原始透明度
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      // 創建新的 Image 對象
+      const grayImage = new Image();
+      grayImage.src = canvas.toDataURL();
+
+      // 存入緩存
+      this.grayImageCache.set(originalImage, grayImage);
+
+      return grayImage;
+    },
+    async handleEquipmentInitialization(slot, item) {
+      const slotIndex = ["accessory", "hairstyle", "outfit"].indexOf(slot);
+      if (slotIndex === -1) return;
+
+      const imageName = item.imageName.split("/").pop();
+      const result = await this.createEquippedSprite(imageName);
+
+      if (!result.success) return;
+
+      const shopImage = await this.loadImage(item.imageName);
+      if (shopImage) {
+        this.equipmentSlots[slotIndex] = shopImage;
+        this.equippedItems[slot] = result.sprite;
+        this.itemsData.set(shopImage, {
+          type: slot,
+          imageName: imageName,
+          fullImagePath: result.itemData.pImageAll,
+        });
+      }
     },
 
-    async handleEquip(itemImage, fromSlot, toSlot) {
+    // 新增同步裝備到 Pinia 的方法
+    async syncEquipmentToPinia() {
       try {
-        // 1. 檢查要裝備的物品資訊
+        const playerCharacterStore = Playerinformation();
+        const equipmentData = await itemApi.getCharacterEquipment(this.account);
+
+        if (!equipmentData) return;
+
+        // 取得各裝備的 P_Code
+        const accessoryCode = await this.getItemPCode(
+          equipmentData.accessory?.imageName
+        );
+        const hairstyleCode = await this.getItemPCode(
+          equipmentData.hairstyle?.imageName
+        );
+        const outfitCode = await this.getItemPCode(
+          equipmentData.outfit?.imageName
+        );
+
+        // 更新 Pinia store
+        playerCharacterStore.Head = accessoryCode?.toString() || "";
+        playerCharacterStore.Upper = hairstyleCode?.toString() || "";
+        playerCharacterStore.Lower = outfitCode?.toString() || "";
+
+        return true;
+      } catch (error) {
+        console.error("Error syncing equipment to Pinia:", error);
+        return false;
+      }
+    },
+
+    // 新增輔助方法來獲取物品的 P_Code
+    async getItemPCode(imageName) {
+      if (!imageName) return null;
+      const fileName = imageName.split("/").pop();
+      const itemData = await itemApi.getItemByShopImage(fileName);
+      return itemData?.pCode || null;
+    },
+    async handleEquipmentInitialization(slot, item) {
+      const slotIndex = ["accessory", "hairstyle", "outfit"].indexOf(slot);
+      if (slotIndex === -1) return;
+
+      const imageName = item.imageName.split("/").pop();
+      const result = await this.createEquippedSprite(imageName);
+
+      if (!result.success) return;
+
+      const shopImage = await this.loadImage(item.imageName);
+      if (shopImage) {
+        this.equipmentSlots[slotIndex] = shopImage;
+        this.equippedItems[slot] = result.sprite;
+        this.itemsData.set(shopImage, {
+          type: slot,
+          imageName: imageName,
+          fullImagePath: result.itemData.pImageAll,
+        });
+      }
+    },
+    async loadImage(src) {
+      try {
+        if (src.startsWith("/")) {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => {
+              console.warn(`本地圖片載入失敗: ${src}`);
+              resolve(null);
+            };
+            img.src = src;
+          });
+        }
+
+        const response = await fetch(src, {
+          mode: "cors",
+          headers: {
+            Accept: "image/*",
+          },
+        });
+
+        const blob = await response.blob();
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.src = reader.result;
+          };
+          reader.readAsDataURL(blob);
+        });
+      } catch (error) {
+        console.warn(`圖片載入失敗: ${src}`, error);
+        return null;
+      }
+    },
+
+    async handleEquip(itemImage, fromIndex) {
+      try {
         let itemInfo = this.itemsData.get(itemImage);
         if (!itemInfo) return;
 
-        // 2. 創建新裝備的精靈
         const result = await this.createEquippedSprite(itemInfo.imageName);
         if (!result.success) return;
 
-        // 3. 確定目標裝備槽位置
         const itemType = result.itemData.pClass;
         const slotType = this.typeMapping[itemType] || itemType;
-        const slotIndex = typeof toSlot === 'number' ? toSlot :
-          ["accessory", "hairstyle", "outfit"].indexOf(slotType);
+        const slotIndex = ["accessory", "hairstyle", "outfit"].indexOf(
+          slotType
+        );
 
         if (slotIndex !== -1) {
-          // 4. 儲存目標裝備槽的當前物品（如果有的話）
+          // 如果該類型已有裝備，先解除該裝備的灰色狀態
           const currentEquippedItem = this.equipmentSlots[slotIndex];
-
-          // 5. 先從來源位置（物品欄）移除物品
-          if (fromSlot >= 0) {
-            this.inventoryItems[fromSlot] = null;
-          }
-
-          // 6. 如果裝備槽有物品，將其移到原始物品的位置
           if (currentEquippedItem) {
-            if (fromSlot >= 0) {
-              // 如果是從物品欄來的，就放回原位置
-              this.inventoryItems[fromSlot] = currentEquippedItem;
-            } else {
-              // 如果不是從物品欄來的（例如直接裝備），找一個空位
-              const emptySlot = this.inventoryItems.indexOf(null);
-              if (emptySlot !== -1) {
-                this.inventoryItems[emptySlot] = currentEquippedItem;
-              } else return; // 如果沒有空位，中止操作
+            const currentItemInfo = this.itemsData.get(currentEquippedItem);
+            const inventoryIndex = this.inventoryItems.findIndex(
+              (item) =>
+                item &&
+                this.itemsData.get(item)?.imageName ===
+                  currentItemInfo?.imageName
+            );
+            if (inventoryIndex !== -1) {
+              this.equippedItemsMap.delete(this.inventoryItems[inventoryIndex]);
             }
           }
 
-          // 7. 更新裝備槽和精靈
+          // 設置新裝備
           this.equipmentSlots[slotIndex] = itemImage;
-          const types = ["accessory", "hairstyle", "outfit"];
-          this.equippedItems[types[slotIndex]] = result.sprite;
+          this.equippedItems[slotType] = result.sprite;
+
+          // 設置物品欄對應物品為灰色狀態
+          const inventoryItem = this.inventoryItems[fromIndex];
+          if (inventoryItem) {
+            this.equippedItemsMap.set(inventoryItem, true);
+          }
         }
       } catch (error) {
-        console.error('Error equipping item:', error);
+        console.error("Error equipping item:", error);
       }
     },
-    //ctx是CanvasRenderingContext2D簡稱
+    handleUnequip(slotIndex) {
+      const item = this.equipmentSlots[slotIndex];
+      if (item) {
+        // 找到對應的物品欄物品並解除灰色狀態
+        const itemInfo = this.itemsData.get(item);
+        const inventoryIndex = this.inventoryItems.findIndex(
+          (invItem) =>
+            invItem &&
+            this.itemsData.get(invItem)?.imageName === itemInfo?.imageName
+        );
+
+        if (inventoryIndex !== -1) {
+          this.equippedItemsMap.delete(this.inventoryItems[inventoryIndex]);
+        }
+
+        // 清除裝備欄
+        this.equipmentSlots[slotIndex] = null;
+        this.equippedItems[["accessory", "hairstyle", "outfit"][slotIndex]] =
+          null;
+      }
+    },
     renderInventory(ctx, player) {
-      //檢查物品欄是否開啟、ctx是否存在
-      if (!this.inventoryOpen || !ctx) {
-        console.log('Not rendering inventory - closed or no context');
+      // 如果物品欄關閉，只需清除相關區域即可
+      if (!this.inventoryOpen) {
+        if (this.inventoryBackground) {
+          // 清除物品欄區域
+          ctx.clearRect(
+            this.inventoryPosition.x,
+            this.inventoryPosition.y,
+            this.inventoryBackground.width,
+            this.inventoryBackground.height
+          );
+        }
         return;
       }
 
-      // 繪製背包圖片
+      // 以下是原有的渲染邏輯
+      if (!ctx) return;
+
       if (this.inventoryBackground) {
         ctx.drawImage(
           this.inventoryBackground,
@@ -303,24 +444,33 @@ async handleEquipmentInitialization(slot, item) {
         );
       }
 
-      //繪製物品欄
+      // 渲染物品欄
       this.itemSlots.forEach((slot, index) => {
-        //取出對應物品繪製
         const item = this.inventoryItems[index];
         if (item && item instanceof Image) {
-          ctx.drawImage(
-            item,
-            slot.x,
-            slot.y,
-            this.slotConfig.size,
-            this.slotConfig.size
-          );
+          if (this.equippedItemsMap.get(item)) {
+            const grayImage = this.createGrayImage(item);
+            ctx.drawImage(
+              grayImage,
+              slot.x,
+              slot.y,
+              this.slotConfig.size,
+              this.slotConfig.size
+            );
+          } else {
+            ctx.drawImage(
+              item,
+              slot.x,
+              slot.y,
+              this.slotConfig.size,
+              this.slotConfig.size
+            );
+          }
         }
       });
 
-      // 繪製裝備欄
+      // 渲染裝備欄
       this.equipmentSlotsPosition.forEach((slot, i) => {
-        //取出對應裝備繪製
         const item = this.equipmentSlots[i];
         if (item && item instanceof Image) {
           ctx.drawImage(
@@ -333,9 +483,9 @@ async handleEquipmentInitialization(slot, item) {
         }
       });
 
-      // 繪製角色預覽框
       this.drawPreviewBox(ctx, player);
-      // 如果正在拖曳，繪製拖曳中的物品
+
+      // 渲染拖曳中的物品
       if (this.dragState.isDragging && this.dragState.dragImage) {
         ctx.drawImage(
           this.dragState.dragImage,
@@ -349,9 +499,7 @@ async handleEquipmentInitialization(slot, item) {
 
     drawPreviewBox(ctx, player) {
       if (!player) return;
-      //繪製角色預覽
       if (player && player.image) {
-        //縮放比例
         const scaleFactor = 0.8;
         const start = (player.image.width / 4) * player.direction;
 
@@ -375,266 +523,216 @@ async handleEquipmentInitialization(slot, item) {
       if (!player) return;
 
       const equipmentOrder = ["outfit", "hairstyle", "accessory"];
-      equipmentOrder.forEach(type => {
-          const sprite = this.equippedItems[type];
-          if (sprite && sprite.loaded) {
-              sprite.draw(
-                  ctx,
-                  this.previewBox.x + 10,
-                  this.previewBox.y + 35,
-                  this.previewBox.width * scaleFactor,
-                  this.previewBox.height * scaleFactor,
-                  player
-              );
-          }
+      equipmentOrder.forEach((type) => {
+        const sprite = this.equippedItems[type];
+        if (sprite && sprite.loaded) {
+          sprite.draw(
+            ctx,
+            this.previewBox.x + 10,
+            this.previewBox.y + 35,
+            this.previewBox.width * scaleFactor,
+            this.previewBox.height * scaleFactor,
+            player
+          );
+        }
       });
-  },
-  // 開始拖曳
-  startDrag(event, item, index, type) {
-    if (!item) return;
+    },
+    startDrag(event, item, index, type) {
+      if (!item) return;
 
-    const rect = event.target.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const clickY = event.clientY - rect.top;
+      const rect = event.target.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const clickY = event.clientY - rect.top;
 
-    this.mousePosition = { x: clickX, y: clickY };
+      this.mousePosition = { x: clickX, y: clickY };
 
-    let offsetX, offsetY;
-    if (type === 'inventory') {
-      offsetX = clickX - this.itemSlots[index].x;
-      offsetY = clickY - this.itemSlots[index].y;
-    } else {
-      offsetX = clickX - this.equipmentSlotsPosition[index].x;
-      offsetY = clickY - this.equipmentSlotsPosition[index].y;
-    }
+      let offsetX, offsetY;
+      if (type === "inventory") {
+        offsetX = clickX - this.itemSlots[index].x;
+        offsetY = clickY - this.itemSlots[index].y;
+      } else {
+        offsetX = clickX - this.equipmentSlotsPosition[index].x;
+        offsetY = clickY - this.equipmentSlotsPosition[index].y;
+      }
 
-    this.dragState = {
-      isDragging: true,
-      draggedItem: item,
-      sourceIndex: index,
-      sourceType: type,
-      dragImage: item,
-      offsetX,
-      offsetY
-    };
-  },
+      this.dragState = {
+        isDragging: true,
+        draggedItem: item,
+        sourceIndex: index,
+        sourceType: type,
+        dragImage: item,
+        offsetX,
+        offsetY,
+      };
+    },
 
-  // 更新拖曳位置
-  updateDrag(event) {
-    if (!this.dragState.isDragging) return;
+    updateDrag(event) {
+      if (!this.dragState.isDragging) return;
 
-    const rect = event.target.getBoundingClientRect();
-    this.mousePosition = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
-    };
-  },
+      const rect = event.target.getBoundingClientRect();
+      this.mousePosition = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      };
+    },
 
-  // 結束拖曳
-  endDrag(event) {
-    if (!this.dragState.isDragging) return;
+    async endDrag(event) {
+      if (!this.dragState.isDragging) return;
 
-    const { x, y } = this.getMousePosition(event);
-    let targetFound = false;
+      const { x, y } = this.getMousePosition(event);
+      const { sourceType, sourceIndex, draggedItem } = this.dragState;
 
-    // 檢查是否放在裝備欄上
-    if (this.dragState.sourceType === 'inventory') {
-      // 獲取被拖曳物品的類型
-      const draggedItemInfo = this.itemsData.get(this.dragState.draggedItem);
-      if (!draggedItemInfo) return;
+      if (sourceType === "inventory") {
+        // 從物品欄拖到裝備欄
+        const draggedItemInfo = this.itemsData.get(draggedItem);
+        if (!draggedItemInfo) return;
 
-      const itemType = draggedItemInfo.type;
-      this.equipmentSlotsPosition.forEach((slot, index) => {
-        if (
-          x >= slot.x &&
-          x <= slot.x + this.slotConfig.size &&
-          y >= slot.y &&
-          y <= slot.y + this.slotConfig.size
+        const itemType = draggedItemInfo.type;
+        for (
+          let index = 0;
+          index < this.equipmentSlotsPosition.length;
+          index++
         ) {
-          // 檢查裝備槽位類型是否匹配
-          const slotTypes = ["accessory", "hairstyle", "outfit"];
-          const targetSlotType = slotTypes[index];
-
-          // 檢查物品類型是否匹配目標槽位
+          const slot = this.equipmentSlotsPosition[index];
           if (
-            (itemType === "accessory" && targetSlotType === "accessory") ||
-            (itemType === "hairstyle" && targetSlotType === "hairstyle") ||
-            (itemType === "outfit" && targetSlotType === "outfit") ||
-            (itemType === "飾品" && targetSlotType === "accessory") ||
-            (itemType === "髮型" && targetSlotType === "hairstyle") ||
-            (itemType === "衣服" && targetSlotType === "outfit")
+            x >= slot.x &&
+            x <= slot.x + this.slotConfig.size &&
+            y >= slot.y &&
+            y <= slot.y + this.slotConfig.size
           ) {
-          // 使用現有的裝備邏輯
-          this.handleEquip(this.dragState.draggedItem, this.dragState.sourceIndex, index);
-          targetFound = true;
-          }
-        }
-      });
-    }
+            const slotTypes = ["accessory", "hairstyle", "outfit"];
+            const targetSlotType = slotTypes[index];
 
-    // 檢查是否放在物品欄上
-    if (this.dragState.sourceType === 'equipment') {
-      this.itemSlots.forEach((slot, index) => {
-        if (
-          x >= slot.x &&
-          x <= slot.x + this.slotConfig.size &&
-          y >= slot.y &&
-          y <= slot.y + this.slotConfig.size
-        ) {
-          // 處理卸下裝備
-          // 檢查目標格子是否有物品
-          const targetItem = this.inventoryItems[index];
-          const equipmentIndex = this.dragState.sourceIndex;
-          const draggedItem = this.equipmentSlots[equipmentIndex];
-
-          if (draggedItem) {
-            const draggedItemInfo = this.itemsData.get(draggedItem);
-            if (!draggedItemInfo) return;
-
-            if (!targetItem) {
-              // 如果目標格子是空的，直接移動
-              this.inventoryItems[index] = draggedItem;
-              this.equipmentSlots[equipmentIndex] = null;
-              this.equippedItems[["accessory", "hairstyle", "outfit"][equipmentIndex]] = null;
-            } else {
-              // 如果目標格子有物品，檢查類型是否匹配
-              const targetItemInfo = this.itemsData.get(targetItem);
-              if (targetItemInfo && targetItemInfo.type === draggedItemInfo.type) {
-                // 類型匹配，進行交換
-                this.inventoryItems[index] = draggedItem;
-                this.handleEquip(targetItem, index, equipmentIndex);
-              }
+            if (
+              itemType === targetSlotType ||
+              this.typeMapping[itemType] === targetSlotType
+            ) {
+              await this.handleEquip(draggedItem, sourceIndex);
+              break;
             }
-            targetFound = true;
           }
         }
-      });
-    }
-    // 重置拖曳狀態
-    this.dragState = {
-      isDragging: false,
-      draggedItem: null,
-      sourceIndex: null,
-      sourceType: null,
-      dragImage: null,
-      offsetX: 0,
-      offsetY: 0
-    };
-  },
+      } else if (sourceType === "equipment") {
+        // 從裝備欄拖回物品欄 - 直接解除裝備
+        this.handleUnequip(sourceIndex);
+      }
 
-  // 獲取滑鼠在畫布上的位置
-  getMousePosition(event) {
-    const canvas = event.target;
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
-    };
-  },
-    //處理點擊物品欄或裝備欄的互動事件
+      // 重置拖曳狀態
+      this.dragState = {
+        isDragging: false,
+        draggedItem: null,
+        sourceIndex: null,
+        sourceType: null,
+        dragImage: null,
+        offsetX: 0,
+        offsetY: 0,
+      };
+    },
+
+    getMousePosition(event) {
+      const canvas = event.target;
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      };
+    },
+
     handleInventoryClick(x, y) {
       if (!this.inventoryOpen) return;
 
-      //檢查並處理物品欄點擊
-      this.itemSlots.forEach((slot, index) => {
-        if (
-          //檢查點擊的 x 與 y 座標是否位於該物品欄的水平、垂直範圍內
+      // 處理物品欄點擊
+      const inventorySlotIndex = this.itemSlots.findIndex(
+        (slot) =>
           x >= slot.x &&
           x <= slot.x + this.slotConfig.size &&
           y >= slot.y &&
-          y <= slot.y + this.slotConfig.size &&
-          //檢查欄位是否有物品，若null則略過
-          this.inventoryItems[index]
-        ) {
-          this.handleEquip(this.inventoryItems[index], index);
-        }
-      });
-      //檢查並處理裝備欄點擊
-      this.equipmentSlotsPosition.forEach((slot, i) => {
-        if (
-          x >= slot.x &&
-          x <= slot.x + this.slotConfig.size &&
-          y >= slot.y &&
-          y <= slot.y + this.slotConfig.size &&
-          this.equipmentSlots[i]
-        ) {
-          //抓被移除的裝備
-          const removedItem = this.equipmentSlots[i];
-          //找物品欄第一格為空的欄位
-          const emptySlot = this.inventoryItems.indexOf(null);
-          //如果找到空欄位
-          if (emptySlot !== -1) {
-            //將removedItem 移到物品欄的空位置
-            this.inventoryItems[emptySlot] = removedItem;
-            //將裝備欄中的欄位清空
-            this.equipmentSlots[i] = null;
-            //清空裝備欄對應的裝備記錄
-            this.equippedItems[["accessory", "hairstyle", "outfit"][i]] = null;
+          y <= slot.y + this.slotConfig.size
+      );
+
+      if (inventorySlotIndex !== -1) {
+        const item = this.inventoryItems[inventorySlotIndex];
+        if (item && !this.equippedItemsMap.get(item)) {
+          const itemInfo = this.itemsData.get(item);
+          if (itemInfo) {
+            // 確保我們得到正確的 slot type
+            const itemType = itemInfo.type;
+            const slotType = this.typeMapping[itemType] || itemType;
+
+            // 尋找對應的裝備欄位置
+            const slotIndex = ["accessory", "hairstyle", "outfit"].indexOf(
+              slotType
+            );
+            if (slotIndex !== -1) {
+              this.handleEquip(item, inventorySlotIndex);
+              return;
+            }
           }
         }
-      });
+        return; // 如果點擊了物品欄但沒有成功裝備，提前返回
+      }
+
+      // 處理裝備欄點擊
+      const equipmentSlotIndex = this.equipmentSlotsPosition.findIndex(
+        (slot) =>
+          x >= slot.x &&
+          x <= slot.x + this.slotConfig.size &&
+          y >= slot.y &&
+          y <= slot.y + this.slotConfig.size
+      );
+
+      if (
+        equipmentSlotIndex !== -1 &&
+        this.equipmentSlots[equipmentSlotIndex]
+      ) {
+        this.handleUnequip(equipmentSlotIndex);
+      }
     },
     async saveInventoryState() {
       try {
         if (!this.account) {
-          throw new Error('Player account is not initialized');
+          throw new Error("Player account is not initialized");
         }
 
-    // 準備裝備數據
-    const equipmentData = {
-      account: this.account,
-      accessory: {
-        imageName: null,
-        type: "飾品"
-      },
-      hairstyle: {
-        imageName: null,
-        type: "髮型"
-      },
-      outfit: {
-        imageName: null,
-        type: "衣服"
-      }
-    };
-    // 從裝備槽位獲取數據
-    const types = ["accessory", "hairstyle", "outfit"];
-    this.equipmentSlots.forEach((item, index) => {
-      if (item) {
-        const itemInfo = this.itemsData.get(item);
-        if (itemInfo && itemInfo.imageName) {
-          const slotType = types[index];
-          equipmentData[slotType].imageName = itemInfo.imageName;
+        const equipmentData = {
+          account: this.account,
+          accessory: {
+            imageName: null,
+            type: "飾品",
+          },
+          hairstyle: {
+            imageName: null,
+            type: "髮型",
+          },
+          outfit: {
+            imageName: null,
+            type: "衣服",
+          },
+        };
+
+        // 遍歷裝備槽位，只更新有裝備的槽位
+        this.equipmentSlots.forEach((item, index) => {
+          if (item) {
+            const itemInfo = this.itemsData.get(item);
+            if (itemInfo && itemInfo.imageName) {
+              const slotType = ["accessory", "hairstyle", "outfit"][index];
+              equipmentData[slotType].imageName = itemInfo.imageName;
+            }
+          }
+        });
+        // 檢查是否所有 imageName 都有值，如果沒有則設置為空字符串而不是 null
+        Object.keys(equipmentData).forEach((key) => {
+          if (key !== "account" && equipmentData[key].imageName === null) {
+            equipmentData[key].imageName = "";
+          }
+        });
+        const result = await itemApi.updateEquipment(equipmentData);
+        if (result.success) {
+          this.inventoryOpen = false; // 成功時才關閉背包
         }
-      }
-    });
-
-    // 準備背包數據
-    const inventoryData = {
-      account: this.account,
-      items: this.inventoryItems
-        .filter(item => item && this.itemsData.get(item))
-        .map(item => {
-          const itemInfo = this.itemsData.get(item);
-          return {
-            imageName: itemInfo.imageName || "null"
-          };
-        })
-    };
-
-        console.log('Saving equipment data:', JSON.stringify(equipmentData));
-        console.log('Saving inventory data:', JSON.stringify(inventoryData));
-
-        // 使用 Promise.all 同時處理兩個更新請求
-        const [equipmentResult, inventoryResult] = await Promise.all([
-          itemApi.updateEquipment(equipmentData),
-          itemApi.updateInventory(inventoryData)
-        ]);
-
-        console.log('Save successful:', { equipmentResult, inventoryResult });
-        return { equipmentResult, inventoryResult };
-
+        return result;
       } catch (error) {
-        console.error('Error saving inventory state:', error);
+        console.error("Error saving inventory state:", error);
         throw error;
       }
     },
@@ -644,13 +742,13 @@ async handleEquipmentInitialization(slot, item) {
       if (!item) {
         return {
           imageName: null,
-          type: this.getTypeForSlot(index)
+          type: this.getTypeForSlot(index),
         };
       }
       const itemInfo = this.itemsData.get(item);
       return {
         imageName: itemInfo?.imageName || null,
-        type: this.getTypeForSlot(index)
+        type: this.getTypeForSlot(index),
       };
     },
 
@@ -664,16 +762,99 @@ async handleEquipmentInitialization(slot, item) {
     },
 
     async toggleInventory() {
-      const wasOpen = this.inventoryOpen;
-      this.inventoryOpen = !this.inventoryOpen;
-
-      if (wasOpen && !this.inventoryOpen) {
+      if (this.inventoryOpen) {
+        // 關閉物品欄時儲存狀態
         try {
           await this.saveInventoryState();
+          await this.syncEquipmentToPinia();
+          this.inventoryOpen = false;
+          if (router.currentRoute.value.name === "out-dress") {
+            router.push("/outdoor");
+          }
         } catch (error) {
-          console.error('Failed to save inventory state:', error);
+          console.error("Failed to save inventory state:", error);
+        }
+      } else {
+        try {
+          if (this.account) {
+            const currentEquipment = {
+              accessory: this.equippedItems.accessory,
+              hairstyle: this.equippedItems.hairstyle,
+              outfit: this.equippedItems.outfit,
+            };
+            const currentEquipmentSlots = [...this.equipmentSlots];
+
+            const [equipment, userItems] = await Promise.all([
+              itemApi.getCharacterEquipment(this.account),
+              itemApi.getUserItems(this.account),
+            ]);
+
+            // 重置物品欄和裝備數據
+            this.inventoryItems = new Array(15).fill(null);
+            this.equippedItemsMap.clear(); // 重置已裝備物品的追蹤
+            // 如果沒有現有裝備，才初始化裝備欄
+            if (
+              !currentEquipment.accessory &&
+              !currentEquipment.hairstyle &&
+              !currentEquipment.outfit
+            ) {
+              this.equipmentSlots = [null, null, null];
+              this.equippedItems = {
+                accessory: null,
+                hairstyle: null,
+                outfit: null,
+              };
+
+              // 處理裝備數據
+              for (const [slot, item] of Object.entries(equipment)) {
+                if (item && item.imageName) {
+                  await this.handleEquipmentInitialization(slot, item);
+                }
+              }
+            } else {
+              // 保持現有裝備狀態
+              this.equipmentSlots = currentEquipmentSlots;
+              this.equippedItems = currentEquipment;
+            }
+            // 處理物品欄數據
+            let inventoryIndex = 0;
+            for (const item of userItems) {
+              if (inventoryIndex < 15) {
+                const shopImage = await this.loadImage(item.imageName);
+                if (shopImage) {
+                  const imageName = item.imageName.split("/").pop();
+                  const itemData = await itemApi.getItemByShopImage(imageName);
+
+                  if (itemData) {
+                    this.itemsData.set(shopImage, {
+                      type:
+                        this.typeMapping[itemData.pClass] || itemData.pClass,
+                      imageName: imageName,
+                      fullImagePath: itemData.pImageAll,
+                    });
+                    this.inventoryItems[inventoryIndex] = shopImage;
+
+                    // 檢查此物品是否已裝備
+                    const isEquipped = Object.values(equipment).some(
+                      (equip) => equip && equip.imageName === item.imageName
+                    );
+                    if (isEquipped) {
+                      this.equippedItemsMap.set(shopImage, true);
+                    }
+
+                    inventoryIndex++;
+                  }
+                }
+              }
+            }
+          }
+          this.inventoryOpen = true;
+          router.push("/outdoor/dress");
+          await this.syncEquipmentToPinia();
+        } catch (error) {
+          console.error("Failed to refresh inventory data:", error);
         }
       }
-    }
-  }
+    },
+  },
 });

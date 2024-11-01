@@ -1,7 +1,6 @@
 <script setup>
 import GameView from "./GameView.vue";
 import SidebarView from "./SidebarView.vue";
-import GameCanvas from "@/components/game/GameCanvas.vue";
 </script>
 
 <template>

@@ -1,8 +1,10 @@
 // useGameEvents.js
 // 處理所有用戶輸入和事件
 import { ref } from "vue";
+import { useRouter } from 'vue-router';
 
 export function useGameEvents(gameCanvasRef, gameStore) {
+  const router = useRouter();
   const keys = ref({
     w: { pressed: false },
     a: { pressed: false },
@@ -14,6 +16,7 @@ export function useGameEvents(gameCanvasRef, gameStore) {
   const lastKey = ref("");
   const isInitialized = ref(false);
   let animationFrameId = null;
+  let isInventoryInitialized = false;
 
   // Movement handling
   function handlePlayerMovement() {
@@ -80,7 +83,7 @@ export function useGameEvents(gameCanvasRef, gameStore) {
       }
 
       if (key === "i") {
-        handleInventoryToggle();
+        handleInventoryKeyPress();
       }
     },
 
@@ -106,33 +109,29 @@ export function useGameEvents(gameCanvasRef, gameStore) {
       handleInventoryMouseUp(e);
     },
 
-    dblclick: (e) => {
+    click: (e) => {
       if (!gameStore.inventoryOpen) return;
       handleInventoryClick(e);
     },
   };
 
-  // Inventory handlers
-  const handleInventoryToggle = async () => {
-    try {
-      const canvas = gameCanvasRef.value?.getCanvas();
-      const context = canvas?.getContext("2d");
-      const player = gameCanvasRef.value?.getPlayer();
-
-      if (!canvas || !context || !player) {
-        console.error("Missing required elements for inventory toggle");
-        return;
+  const handleInventoryKeyPress = async () => {
+    if (gameStore.inventoryOpen) {
+      try {
+        await gameStore.saveInventoryState();
+        await gameStore.syncEquipmentToPinia();
+        gameStore.inventoryOpen = false;
+        router.push('/outdoor');
+      } catch (error) {
+        console.error("Failed to close inventory:", error);
       }
-
-      console.log("Toggling inventory...");
-      await gameStore.toggleInventory();
-      console.log("Inventory state:", gameStore.inventoryOpen);
-
-      if (gameStore.inventoryOpen) {
-        gameStore.renderInventory(context, player);
+    } else {
+      try {
+        gameStore.inventoryOpen = true;
+        router.push('/outdoor/dress');
+      } catch (error) {
+        console.error("Failed to open inventory:", error);
       }
-    } catch (error) {
-      console.error("Error toggling inventory:", error);
     }
   };
 

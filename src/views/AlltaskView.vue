@@ -170,7 +170,7 @@ onMounted(() => {
 const API_URLWeeklyupdate = `${Base_URL}/WeeklyHealthRecords`;
 const weeklyupdate = async () => {
   console.log("OK");
-  const userAccountString = localStorage.getItem("UserAccount");
+  const userAccountString = sessionStorage.getItem("UserAccount");
   const userAccount = JSON.parse(userAccountString);
   const CId = userAccount.characterID;
   const weeklyupdatedata = {
