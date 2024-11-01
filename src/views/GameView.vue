@@ -32,8 +32,6 @@ async function initializeGame() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    gameStore.initializePositions(canvas);
-
     isInitialized.value = true;
     console.log("Game initialized successfully");
 
@@ -57,6 +55,7 @@ watch(
 
 onMounted(async () => {
   console.log("Component mounted");
+  gameStore.initializeInventory(playerAccount)
   await initializeGame();
 });
 

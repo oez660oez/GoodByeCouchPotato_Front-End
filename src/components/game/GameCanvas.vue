@@ -203,8 +203,6 @@ onMounted(async () => {
       frames: { max: 6 },
     });
 
-    //=============================================
-
     createBoundaries();
 
     movables.value = [
@@ -214,7 +212,6 @@ onMounted(async () => {
     ].filter(Boolean);
 
     assetsLoaded.value = true;
-    gameStore.initializePositions(canvasRef.value);
     startGameLoop(gameLoop);
   } catch (error) {
     console.error("Failed to initialize game:", error);

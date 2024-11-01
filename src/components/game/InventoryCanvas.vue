@@ -158,32 +158,27 @@ async function loadPlayerSprite() {
 }
 
 // 修改 render 函數，移除主畫布的角色渲染
-function render() {
-  if (!context.value || !player.value) return;
+const render = () => {
+  if (!context.value || !player.value || !canvasRef.value) return;
 
   const ctx = context.value;
   const canvas = canvasRef.value;
 
+  if (!canvas.width || !canvas.height) {
+    canvas.width = props.width;
+    canvas.height = props.height;
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 計算背包縮放
-  const { scale } = calculateInventoryPosition(
-    canvas,
-    gameStore.inventoryBackground
-  );
-
-  // 保存當前上下文狀態
-  ctx.save();
-
-  // 設置縮放
-  ctx.scale(scale, scale);
-
-  // 渲染背包界面和裝備
-  gameStore.renderInventory(ctx, player.value);
-
-  // 恢復上下文狀態
-  ctx.restore();
-}
+  if (gameStore.inventoryBackground) {
+    const { scale } = calculateInventoryPosition(canvas, gameStore.inventoryBackground);
+    ctx.save();
+    ctx.scale(scale, scale);
+    gameStore.renderInventory(ctx, player.value);
+    ctx.restore();
+  }
+};
 
 // 事件處理部分保持不變...
 const eventHandlers = {
