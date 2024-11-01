@@ -200,6 +200,8 @@ onMounted(async () => {
       frames: { max: 6 },
     });
 
+    //=============================================
+
     createBoundaries();
 
     movables.value = [

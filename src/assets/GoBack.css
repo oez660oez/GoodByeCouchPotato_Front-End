@@ -1,0 +1,13 @@
+.shopgoback {
+  top: 2.5%;
+  left: 980px;
+  position: absolute;
+  z-index: 10;
+}
+
+.goback {
+  top: 2.5%;
+  left: 850px;
+  position: absolute;
+  z-index: 10;
+}

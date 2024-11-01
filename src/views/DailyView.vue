@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
-
+import GoBackComponent from "@/components/GoBackComponent.vue";
 // 使用 Vue 路由
 const router = useRouter();
 const route = useRoute();
@@ -386,7 +386,9 @@ const moodOptions = ref([
         <button v-else type="submit" class="btn btn-primary w-100">Done</button>
       </form>
     </div>
-    <button id="back" class="bi bi-x-circle" @click="goBack"></button>
+    <div class="goback">
+      <GoBackComponent @goback="goBack"></GoBackComponent>
+    </div>
   </div>
 </template>
 
@@ -402,13 +404,5 @@ const moodOptions = ref([
   top: 50px;
   left: 350px;
   /* background-image: url("@/components/image/form.png"); */
-}
-
-#back {
-  height: 30px;
-  border: none;
-  justify-content: flex-end;
-  margin-right: 5px;
-  background-color: white;
 }
 </style>

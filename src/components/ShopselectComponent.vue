@@ -51,9 +51,9 @@ const changeselect = (type, value) => {
       placeholder="請輸入商品名稱"
     />
 
-    <button @click="lastpage">上</button>
+    <button class="lastpage" @click="lastpage"></button>
     <h4>{{ allitem.currentpage }}</h4>
-    <button @click="nextpage">下</button>
+    <button class="nextpage" @click="nextpage"></button>
   </div>
 </template>
 
@@ -70,5 +70,29 @@ const changeselect = (type, value) => {
 select {
   text-align: center;
   height: 35px;
+}
+
+.lastpage {
+  margin-top: -3%;
+  background-image: url("@/assets/lastpagebutton.png");
+  width: 66px;
+  height: 66px;
+  background-size: cover;
+}
+
+.nextpage {
+  margin-top: -3%;
+  background-image: url("@/assets/nextpagebutton.png");
+  width: 66px;
+  height: 66px;
+  background-size: cover;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
 }
 </style>

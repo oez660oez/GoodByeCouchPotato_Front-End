@@ -3,6 +3,7 @@ import { useRouter, useRoute } from "vue-router";
 import BodymerchandiseComponent from "@/components/BodyＭerchandiseComponent.vue";
 import { ref } from "vue";
 import ChacterBodyComponent from "@/components/ChacterBodyComponent.vue";
+import GoBackComponent from "@/components/GoBackComponent.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -29,6 +30,9 @@ const goBack = () => {
 
 <template>
   <div id="formborder">
+    <div class="shopgoback">
+      <GoBackComponent @goback="goBack"></GoBackComponent>
+    </div>
     <div class="outborder col-4">
       <div class="charbody">
         <ChacterBodyComponent
@@ -64,7 +68,6 @@ const goBack = () => {
           </div>
         </div>
       </div>
-      <!-- <button id="back" class="bi bi-x-circle" @click="goBack"></button> -->
     </div>
   </div>
 </template>
@@ -81,13 +84,6 @@ const goBack = () => {
   left: 350px;
 }
 
-/* #back {
-  height: 30px;
-  border: none;
-  justify-content: flex-end;
-  margin-right: 5px;
-  background-color: white;
-} */
 .charbody {
   width: 336px;
   height: 576px;

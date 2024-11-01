@@ -1,10 +1,11 @@
 <script setup>
-import { useRouter, useRoute } from 'vue-router';
-import { onMounted, ref,shallowRef } from 'vue';
-import { Playerinformation } from '@/Stores/PlayerCharacter';
-import SleepReport from '@/reportview/SleepReport.vue';
-import StepsReport from '@/reportview/StepsReport.vue';
-import MoodReport from '@/reportview/MoodReport.vue';
+import { useRouter, useRoute } from "vue-router";
+import { onMounted, ref, shallowRef } from "vue";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+import SleepReport from "@/reportview/SleepReport.vue";
+import StepsReport from "@/reportview/StepsReport.vue";
+import MoodReport from "@/reportview/MoodReport.vue";
+import GoBackComponent from "@/components/GoBackComponent.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -20,9 +21,8 @@ const viewComponents = {
   // drink: DrinkView,
   // weight: WeightView,
   bed: SleepReport,
-  smile: MoodReport
+  smile: MoodReport,
 };
-
 
 // 設置活動按鈕並切換視圖
 const setActiveButton = (buttonId) => {
@@ -32,19 +32,16 @@ const setActiveButton = (buttonId) => {
 
 // 定義按鈕名稱映射
 const buttonNameMap = {
-  shoes: '步數',
-  drink: '飲水量',
-  weight: '體重',
-  bed: '睡眠',
-  smile: '心情'
+  shoes: "步數",
+  drink: "飲水量",
+  weight: "體重",
+  bed: "睡眠",
+  smile: "心情",
 };
-
-
 
 const getButtonName = (buttonId) => {
   return buttonNameMap[buttonId];
 };
-
 
 const goBack = () => {
   if (route.matched.length > 1) {
@@ -54,65 +51,62 @@ const goBack = () => {
   }
 };
 
-onMounted(() => {
- 
-});
-
-
+onMounted(() => {});
 </script>
 
 <template>
-   <div id="formborder">     
-    
+  <div id="formborder">
     <!-- 動態組件區域 -->
     <div class="view-area">
       <!-- 顯示當前按鈕名稱 -->
       <div v-if="activeButton" class="status-text">
-      <h5>{{ getButtonName(activeButton) }}</h5>
+        <h5>{{ getButtonName(activeButton) }}</h5>
       </div>
       <component :is="currentView" v-if="currentView" />
     </div>
 
     <!-- 選項按鈕 -->
     <div class="button-container">
-      <button 
-        class="icon-button" 
+      <button
+        class="icon-button"
         :class="{ active: activeButton === 'shoes' }"
         @click="setActiveButton('shoes')"
       >
         <i class="fa-solid fa-shoe-prints fa-rotate-270"></i>
       </button>
-      <button 
-        class="icon-button" 
+      <button
+        class="icon-button"
         :class="{ active: activeButton === 'drink' }"
         @click="setActiveButton('drink')"
       >
         <i class="fa-solid fa-whiskey-glass"></i>
       </button>
-      <button 
-        class="icon-button" 
+      <button
+        class="icon-button"
         :class="{ active: activeButton === 'weight' }"
         @click="setActiveButton('weight')"
       >
         <i class="fa-solid fa-weight-scale"></i>
       </button>
-      <button 
-        class="icon-button" 
+      <button
+        class="icon-button"
         :class="{ active: activeButton === 'bed' }"
         @click="setActiveButton('bed')"
       >
         <i class="fa-solid fa-bed"></i>
       </button>
-      <button 
-        class="icon-button" 
+      <button
+        class="icon-button"
         :class="{ active: activeButton === 'smile' }"
         @click="setActiveButton('smile')"
       >
         <i class="fa-regular fa-face-smile"></i>
       </button>
     </div>
-    
-    <button id="back" class="bi bi-x-circle" @click="goBack"></button>
+
+    <div class="goback">
+      <GoBackComponent @goback="goBack"></GoBackComponent>
+    </div>
   </div>
 </template>
 
@@ -146,12 +140,10 @@ onMounted(() => {
   transition: all 0.3s ease;
 }
 
-
 .icon-button.active {
   background-color: rgb(12, 61, 70);
   color: white;
 }
-
 
 .icon-button:hover {
   transform: scale(1.1);
@@ -168,20 +160,20 @@ onMounted(() => {
 }
 
 .card-body {
-     background: transparent;
-     border: none;
- }
+  background: transparent;
+  border: none;
+}
 
- .form-control.datepicker {
-     background-color: #fff; /* 设置背景色为白色 */
-     border: 1px solid #ccc; /* 设置边框颜色（如果需要的话） */
-     border-radius: 0.25rem; /* 可选：调整边框圆角 */
- }
+.form-control.datepicker {
+  background-color: #fff; /* 设置背景色为白色 */
+  border: 1px solid #ccc; /* 设置边框颜色（如果需要的话） */
+  border-radius: 0.25rem; /* 可选：调整边框圆角 */
+}
 
- .view-area {
+.view-area {
   padding: 10px;
   margin-top: 20px;
-  margin-left:10px;
+  margin-left: 10px;
   margin-right: 100px; /* 為右側按鈕預留空間 */
   height: calc(100% - 30px); /* 減去標題的高度 */
   overflow-y: auto; /* 內容過多時可以滾動 */

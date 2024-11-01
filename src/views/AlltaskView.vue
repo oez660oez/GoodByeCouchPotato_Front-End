@@ -2,6 +2,7 @@
 import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref, computed } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
+import GoBackComponent from "@/components/GoBackComponent.vue";
 const PiniaPlayer = Playerinformation();
 const router = useRouter();
 const route = useRoute();
@@ -217,7 +218,9 @@ const goBack = () => {
   <div id="feedbackborder">
     <div>
       <p id="title">&nbsp;&nbsp;任務區</p>
-      <button id="back" class="bi bi-x-circle" @click="goBack"></button>
+      <div class="goback">
+        <GoBackComponent @goback="goBack"></GoBackComponent>
+      </div>
     </div>
 
     <!-- 每日任務區塊 -->

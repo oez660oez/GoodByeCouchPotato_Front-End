@@ -179,16 +179,17 @@ const handleSubmit = async () => {
       }),
     });
     if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+      PiniaPlayer.updatePlayerData(data.character);
+      PiniaPlayer.updateCharacterBody(data.characterAccessorie);
+
       await Swal.fire({
         icon: "success",
         title: "成功",
         text: "角色創建成功！",
       });
-      // const res = response.json();
-      // console.log(res);
-      // PiniaPlayer.updatePlayerData(res.playercharacter);
-      // PiniaPlayer.updateCharacterBody(res.charactrtbody);
-      // window.location.href = "/outdoor";
+      window.location.href = "/outdoor";
       // 可以在這裡添加導航到其他頁面的邏輯
     } else {
       const errorData = await response.json();

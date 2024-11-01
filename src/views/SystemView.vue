@@ -1,5 +1,6 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
+import GoBackComponent from "@/components/GoBackComponent.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -41,7 +42,9 @@ const goBack = () => {
       <button class="sysbtnfeed">聯絡我們</button></RouterLink
     >
 
-    <button id="backbtn" class="bi bi-x-circle" @click="goBack"></button>
+    <div class="goback">
+      <GoBackComponent @goback="goBack"></GoBackComponent>
+    </div>
   </div>
   <div>
     <router-view></router-view>

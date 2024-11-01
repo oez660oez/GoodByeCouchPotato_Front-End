@@ -4,10 +4,8 @@ class Sprite {
     this.position = position;
     this.image = image;
     this.frames = { ...frames, val: 0, elapsed: 0 };
-    this.image.onload = () => {
-      this.width = this.image.width / this.frames.max;
-      this.height = this.image.height;
-    };
+    this.width = 32; // 每幀的寬度
+    this.height = 40; // 每幀的高度
   }
   draw(ctx) {
     ctx.drawImage(

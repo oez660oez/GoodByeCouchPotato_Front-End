@@ -69,6 +69,21 @@ const GettheAccessoriesList = async (requestBody) => {
       Nofiltertiemlist.value = JSON.parse(
         JSON.stringify(GetItem.value) //JSON.stringify()先將資料轉換成新json格式，使資料與原始物件沒有引用關係，再去做解析
       ); //將所有商品複製到存放原始資料的物件裡
+
+      //抓取已經穿著的衣服，如果在onMounted做，會因為加載未完成而抓不到，在這個方法內就一定能取到了
+      if (GetItem.value.allqualifiedItem.length > 0) {
+        //取得目前穿的編號
+        Mybody.value.head = PiniaPlayer.Head;
+        Mybody.value.body = PiniaPlayer.Upper;
+        Mybody.value.accessory = PiniaPlayer.Lower;
+        GetMyClothes(); //將穿著的內容篩選出來
+
+        console.log(PiniaMerchandise.Myaccessory);
+        console.log(PiniaMerchandise.Myhead);
+        console.log(PiniaMerchandise.Mybody);
+      } else {
+        console.log("尚無穿著");
+      }
     }
   } catch (error) {
     console.log(error);
@@ -83,16 +98,42 @@ const RenewtheList = async () => {
   GettheAccessoriesList(requestBody.value);
 };
 
+//取得目前穿著
+const Mybody = ref({
+  head: "",
+  body: "",
+  accessory: "",
+});
+
+const GetMyClothes = () => {
+  const Gethead =
+    GetItem.value.allqualifiedItem.filter(
+      (item) => item.pCode === Mybody.value.head
+    ) || null;
+
+  const Getbody =
+    GetItem.value.allqualifiedItem.filter(
+      (item) => item.pCode === Mybody.value.body
+    ) || null;
+
+  const Getaccessory =
+    GetItem.value.allqualifiedItem.filter(
+      (item) => item.pCode === Mybody.value.accessory
+    ) || null;
+  PiniaMerchandise.Getplaterclothes(Gethead, Getbody, Getaccessory);
+};
+
 //載入頁面後執行
 onMounted(async () => {
-  RenewtheList(); //顯示商品清單
-
+  await RenewtheList(); //顯示商品清單
+  // console.log(GetItem.value.allqualifiedItem ); //檢查內容是否被加載出來了。沒有
   console.log(selectedLevel.value);
+  PiniaMerchandise.First = true;
 });
 
 //上一頁
 const lastpage = async () => {
-  // console.log("Next page event triggered");
+  // console.log("Next page event triggered"); 用來確認事件可以執行
   if (GetItem.value.totalpages > 1) {
     if (GetItem.value.currentpage - 1 < 1) {
       requestBody.value.page = GetItem.value.totalpages;
@@ -120,11 +161,19 @@ const nextpage = () => {
 
 //試穿事件
 const MerchandiseOnBody = (pCode) => {
+  PiniaMerchandise.Choosemerchandise = true;
+  PiniaMerchandise.First = false;
   PiniaMerchandise.setPcode(pCode);
   const Getchoosemerchandise = GetItem.value.allqualifiedItem.filter(
     (item) => item.pCode === pCode
   );
+  // PiniaMerchandise.Myhead.value = GetItem.value.allqualifiedItem.find(
+  //   (item) => item.pCode == PiniaPlayer.Head
+  // );
   PiniaMerchandise.Getmerchandise(Getchoosemerchandise);
+  // console.log(Mybody.value);
+  // console.log(PiniaMerchandise.Myaccessory);
+  // console.log(PiniaMerchandise.Myhead);
   console.log(PiniaMerchandise.Choose);
   console.log(PiniaMerchandise.Getpcode);
   console.log(PiniaMerchandise.Choosemerchandise);

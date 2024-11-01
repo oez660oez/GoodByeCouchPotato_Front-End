@@ -2,7 +2,7 @@
 import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
-
+import GoBackComponent from "@/components/GoBackComponent.vue";
 const router = useRouter();
 const route = useRoute();
 
@@ -81,6 +81,9 @@ const fetchPreviousCharacters = async () => {
 
 <template>
   <div class="container" id="formborder">
+    <div class="goback">
+      <GoBackComponent @goback="goBack"></GoBackComponent>
+    </div>
     <div class="accordion accordion-flush" id="accordionFlushExample">
       <!-- 使用 v-for 生成每個角色的 Accordion 項目 -->
       <div

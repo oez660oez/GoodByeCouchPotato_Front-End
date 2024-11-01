@@ -62,12 +62,12 @@ const Login = async () => {
         PiniaPlayer.updateCharacterBody(data.characterAccessorie);
         alert("登入成功");
 
-        console.log(data);
         window.location.href = "/outdoor";
       } else {
         alert(data.message);
+        console.log(data);
         PiniaPlayer.logout();
-        if (data.respond == "newcharacter") {
+        if (data.respond == "newcharacter" || data.respond == "gameover") {
           PiniaPlayer.playerAccount = LoginData.value.account;
           PiniaPlayer.isLoggedIn = true;
           window.location.href = "/createcharacter/";

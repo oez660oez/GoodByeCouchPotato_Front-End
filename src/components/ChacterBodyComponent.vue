@@ -1,8 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
-import { Sprite } from "@/core/Player"; //裁切器(?)
+import { Sprite } from "@/core/Player"; //裁切圖片並製作成動畫
 import { useGameLoop } from "@/composables/useGameLoop";
 import { Merchandiselist } from "@/Stores/Merchandiselist";
+import { Alert } from "bootstrap";
 const PiniaMerchandise = Merchandiselist();
 
 const canvasRef = ref(null);
@@ -20,7 +21,12 @@ const playerhead = ref(null);
 const playerbody = ref(null);
 const playeraccessory = ref(null);
 const currentdirection = ref(3);
-//用來存放玩家試穿的衣服，圖片來源
+
+// const Myhead = PiniaMerchandise.Myhead.value.pImageAll;
+// const Mybody = PiniaMerchandise.Mybody.value.pImageAll;
+// const Myaccessory = PiniaMerchandise.Myaccessory.value.pImageAll;
+
+//用來存放玩家穿的衣服，圖片來源
 const equippedItems = ref({
   head: null,
   body: null,
@@ -42,15 +48,65 @@ const LoadImage = (src) => {
   });
 };
 
+//製作動畫循環
+const GetImage = async (equippedItems, play) => {
+  const IMG = await LoadImage(equippedItems);
+  play.value = new Sprite({
+    position: {
+      x: canvasWidth / 2 - 288 / 4 / 2,
+      y: canvasHeight / 2 - 80 / 2,
+    },
+    image: IMG,
+    frames: { max: 6 },
+  });
+  play.value.setDirection(currentdirection.value);
+};
+
+const GetMybody = ref(PiniaMerchandise.Mybody); //取資料
+const GetMyhead = ref(PiniaMerchandise.Myhead); //取資料
+const GetMyaccessory = ref(PiniaMerchandise.Myaccessory); //取資料
 //開始遊戲循環
 const GameLoop = async () => {
   const ctx = context.value;
   ctx.clearRect(0, 0, canvasWidth, canvasHeight); //清空畫布
-  player.value.setDirection(currentdirection);
+  // console.log("Mybody data before accessing:", PiniaMerchandise.Mybody);
+  player.value.setDirection(currentdirection.value);
+  if (
+    PiniaMerchandise.Mybody.length > 0 ||
+    PiniaMerchandise.Myhead.length > 0 ||
+    PiniaMerchandise.Myaccessory.length > 0
+  ) {
+    if (PiniaMerchandise.First) {
+      GetMybody.value = PiniaMerchandise.Mybody;
+      GetMyhead.value = PiniaMerchandise.Myhead;
+      GetMyaccessory.value = PiniaMerchandise.Myaccessory;
+
+      let first = "";
+      if (PiniaMerchandise.Mybody.length > 0) {
+        first = GetMybody.value[0];
+        equippedItems.value.body = first.pImageAll;
+        await GetImage(equippedItems.value.body, playerbody);
+        console.log(PiniaMerchandise.Myhead);
+      }
+      if (PiniaMerchandise.Myhead.length > 0) {
+        first = GetMyhead.value[0];
+        equippedItems.value.body = first.pImageAll;
+        await GetImage(equippedItems.value.head, playerhead);
+      }
+      if (PiniaMerchandise.Myaccessory.length > 0) {
+        first = GetMyaccessory.value[0];
+        equippedItems.value.accessory = first.pImageAll;
+        await GetImage(equippedItems.value.accessory, playeraccessory);
+      }
+    }
+    PiniaMerchandise.First = false;
+  }
   if (PiniaMerchandise.Choosemerchandise) {
-    //把玩家選擇的商品帶到角色demo這裡，因為這個會一直循環，所以寫在這裡就會一直被觸發
+    console.log(PiniaMerchandise.First);
+    console.log(PiniaMerchandise.Mybody);
     ChooseMerchandise.value = PiniaMerchandise.Choose;
     PiniaMerchandise.Choosemerchandise = false;
+    PiniaMerchandise.First = false;
     if (ChooseMerchandise.value != "") {
       const first = ChooseMerchandise.value[0]; //取出陣列的內容
       console.log(first.pClass);
@@ -59,18 +115,8 @@ const GameLoop = async () => {
         equippedItems.value.accessory = first.pImageAll;
         console.log(equippedItems.value.accessory);
         if (equippedItems.value.accessory != null) {
-          const playeraccessoryIMG = await LoadImage(
-            equippedItems.value.accessory
-          );
-          playeraccessory.value = new Sprite({
-            position: {
-              x: canvasWidth / 2 - 288 / 4 / 2,
-              y: canvasHeight / 2 - 80 / 2,
-            },
-            image: playeraccessoryIMG,
-            frames: { max: 6 },
-          });
-          playeraccessory.value.setDirection(currentdirection);
+          await GetImage(equippedItems.value.accessory, playeraccessory);
+          // playeraccessory.value.setDirection(currentdirection.value); //設定裝扮方向
         }
       }
 
@@ -78,16 +124,8 @@ const GameLoop = async () => {
         equippedItems.value.body = first.pImageAll;
         console.log(equippedItems.value.body);
         if (equippedItems.value.body != null) {
-          const playerbodyIMG = await LoadImage(equippedItems.value.body);
-          playerbody.value = new Sprite({
-            position: {
-              x: canvasWidth / 2 - 288 / 4 / 2,
-              y: canvasHeight / 2 - 80 / 2,
-            },
-            image: playerbodyIMG,
-            frames: { max: 6 },
-          });
-          playerbody.value.setDirection(currentdirection);
+          await GetImage(equippedItems.value.body, playerbody);
+          // playerbody.value.setDirection(currentdirection.value);
         }
       }
 
@@ -95,16 +133,8 @@ const GameLoop = async () => {
         equippedItems.value.head = first.pImageAll;
         console.log(equippedItems.value.head);
         if (equippedItems.value.head != null) {
-          const playerheadIMG = await LoadImage(equippedItems.value.head);
-          playerhead.value = new Sprite({
-            position: {
-              x: canvasWidth / 2 - 288 / 4 / 2,
-              y: canvasHeight / 2 - 80 / 2,
-            },
-            image: playerheadIMG,
-            frames: { max: 6 },
-          });
-          playerhead.value.setDirection(currentdirection);
+          await GetImage(equippedItems.value.head, playerhead);
+          // playerhead.value.setDirection(currentdirection.value);
         }
       }
     }
@@ -151,6 +181,8 @@ const handleRotate = (direction) => {
   if (playerhead.value != null) {
     playerhead.value.setDirection(dir);
   }
+  currentdirection.value = dir;
+  console.log(currentdirection.value);
 };
 
 //清空
@@ -162,9 +194,20 @@ const clear = () => {
   playerhead.value = null;
   playerbody.value = null;
   playeraccessory.value = null;
+  PiniaMerchandise.First = false;
+  PiniaMerchandise.ChooseMerchandise = true;
+  console.log(equippedItems.value);
+  console.log("yes");
 };
 
 //還原
+const reset = () => {
+  PiniaMerchandise.First = true;
+  PiniaMerchandise.ChooseMerchandise = false;
+  // console.log(PiniaMerchandise.Myaccessory.value[0]);
+  // console.log(PiniaMerchandise.Myhead);
+  // console.log(PiniaMerchandise.Mybody);
+};
 
 //=====================事件end===============================
 
@@ -185,8 +228,6 @@ onMounted(async () => {
     image: CharcterImage,
     frames: { max: 6 },
   });
-
-  //只有一張圖所以不用使用Promise.all
 
   startGameLoop(GameLoop);
 });
@@ -215,6 +256,7 @@ onUnmounted(() => {
 
   <div class="underbutton">
     <button @click="clear">清空</button>
+    <button @click="reset">還原</button>
   </div>
 </template>
 
