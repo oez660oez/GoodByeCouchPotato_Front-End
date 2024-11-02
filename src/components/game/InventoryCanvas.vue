@@ -87,17 +87,17 @@ const initializePositions = () => {
   };
 
   gameStore.paginationButtons.prev = {
-        x: x + 560,
-        y: y + 450,
-        width: 30,
-        height: 30
-      };
-      gameStore.paginationButtons.next = {
-        x: x + 660,
-        y: y + 450,
-        width: 30,
-        height: 30
-      };
+    x: x + 500,
+    y: y + 435,
+    width: 30,
+    height: 30,
+  };
+  gameStore.paginationButtons.next = {
+    x: x + 620,
+    y: y + 435,
+    width: 30,
+    height: 30,
+  };
   // 更新背包位置
   gameStore.inventoryPosition = { x, y };
 };
@@ -124,13 +124,12 @@ const handleMove = (direction) => {
   render();
 };
 
-
 // 修改 executeGameLoop 方法
 const executeGameLoop = (timestamp) => {
   if (!context.value || !player.value) return;
 
-// 計算時間差
-if (!lastFrameTime) lastFrameTime = timestamp;
+  // 計算時間差
+  if (!lastFrameTime) lastFrameTime = timestamp;
   const elapsed = timestamp - lastFrameTime;
 
   // 同步遊戲世界玩家的狀態
@@ -184,7 +183,10 @@ const render = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (gameStore.inventoryBackground) {
-    const { scale } = calculateInventoryPosition(canvas, gameStore.inventoryBackground);
+    const { scale } = calculateInventoryPosition(
+      canvas,
+      gameStore.inventoryBackground
+    );
     ctx.save();
     ctx.scale(scale, scale);
     gameStore.renderInventory(ctx, player.value);
@@ -202,22 +204,23 @@ const eventHandlers = {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    if (gameStore.isClickInButton(x, y, gameStore.paginationButtons.prev) ||
-        gameStore.isClickInButton(x, y, gameStore.paginationButtons.next)) {
+    if (
+      gameStore.isClickInButton(x, y, gameStore.paginationButtons.prev) ||
+      gameStore.isClickInButton(x, y, gameStore.paginationButtons.next)
+    ) {
       gameStore.handleInventoryClick(x, y);
       return;
     }
-  const currentItems = gameStore.currentPageItems;
-  gameStore.itemSlots.forEach((slot, slotIndex) => {
+    const currentItems = gameStore.currentPageItems;
+    gameStore.itemSlots.forEach((slot, index) => {
       if (isWithinSlot(x, y, slot)) {
-        const currentPageItem = currentItems[slotIndex];
-        if (currentPageItem) {
-          const actualItemIndex = slotIndex + (gameStore.currentPage * gameStore.itemsPerPage);
-          gameStore.startDrag(
-            createMouseEvent(e, canvas),
-            currentPageItem,
-            actualItemIndex,
-            "inventory"
+        const currentPageItem = currentItems[index];
+      if (currentPageItem) {
+        gameStore.startDrag(
+          createMouseEvent(e, canvas),
+          currentPageItem,
+          index,
+          "inventory"
           );
         }
       }
@@ -308,7 +311,7 @@ onMounted(async () => {
     gameStore.inventoryOpen = true;
 
     // 等待背包背景圖片加載完成
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       if (gameStore.inventoryBackground) {
         resolve();
       } else {
