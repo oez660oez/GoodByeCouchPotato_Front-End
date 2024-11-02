@@ -58,6 +58,7 @@ onUnmounted(async () => {
 const goBack = async () => {
   try {
     await gameStore.saveInventoryState();
+    await gameStore.syncEquipmentToPinia();
   } catch (error) {
     console.error("Failed to save inventory state:", error);
   }

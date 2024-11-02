@@ -16,7 +16,6 @@ export function useGameEvents(gameCanvasRef, gameStore) {
   const lastKey = ref("");
   const isInitialized = ref(false);
   let animationFrameId = null;
-  let isInventoryInitialized = false;
 
   // Movement handling
   function handlePlayerMovement() {
@@ -227,7 +226,6 @@ export function useGameEvents(gameCanvasRef, gameStore) {
     window.addEventListener("resize", () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      gameStore.initializePositions(canvas);
     });
 
     // Start game loop

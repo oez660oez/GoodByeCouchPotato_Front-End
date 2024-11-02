@@ -86,6 +86,18 @@ const initializePositions = () => {
     height: 270 * scale,
   };
 
+  gameStore.paginationButtons.prev = {
+        x: x + 560,
+        y: y + 450,
+        width: 30,
+        height: 30
+      };
+      gameStore.paginationButtons.next = {
+        x: x + 660,
+        y: y + 450,
+        width: 30,
+        height: 30
+      };
   // 更新背包位置
   gameStore.inventoryPosition = { x, y };
 };
@@ -190,14 +202,24 @@ const eventHandlers = {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    gameStore.itemSlots.forEach((slot, index) => {
-      if (isWithinSlot(x, y, slot) && gameStore.inventoryItems[index]) {
-        gameStore.startDrag(
-          createMouseEvent(e, canvas),
-          gameStore.inventoryItems[index],
-          index,
-          "inventory"
-        );
+    if (gameStore.isClickInButton(x, y, gameStore.paginationButtons.prev) ||
+        gameStore.isClickInButton(x, y, gameStore.paginationButtons.next)) {
+      gameStore.handleInventoryClick(x, y);
+      return;
+    }
+  const currentItems = gameStore.currentPageItems;
+  gameStore.itemSlots.forEach((slot, slotIndex) => {
+      if (isWithinSlot(x, y, slot)) {
+        const currentPageItem = currentItems[slotIndex];
+        if (currentPageItem) {
+          const actualItemIndex = slotIndex + (gameStore.currentPage * gameStore.itemsPerPage);
+          gameStore.startDrag(
+            createMouseEvent(e, canvas),
+            currentPageItem,
+            actualItemIndex,
+            "inventory"
+          );
+        }
       }
     });
 
