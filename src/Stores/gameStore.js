@@ -431,38 +431,38 @@ export const useGameStore = defineStore("game", {
         );
       }
 
- // 渲染物品欄
- this.itemSlots.forEach((slot, index) => {
-  const item = this.inventoryItems[index];
-  if (item && item instanceof Image) {
-    // 檢查該物品是否在裝備欄中
-    const isEquipped = this.equipmentSlots.some(equippedItem => {
-      if (!equippedItem) return false;
-      const equippedItemInfo = this.itemsData.get(equippedItem);
-      const currentItemInfo = this.itemsData.get(item);
-      return equippedItemInfo?.imageName === currentItemInfo?.imageName;
-    });
+      // 渲染物品欄
+      this.itemSlots.forEach((slot, index) => {
+        const item = this.inventoryItems[index];
+        if (item && item instanceof Image) {
+          // 檢查該物品是否在裝備欄中
+          const isEquipped = this.equipmentSlots.some((equippedItem) => {
+            if (!equippedItem) return false;
+            const equippedItemInfo = this.itemsData.get(equippedItem);
+            const currentItemInfo = this.itemsData.get(item);
+            return equippedItemInfo?.imageName === currentItemInfo?.imageName;
+          });
 
-    if (isEquipped) {
-      const grayImage = this.createGrayImage(item);
-      ctx.drawImage(
-        grayImage,
-        slot.x,
-        slot.y,
-        this.slotConfig.size,
-        this.slotConfig.size
-      );
-    } else {
-      ctx.drawImage(
-        item,
-        slot.x,
-        slot.y,
-        this.slotConfig.size,
-        this.slotConfig.size
-      );
-    }
-  }
-});
+          if (isEquipped) {
+            const grayImage = this.createGrayImage(item);
+            ctx.drawImage(
+              grayImage,
+              slot.x,
+              slot.y,
+              this.slotConfig.size,
+              this.slotConfig.size
+            );
+          } else {
+            ctx.drawImage(
+              item,
+              slot.x,
+              slot.y,
+              this.slotConfig.size,
+              this.slotConfig.size
+            );
+          }
+        }
+      });
       // 渲染裝備欄
       this.equipmentSlotsPosition.forEach((slot, i) => {
         const item = this.equipmentSlots[i];

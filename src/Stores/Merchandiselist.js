@@ -19,10 +19,10 @@ export const Merchandiselist = defineStore("Merchandise", () => {
     Choosemerchandise.value = true;
   };
 
-  const Getplaterclothes = (myhead, mybody, myaccessory) => {
-    Myhead.value = myhead;
-    Mybody.value = mybody;
-    Myaccessory.value = myaccessory;
+  const Getplaterclothes = (data) => {
+    Myhead.value = data.GetMyhead;
+    Mybody.value = data.GetMybody;
+    Myaccessory.value = data.Getaccessory;
   };
 
   return {

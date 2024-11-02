@@ -396,13 +396,14 @@ const moodOptions = ref([
 #formborder {
   display: flex;
   justify-content: flex-end;
-  border: 1px solid rgb(63, 12, 70);
-  background-color: rgb(225, 230, 245);
+  /* border: 1px solid rgb(63, 12, 70);
+  background-color: rgb(225, 230, 245); */
   width: 912px;
   height: 608px;
   position: fixed;
   top: 50px;
   left: 350px;
-  /* background-image: url("@/components/image/form.png"); */
+  background-image: url("@/assets/border.png");
+  background-size: cover;
 }
 </style>

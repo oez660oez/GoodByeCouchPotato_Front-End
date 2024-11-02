@@ -11,6 +11,7 @@ const PiniaPlayer = Playerinformation();
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/ShopAccessoriesLists/GetList`;
 const API_URL_Purchase = `${Base_URL}/ShopAccessoriesLists/purchase`;
+
 const GetItem = ref({
   allclass: [],
   qualifiedItem: [],
@@ -69,22 +70,6 @@ const GettheAccessoriesList = async (requestBody) => {
       Nofiltertiemlist.value = JSON.parse(
         JSON.stringify(GetItem.value) //JSON.stringify()先將資料轉換成新json格式，使資料與原始物件沒有引用關係，再去做解析
       ); //將所有商品複製到存放原始資料的物件裡
-
-      //抓取已經穿著的衣服，如果在onMounted做，會因為加載未完成而抓不到，在這個方法內就一定能取到了
-      if (GetItem.value.allqualifiedItem.length > 0) {
-        //取得目前穿的編號
-        Mybody.value.head = PiniaPlayer.Upper;
-        Mybody.value.body = PiniaPlayer.Lower;
-        Mybody.value.accessory = PiniaPlayer.Head;
-        console.log(Mybody.value);
-        GetMyClothes(); //將穿著的內容篩選出來
-
-        console.log(PiniaMerchandise.Myaccessory);
-        console.log(PiniaMerchandise.Myhead);
-        console.log(PiniaMerchandise.Mybody);
-      } else {
-        console.log("尚無穿著");
-      }
     }
   } catch (error) {
     console.log(error);
@@ -97,31 +82,6 @@ const RenewtheList = async () => {
   requestBody.value.Account = PiniaPlayer.playerAccount;
   console.log(PiniaPlayer.characterCoins);
   GettheAccessoriesList(requestBody.value);
-};
-
-//取得目前穿著
-const Mybody = computed(() => ({
-  head: PiniaPlayer.Upper,
-  body: PiniaPlayer.Lower,
-  accessory: PiniaPlayer.Head,
-}));
-
-const GetMyClothes = () => {
-  const Gethead =
-    GetItem.value.allqualifiedItem.filter(
-      (item) => item.pCode === Mybody.value.head
-    ) || null;
-
-  const Getbody =
-    GetItem.value.allqualifiedItem.filter(
-      (item) => item.pCode === Mybody.value.body
-    ) || null;
-
-  const Getaccessory =
-    GetItem.value.allqualifiedItem.filter(
-      (item) => item.pCode === Mybody.value.accessory
-    ) || null;
-  PiniaMerchandise.Getplaterclothes(Gethead, Getbody, Getaccessory);
 };
 
 //載入頁面後執行
@@ -294,6 +254,14 @@ const changeselect = (type, value) => {
   });
   GetItem.value.qualifiedItem = filteredItems.value;
   //=================篩選=========================
+
+  // watch(
+  //   [() => PiniaPlayer.Upper, () => PiniaPlayer.Lower, () => PiniaPlayer.Head],
+  //   () => {
+  //     GetMyClothes();
+  //     RenewtheList();
+  //   }
+  // );
 };
 </script>
 <template>
@@ -353,10 +321,10 @@ const changeselect = (type, value) => {
   flex-wrap: wrap;
 }
 .photoborder {
-  height: 110px;
+  height: 85px;
   width: 310px;
-  /* background-color: rgb(235, 219, 167); */
-  /* border: 1px solid black; */
+  background-color: rgb(189, 168, 124);
+  border: 3px dashed rgba(82, 50, 50, 0.847);
   display: flex;
   padding-top: 8px;
   padding-left: 8px;
@@ -365,8 +333,6 @@ const changeselect = (type, value) => {
   margin-left: 14px;
   border-radius: 10px;
   position: relative;
-  background-image: url("@/assets/merchandiseborder.png");
-  background-size: cover;
 }
 .photoborder button {
   height: 32px;

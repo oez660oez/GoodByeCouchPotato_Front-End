@@ -200,19 +200,19 @@ onMounted(() => {
   }
 });
 
-// 監聽 currentChart 的變化
-watch(currentChart, () => {
-  getPlayData(); // 當 currentChart 改變時執行 getPlayData
-});
+// // 監聽 currentChart 的變化
+// watch(currentChart, () => {
+//   getPlayData(); // 當 currentChart 改變時執行 getPlayData
+// });
 
-// 監聽 getreportData.Data 的變化
-watch(
-  () => getreportData.Data,
-  () => {
-    getData();
-    getPlayData(); // 當 getreportData.Data 改變時執行 getData
-  }
-);
+// // 監聽 getreportData.Data 的變化
+// watch(
+//   () => getreportData.Data,
+//   () => {
+//     getData();
+//     getPlayData(); // 當 getreportData.Data 改變時執行 getData
+//   }
+// );
 
 // 控制顯示物件切換的狀態變數
 const isObjectOneVisible = ref(true);

@@ -6,6 +6,9 @@ import { Merchandiselist } from "@/Stores/Merchandiselist";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 const PiniaMerchandise = Merchandiselist();
 const PiniaPlayer = Playerinformation();
+const Base_URL = import.meta.env.VITE_API_BASEURL;
+const API_URL_GetBody = `${Base_URL}/ShopAccessoriesLists/GetNowBody`;
+const Image_URL = "https://localhost:7146/images/";
 
 const canvasRef = ref(null);
 const canvasWidth = 74;
@@ -63,84 +66,97 @@ const GetImage = async (equippedItems, play) => {
   play.value.setDirection(currentdirection.value);
 };
 
-const GetMybody = ref(PiniaMerchandise.Mybody); //取資料
-const GetMyhead = ref(PiniaMerchandise.Myhead); //取資料
-const GetMyaccessory = ref(PiniaMerchandise.Myaccessory); //取資料
-//開始遊戲循環
+//用來取身上穿著的裝備的資料庫圖片，只有取名稱
+const GetImageAllID = ref({
+  body: 0,
+  head: 0,
+  accessory: 0,
+});
+//存放回傳的圖片名稱並且串上路由
+const GetImageAllname = ref({
+  GetMybody: "",
+  GetMyhead: "",
+  GetMyaccessory: "",
+});
 const GameLoop = async () => {
   const ctx = context.value;
   ctx.clearRect(0, 0, canvasWidth, canvasHeight); //清空畫布
   // console.log("Mybody data before accessing:", PiniaMerchandise.Mybody);
   player.value.setDirection(currentdirection.value);
-  if (
-    PiniaMerchandise.Mybody.length > 0 ||
-    PiniaMerchandise.Myhead.length > 0 ||
-    PiniaMerchandise.Myaccessory.length > 0
-  ) {
-    if (PiniaMerchandise.First) {
-      PiniaMerchandise.First = false;
-      GetMybody.value = PiniaMerchandise.Mybody;
-      GetMyhead.value = PiniaMerchandise.Myhead;
-      GetMyaccessory.value = PiniaMerchandise.Myaccessory;
 
-      let body = "";
-      let head = "";
-      let accessory = "";
-      if (PiniaMerchandise.Mybody.length > 0) {
-        body = GetMybody.value[0];
-        equippedItems.value.body = body.pImageAll;
-        GetImage(equippedItems.value.body, playerbody);
-        console.log(body);
+  // //原始的服裝
+  if (PiniaMerchandise.First) {
+    //抓取已經穿著的衣服，如果在onMounted做，會因為加載未完成而抓不到，在這個方法內就一定能取到了
+    //取得目前穿的編號，並且存入pinia，其實可以不存了但做個備用，設定沒值默認值為0
+    GetImageAllID.value.body = PiniaPlayer.Lower || "0";
+    GetImageAllID.value.head = PiniaPlayer.Upper || "0";
+    GetImageAllID.value.accessory = PiniaPlayer.Head || "0";
+    PiniaMerchandise.Getplaterclothes(GetImageAllID.value);
+    //取裝備的圖片名稱
+    console.log(GetImageAllID.value);
+    const GetNewbody = await fetch(API_URL_GetBody, {
+      method: "POST",
+      body: JSON.stringify(GetImageAllID.value),
+      headers: { "Content-Type": "application/json" },
+    });
+    if (GetNewbody.ok) {
+      const data = await GetNewbody.json();
+      console.log(data);
+      if (data.body != "") {
+        GetImageAllname.value.GetMybody = Image_URL + data.body;
       }
-      if (PiniaMerchandise.Myhead.length > 0) {
-        head = GetMyhead.value[0];
-        equippedItems.value.body = head.pImageAll;
-        GetImage(equippedItems.value.head, playerhead);
+      if (data.head != "") {
+        GetImageAllname.value.GetMyhead = Image_URL + data.head;
       }
-      if (PiniaMerchandise.Myaccessory.length > 0) {
-        accessory = GetMyaccessory.value[0];
-        equippedItems.value.accessory = accessory.pImageAll;
-        GetImage(equippedItems.value.accessory, playeraccessory);
-        console.log(PiniaMerchandise.Myaccessory);
+      if (data.accessory != "") {
+        GetImageAllname.value.GetMyaccessory = Image_URL + data.accessory;
       }
+      PiniaMerchandise.First = false;
     }
+    //================繪製canvas================================
+    if (GetImageAllname.value.GetMybody != "") {
+      equippedItems.value.body = GetImageAllname.value.GetMybody;
+      GetImage(equippedItems.value.body, playerbody);
+    }
+    if (GetImageAllname.value.GetMyhead != "") {
+      equippedItems.value.head = GetImageAllname.value.GetMyhead;
+      GetImage(equippedItems.value.head, playerhead);
+    }
+    if (GetImageAllname.value.GetMyaccessory != "") {
+      equippedItems.value.accessory = GetImageAllname.value.GetMyaccessory;
+      GetImage(equippedItems.value.accessory, playeraccessory);
+    }
+    PiniaMerchandise.First = false;
+    console.log(equippedItems.value);
   }
   if (PiniaMerchandise.Choosemerchandise) {
-    console.log(PiniaMerchandise.First);
-    console.log(PiniaMerchandise.Mybody);
     ChooseMerchandise.value = PiniaMerchandise.Choose;
     PiniaMerchandise.Choosemerchandise = false;
-    PiniaMerchandise.First = false;
-    if (ChooseMerchandise.value != "") {
-      const first = ChooseMerchandise.value[0]; //取出陣列的內容
-      console.log(first.pClass);
 
-      if (first.pClass == "飾品") {
-        equippedItems.value.accessory = first.pImageAll;
-        console.log(equippedItems.value.accessory);
-        if (equippedItems.value.accessory != null) {
-          await GetImage(equippedItems.value.accessory, playeraccessory);
-          // playeraccessory.value.setDirection(currentdirection.value); //設定裝扮方向
-        }
-      }
-
-      if (first.pClass == "衣服") {
-        equippedItems.value.body = first.pImageAll;
-        console.log(equippedItems.value.body);
-        if (equippedItems.value.body != null) {
-          await GetImage(equippedItems.value.body, playerbody);
-          // playerbody.value.setDirection(currentdirection.value);
-        }
-      }
-
-      if (first.pClass == "髮型") {
-        equippedItems.value.head = first.pImageAll;
-        console.log(equippedItems.value.head);
-        if (equippedItems.value.head != null) {
-          await GetImage(equippedItems.value.head, playerhead);
-          // playerhead.value.setDirection(currentdirection.value);
-        }
-      }
+    const first = ChooseMerchandise.value[0]; //取出陣列的內容
+    console.log(first.pClass);
+    if (first.pClass === "飾品") {
+      const accessory = ref(first.pImageAll);
+      equippedItems.value.accessory = first.pImageAll;
+      accessory.value = first.pImageAll;
+      await GetImage(equippedItems.value.accessory, playeraccessory);
+      // playeraccessory.value.setDirection(currentdirection.value); //設定裝扮方向
+    }
+    if (first.pClass === "衣服") {
+      const body = first.pImageAll;
+      equippedItems.value.body = body;
+      await GetImage(equippedItems.value.body, playerbody);
+      console.log(first.pImageAll);
+      console.log(equippedItems.value);
+      // playerbody.value.setDirection(currentdirection.value);
+    }
+    if (first.pClass === "髮型") {
+      const head = first.pImageAll;
+      equippedItems.value.head = head;
+      await GetImage(equippedItems.value.head, playerhead);
+      // playerhead.value.setDirection(currentdirection.value);
+      console.log(first.pImageAll);
+      console.log(equippedItems.value);
     }
   }
 
@@ -216,9 +232,7 @@ const reset = () => {
 //=====================事件end===============================
 
 onMounted(async () => {
-  console.log(PiniaPlayer.Head);
-  console.log(PiniaPlayer.Lower);
-  console.log(PiniaPlayer.Upper);
+  PiniaMerchandise.First = true;
   const canvas = canvasRef.value;
   if (!canvas) throw new Error("Canvas not found");
   canvas.width = canvasWidth;

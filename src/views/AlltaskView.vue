@@ -303,10 +303,12 @@ const goBack = () => {
 
 <style lang="css" scoped>
 #feedbackborder {
-  border: 1px solid rgb(12, 61, 70);
-  background-color: rgb(230, 213, 198);
+  /* border: 1px solid rgb(12, 61, 70);
+  background-color: rgb(230, 213, 198); */
+  background-image: url("@/assets/border.png");
+  background-size: cover;
   width: 912px;
-  height: 608px;
+  height: 620px;
   position: fixed;
   top: 50px;
   left: 350px;
