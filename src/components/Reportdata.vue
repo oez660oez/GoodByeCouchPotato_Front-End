@@ -1,9 +1,41 @@
+<template>
+  <div id="formborder">
+    <!-- Calendar 顯示區塊 -->
+    <div class="container" id="calendar-title" v-if="!isObjectOneVisible">
+      <ShadowCalendar />
+    </div>
+
+    <!-- Chart 顯示區塊 -->
+    <div class="chart-container" v-if="isObjectOneVisible">
+      <div ref="chartRef" style="width: 100%; height: 100%"></div>
+    </div>
+
+    <!-- 控制按鈕 -->
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" @click="currentChart = 'water'">
+        顯示飲水量
+      </button>
+      <button class="btn btn-primary" @click="currentChart = 'steps'">
+        顯示步數
+      </button>
+      <button class="btn btn-primary" @click="currentChart = 'sleep'">
+        顯示睡眠時長
+      </button>
+      <button class="btn btn-primary" @click="currentChart = 'mood'">
+        顯示心情
+      </button>
+      <button @click="toggleVisibility">Switch</button>
+      <button id="back" class="bi bi-x-circle" @click="goBack"></button>
+    </div>
+  </div>
+</template>
+
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import * as echarts from "echarts";
-import ShadowCalendar from "@/views/ShadowCalendar.vue";
-import { useReportDataStore } from "@/Stores/reportDataStore";
+import { ref, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import * as echarts from 'echarts';
+import ShadowCalendar from '@/views/ShadowCalendar.vue';
+import { useReportDataStore } from '@/Stores/reportDataStore';
 
 const getreportData = useReportDataStore();
 
@@ -18,38 +50,41 @@ const goBack = () => {
   }
 };
 
-// API 基本 URL
-const BASE_URL = import.meta.env.VITE_API_BASEURL;
-const API_URL = `${BASE_URL}/dailyhealthrecords`;
-
-const playerData = ref([]);
 const dailyhealthData = ref([]);
+const waterData = ref([]);
+const stepsData = ref([]);
+const sleepData = ref([]);
+const moodData = ref([]);
+const labels = ref([]);
+
 const chartRef = ref(null);
+let chartInstance = null;
 
-let chartInstance; // 單一圖表實例
+const isObjectOneVisible = ref(true);
 
-// 控制顯示哪個報表和動態傳入參數
-const currentChart = ref("water");
+const toggleVisibility = () => {
+  isObjectOneVisible.value = !isObjectOneVisible.value;
+};
 
-// 動態更新的圖表配置
+const currentChart = ref('water');
+
 const chartOptions = ref({
-  title: { text: "" },
-  tooltip: { trigger: "axis" },
-  xAxis: { type: "category", data: [] },
-  yAxis: { type: "value" },
+  title: { text: '' },
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: [] },
+  yAxis: { type: 'value' },
   series: [
     {
-      name: "",
-      type: "bar",
-      data: [],
-    },
-  ],
+      name: '',
+      type: 'bar',
+      data: []
+    }
+  ]
 });
 
-// 將 "HH:mm" 時間格式轉換為小時數
 const convertTimeToHourDecimal = (timeString) => {
-  const [hours, minutes] = timeString.split(":").map(Number);
-  return hours + minutes / 60; // 轉換為小時數
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours + minutes / 60;
 };
 
 const moodToValue = {
@@ -58,202 +93,163 @@ const moodToValue = {
   有點不開心: 2,
   普通: 3,
   開心: 4,
-  非常開心: 5,
+  非常開心: 5
 };
 
-const getData = () => {
+const getData = async () => {
   dailyhealthData.value = getreportData.Data;
-  console.log("25454545", dailyhealthData.value);
-};
-
-const getPlayData = async () => {
-  const waterData = dailyhealthData.value.map((record) => record.water);
-  const stepsData = dailyhealthData.value.map((record) => record.steps);
-  const sleepData = dailyhealthData.value.map((record) =>
+  waterData.value = dailyhealthData.value.map((record) => record.water);
+  stepsData.value = dailyhealthData.value.map((record) => record.steps);
+  sleepData.value = dailyhealthData.value.map((record) =>
     convertTimeToHourDecimal(record.sleep)
   );
-  const moodData = dailyhealthData.value.map(
+  moodData.value = dailyhealthData.value.map(
     (record) => moodToValue[record.mood]
   );
-  const labels = dailyhealthData.value.map((record) => record.hrecordDate);
-  console.log(moodData);
+  labels.value = dailyhealthData.value.map((record) => record.hrecordDate);
+};
 
-  // 根據當前的圖表類型更新動態配置
-  if (currentChart.value === "water") {
+const initializeChart = async () => {
+  if (!chartInstance && chartRef.value) {
+    chartInstance = echarts.init(chartRef.value);
+  }
+  if (!chartInstance) return;
+
+  if (currentChart.value === 'water') {
     chartOptions.value = {
-      title: { text: "飲水量" },
-      xAxis: { type: "category", data: labels },
+      title: { text: '飲水量' },
+      xAxis: { type: 'category', data: labels.value },
       yAxis: {
-        type: "value",
-        title: { text: "Water Intake (ml)" },
-        min: "0",
-        max: "6000",
+        type: 'value',
+        title: { text: 'Water Intake (ml)' },
+        min: '0',
+        max: '6000',
         axisLabel: {
-          formatter: "{value} ml",
-        },
+          formatter: '{value} ml'
+        }
       },
       series: [
         {
-          name: "Water Intake (ml)",
-          type: "bar",
-          data: waterData,
-          itemStyle: { color: "rgba(75, 192, 192, 1)" },
-        },
-      ],
+          name: 'Water Intake (ml)',
+          type: 'bar',
+          data: waterData.value,
+          itemStyle: { color: 'rgba(75, 192, 192, 1)' }
+        }
+      ]
     };
-  } else if (currentChart.value === "steps") {
+  } else if (currentChart.value === 'steps') {
     chartOptions.value = {
-      title: { text: "步數" },
-      xAxis: { type: "category", data: labels },
+      title: { text: '步數' },
+      xAxis: { type: 'category', data: labels.value },
       yAxis: {
-        type: "value",
-        title: { text: "步數" },
-        min: "0",
-        max: "10000",
+        type: 'value',
+        title: { text: '步數' },
+        min: '0',
+        max: '10000',
         axisLabel: {
-          formatter: "{value}步",
-        },
+          formatter: '{value}步'
+        }
       },
       series: [
         {
-          name: "步數",
-          type: "bar",
-          data: stepsData,
-          itemStyle: { color: "orange" },
-        },
-      ],
+          name: '步數',
+          type: 'bar',
+          data: stepsData.value,
+          itemStyle: { color: 'orange' }
+        }
+      ]
     };
-  } else if (currentChart.value === "sleep") {
+  } else if (currentChart.value === 'sleep') {
     chartOptions.value = {
-      title: { text: "入睡時間" },
-      xAxis: { type: "category", data: labels },
+      title: { text: '入睡時間' },
+      xAxis: { type: 'category', data: labels.value },
       yAxis: {
-        type: "value",
-        title: { text: "入睡時間" },
+        type: 'value',
+        title: { text: '入睡時間' },
         min: 0,
         max: 24,
         axisLabel: {
           formatter: (value) => {
             const hours = Math.floor(value);
             const minutes = Math.round((value - hours) * 60);
-            return `${hours.toString().padStart(2, "0")}:${minutes
+            return `${hours.toString().padStart(2, '0')}:${minutes
               .toString()
-              .padStart(2, "0")}`;
-          },
-        },
+              .padStart(2, '0')}`;
+          }
+        }
       },
       series: [
         {
-          name: "Sleep Start Time",
-          type: "line",
-          data: sleepData,
-          itemStyle: { color: "purple" },
-        },
-      ],
+          name: 'Sleep Start Time',
+          type: 'line',
+          data: sleepData.value,
+          itemStyle: { color: 'purple' }
+        }
+      ]
     };
-  } else if (currentChart.value === "mood") {
+  } else if (currentChart.value === 'mood') {
     chartOptions.value = {
-      title: { text: "心情" },
-      xAxis: { type: "category", data: labels },
+      title: { text: '心情' },
+      xAxis: { type: 'category', data: labels.value },
       yAxis: {
-        type: "value",
-        title: { text: "心情" },
+        type: 'value',
+        title: { text: '心情' },
         min: 0,
         max: 5,
         axisLabel: {
-          formatter: function (value) {
-            var moodLabels = [
-              "不透露",
-              "不開心",
-              "有點不開心",
-              "普通",
-              "開心",
-              "非常開心",
+          formatter: (value) => {
+            const moodLabels = [
+              '不透露',
+              '不開心',
+              '有點不開心',
+              '普通',
+              '開心',
+              '非常開心'
             ];
             return moodLabels[value];
-          },
-        },
+          }
+        }
       },
       series: [
         {
-          title: { text: "心情" },
-          min: 0,
-          max: 5,
-          type: "line",
-          data: moodData,
-          itemStyle: { color: "blue" },
-        },
-      ],
+          type: 'line',
+          data: moodData.value,
+          itemStyle: { color: 'blue' }
+        }
+      ]
     };
   }
 
-  chartInstance.setOption(chartOptions.value); // 更新圖表配置
+  chartInstance.setOption(chartOptions.value);
 };
 
-// 初始化圖表
 onMounted(() => {
   getData();
-  getPlayData(); // 加載數據
-  if (chartRef.value) {
-    chartInstance = echarts.init(chartRef.value);
-    getPlayData(); // 加載數據
+  initializeChart();
+});
+
+watch(isObjectOneVisible, (newVal) => {
+  if (newVal === true) {
+    initializeChart();
   }
 });
 
-// 監聽 currentChart 的變化
 watch(currentChart, () => {
-  getPlayData(); // 當 currentChart 改變時執行 getPlayData
+  if (chartInstance) {
+    initializeChart();
+  }
 });
 
-// 監聽 getreportData.Data 的變化
 watch(
   () => getreportData.Data,
   () => {
     getData();
-    getPlayData(); // 當 getreportData.Data 改變時執行 getData
+    initializeChart();
   }
 );
-
-// 控制顯示物件切換的狀態變數
-const isObjectOneVisible = ref(true);
-
-const toggleVisibility = () => {
-  isObjectOneVisible.value = !isObjectOneVisible.value; // 切換顯示的狀態
-};
 </script>
 
-<template>
-  <div id="formborder">
-    <div class="container" id="calendar-title" v-if="!isObjectOneVisible">
-      <!-- Calendar position -->
-      <ShadowCalendar />
-    </div>
-    <!-- 使用 FullCalendar Vue 插件 -->
-    <div class="chart-container" v-else>
-      <div ref="chartRef" style="width: 100%; height: 100%"></div>
-    </div>
-
-    <!-- 使用 d-flex 和 gap 來橫向排列按鈕 -->
-    <div class="d-flex gap-2">
-      <button class="btn btn-primary" @click="currentChart = 'water'">
-        顯示飲水量
-      </button>
-      <button class="btn btn-primary" @click="currentChart = 'steps'">
-        顯示步數
-      </button>
-      <button class="btn btn-primary" @click="currentChart = 'sleep'">
-        顯示睡眠時長
-      </button>
-      <button class="btn btn-primary" @click="currentChart = 'mood'">
-        顯示心情
-      </button>
-      <button @click="toggleVisibility">switch</button>
-      <button id="back" class="bi bi-x-circle" @click="goBack"></button>
-    </div>
-  </div>
-</template>
-
-<style lang="css" scoped>
+<style scoped>
 #formborder {
   display: flex;
   flex-direction: column;
@@ -274,14 +270,7 @@ const toggleVisibility = () => {
   margin-top: 10px;
 }
 
-.chart-container {
-  position: relative;
-  width: 90%;
-  height: 90%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+.chart-container,
 .container {
   position: relative;
   width: 90%;
