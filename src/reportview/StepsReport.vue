@@ -198,11 +198,11 @@ const updateChart = (formattedData) => {
   };
 
   // 設置加載動畫
-  myChart.showLoading();
-  setTimeout(() => {
-    myChart.hideLoading();
+  // myChart.showLoading();
+  // setTimeout(() => {
+  //   myChart.hideLoading();
     myChart.setOption(option);
-  }, 300);
+  // }, 300);
 };
 
 // 修改監聽器

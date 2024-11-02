@@ -220,11 +220,11 @@ const updateChart = (formattedData) => {
     },
   };
 
-  myChart.showLoading();
-  setTimeout(() => {
-    myChart.hideLoading();
+  // myChart.showLoading();
+  // setTimeout(() => {
+  //   myChart.hideLoading();
     myChart.setOption(option);
-  }, 300);
+  // }, 300);
 };
 
 // 監聽器
