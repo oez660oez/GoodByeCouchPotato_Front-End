@@ -1,8 +1,8 @@
 <script setup>
-import { useRouter, useRoute } from "vue-router";
-import { onMounted, ref, watch } from "vue";
-import { Playerinformation } from "@/Stores/PlayerCharacter";
-import { useReportDataStore } from "@/Stores/reportDataStore";
+import { useRouter, useRoute } from 'vue-router';
+import { onMounted, ref, watch } from 'vue';
+import { Playerinformation } from '@/Stores/PlayerCharacter';
+import { useReportDataStore } from '@/Stores/reportDataStore';
 const router = useRouter();
 const route = useRoute();
 
@@ -52,21 +52,21 @@ const firstload = () => {
 const fetchCharacters = async (cId) => {
   try {
     const response = await fetch(`${DAILYHEALTHRECORDS_API_URL}/${cId}`, {
-      method: "GET",
+      method: 'GET'
     });
     if (response.ok) {
       const data = await response.json();
       charactersData.value = data;
       reportData.setReportData(data); // 將 apiData 保存到 Pinia
 
-      console.log("抓取到的資料:", charactersData.value);
+      console.log('抓取到的資料:', charactersData.value);
 
       // test.value = reportData.Data;
       // console.log('000', test.value);
       // console.log('抓取到的資料:', charactersData.value);
     }
   } catch (error) {
-    console.error("Error fetching data:", error.message);
+    console.error('Error fetching data:', error.message);
   }
 };
 
@@ -76,7 +76,7 @@ const fetchPreviousCharacters = async () => {
     const response = await fetch(
       `${PREVIOUSCHARACTERS_API_URL}/${targetAccount}`,
       {
-        method: "GET",
+        method: 'GET'
       }
     );
     if (response.ok) {
@@ -85,27 +85,9 @@ const fetchPreviousCharacters = async () => {
       // console.log('抓取到的資料:', charactersAllData.value);
     }
   } catch (error) {
-    console.error("Error fetching data:", error.message);
+    console.error('Error fetching data:', error.message);
   }
 };
-
-// 監聽 getreportData.Data 的變化
-// watch(
-//   () => reportData.Data,
-//   (newData) => {
-//     if (newData !== oldData) {
-//       reportData.setReportData(charactersData.value); // 當 reportData.Data 改變時執行 getData
-//       console.log('reportData', reportData.Data);
-//     }
-//   }
-// );
-
-// watch(
-//   () => reportData.Data,
-//   () => {
-//     reportData.setReportData(charactersData.value); // 當 getreportData.Data 改變時執行 getData
-//   }
-// );
 </script>
 
 <template>
@@ -144,10 +126,7 @@ const fetchPreviousCharacters = async () => {
               :to="{
                 name: $route.name.startsWith('in-')
                   ? 'in-reportdata'
-                  : 'out-reportdata',
-                // 'in-reportdata',
-                // query: { data: JSON.stringify(character) }
-                // query: { data: character.cId },
+                  : 'out-reportdata'
               }"
             >
               <button @click="fetchCharacters(character.cId)">

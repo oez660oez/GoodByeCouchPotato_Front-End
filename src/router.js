@@ -1,202 +1,214 @@
-import { createWebHistory, createRouter } from "vue-router";
-import OutdoorMap from "./views/OutdoorMap.vue";
-import RoomMap from "./views/RoomMap.vue";
-import ShopView from "./views/ShopView.vue";
-import DailyView from "./views/DailyView.vue";
-import AlltaskView from "./views/AlltaskView.vue";
-import IndexView from "./views/IndexView.vue";
-import DecorationView from "./views/DecorationView.vue";
-import DressView from "./views/DressView.vue";
-import ReportView from "./views/ReportView.vue";
-import SystemView from "./views/SystemView.vue";
-import ForgetPassword from "./components/ForgetPasswordComponent.vue";
-import Feedback from "./components/FeedBack.vue";
-import ChangePassword from "./components/ChangePassword.vue";
-import BodyＭerchandiseComponent from "./components/BodyＭerchandiseComponent.vue";
-import CreateCharacter from "./views/CreateCharacter.vue";
-import NowReport from "./views/NowReport.vue";
-import Reportdata from "./components/Reportdata.vue";
-import WeighttaskView from "./views/WeighttaskView.vue";
-import GameView from "./views/GameView.vue";
-import ShadowCalendar from "./views/ShadowCalendar.vue";
+import { createWebHistory, createRouter } from 'vue-router';
+import OutdoorMap from './views/OutdoorMap.vue';
+import RoomMap from './views/RoomMap.vue';
+import ShopView from './views/ShopView.vue';
+import DailyView from './views/DailyView.vue';
+import AlltaskView from './views/AlltaskView.vue';
+import IndexView from './views/IndexView.vue';
+import DecorationView from './views/DecorationView.vue';
+import DressView from './views/DressView.vue';
+import ReportView from './views/ReportView.vue';
+import SystemView from './views/SystemView.vue';
+import ForgetPassword from './components/ForgetPasswordComponent.vue';
+import Feedback from './components/FeedBack.vue';
+import ChangePassword from './components/ChangePassword.vue';
+import BodyＭerchandiseComponent from './components/BodyＭerchandiseComponent.vue';
+import CreateCharacter from './views/CreateCharacter.vue';
+import NowReport from './views/NowReport.vue';
+import Reportdata from './components/Reportdata.vue';
+import WeighttaskView from './views/WeighttaskView.vue';
+import GameView from './views/GameView.vue';
+import ShadowCalendar from './views/ShadowCalendar.vue';
+import FullCalenderComponent from './components/FullCalenderComponent.vue';
+import ReportComponent from './components/ReportComponent.vue';
 
 const routes = [
   {
-    path: "/",
+    path: '/',
     component: IndexView,
-    name: "index",
+    name: 'index',
     children: [
       {
-        path: "forgetpassword",
+        path: 'forgetpassword',
         component: ForgetPassword,
-        name: "forgetpassword",
-      },
-    ],
+        name: 'forgetpassword'
+      }
+    ]
   },
   {
-    path: "/outdoor",
+    path: '/outdoor',
     component: OutdoorMap,
-    name: "outdoor",
+    name: 'outdoor',
     children: [
       {
-        path: "shop",
+        path: 'shop',
         component: ShopView,
-        name: "out-shop",
+        name: 'out-shop'
       },
       {
-        path: "daily",
+        path: 'daily',
         component: DailyView,
-        name: "out-daily",
+        name: 'out-daily'
       },
       {
-        path: "task",
+        path: 'task',
         component: AlltaskView,
-        name: "out-task",
+        name: 'out-task'
       },
       {
-        path: "dress",
+        path: 'dress',
         component: DressView,
-        name: "out-dress",
+        name: 'out-dress'
       },
       {
-        path: "decoration",
+        path: 'decoration',
         component: DecorationView,
-        name: "out-decoration",
+        name: 'out-decoration'
       },
       {
-        path: "system",
+        path: 'system',
         component: SystemView,
-        name: "out-system",
+        name: 'out-system',
         children: [
           {
-            path: "feedback",
+            path: 'feedback',
             component: Feedback,
-            name: "out-systemfeedback",
+            name: 'out-systemfeedback'
           },
           {
-            path: "changepassword",
+            path: 'changepassword',
             component: ChangePassword,
-            name: "out-changepassword",
-          },
-        ],
+            name: 'out-changepassword'
+          }
+        ]
       },
       {
-        path: "report",
+        path: 'report',
         component: ReportView,
-        name: "out-report",
+        name: 'out-report',
         children: [
           {
-            path: "reportdata",
+            path: 'reportdata',
             component: Reportdata,
-            name: "out-reportdata",
-          },
-        ],
+            name: 'out-reportdata'
+          }
+        ]
       },
       {
-        path: "nowreport",
+        path: 'nowreport',
         component: NowReport,
-        name: "out-nowreport",
-      },
-    ],
+        name: 'out-nowreport'
+      }
+    ]
   },
   {
-    path: "/roommap",
+    path: '/roommap',
     component: RoomMap,
-    name: "roommap",
+    name: 'roommap',
     children: [
       {
-        path: "shop",
+        path: 'shop',
         component: ShopView,
-        name: "in-shop",
+        name: 'in-shop',
         children: [
           {
-            path: "Ｍerchandise",
+            path: 'Ｍerchandise',
             component: BodyＭerchandiseComponent,
-            name: "in-bodyMerchandise",
-          },
-        ],
+            name: 'in-bodyMerchandise'
+          }
+        ]
       },
       {
-        path: "daily",
+        path: 'daily',
         component: DailyView,
-        name: "in-daily",
+        name: 'in-daily'
       },
       {
-        path: "task",
+        path: 'task',
         component: AlltaskView,
-        name: "in-task",
+        name: 'in-task'
       },
       {
-        path: "dress",
+        path: 'dress',
         component: DressView,
-        name: "in-dress",
+        name: 'in-dress'
       },
       {
-        path: "decoration",
+        path: 'decoration',
         component: DecorationView,
-        name: "in-decoration",
+        name: 'in-decoration'
       },
       {
-        path: "system",
+        path: 'system',
         component: SystemView,
-        name: "in-system",
+        name: 'in-system',
         children: [
           {
-            path: "feedback",
+            path: 'feedback',
             component: Feedback,
-            name: "in-systemfeedback",
+            name: 'in-systemfeedback'
           },
           {
-            path: "changepassword",
+            path: 'changepassword',
             component: ChangePassword,
-            name: "in-changepassword",
-          },
-        ],
+            name: 'in-changepassword'
+          }
+        ]
       },
       {
-        path: "report",
+        path: 'report',
         component: ReportView,
-        name: "in-report",
+        name: 'in-report',
         children: [
           {
-            path: "reportdata",
+            path: 'reportdata',
             component: Reportdata,
-            name: "in-reportdata",
-          },
-        ],
+            name: 'in-reportdata'
+          }
+        ]
       },
       {
-        path: "nowreport",
+        path: 'nowreport',
         component: NowReport,
-        name: "in-nowreport",
-      },
-    ],
+        name: 'in-nowreport'
+      }
+    ]
   },
   {
-    path: "/createcharacter",
+    path: '/createcharacter',
     component: CreateCharacter,
-    name: "createcharacter",
+    name: 'createcharacter'
   },
   {
-    path: "/weighttask",
+    path: '/weighttask',
     component: WeighttaskView,
-    name: "weighttask",
+    name: 'weighttask'
   },
   {
-    path: "/gameview",
+    path: '/gameview',
     component: GameView,
-    name: "gameview",
+    name: 'gameview'
   },
   {
-    path: "/shadowcalendar",
+    path: '/shadowcalendar',
     component: ShadowCalendar,
-    name: "shadowcalendar",
+    name: 'shadowcalendar'
   },
+  {
+    path: '/fullcalendarcomponent',
+    component: FullCalenderComponent,
+    name: 'fullcalendarcomponent'
+  },
+  {
+    path: '/reportcomponent',
+    component: ReportComponent,
+    name: 'reportcomponent'
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 });
 
 export default router;
