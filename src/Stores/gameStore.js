@@ -78,6 +78,46 @@ export const useGameStore = defineStore("game", {
     },
   },
   actions: {
+    async initializeEquipmentRender(equipment, account) {
+      try {
+        // 設置 account
+        this.account = account;
+
+        // 清空現有裝備狀態
+        this.equipmentSlots = [null, null, null];
+        this.equippedItems = {
+          accessory: null,
+          hairstyle: null,
+          outfit: null,
+        };
+
+        // 如果沒有傳入裝備數據，則從 API 獲取
+        if (!equipment) {
+          console.log(this.account);
+          equipment = await itemApi.getCharacterEquipment(this.account);
+        }
+
+        console.log("當前裝備狀態:", equipment);
+
+        // 處理每個裝備槽位
+        const equipmentPromises = Object.entries(equipment).map(
+          async ([slot, item]) => {
+            if (item && item.imageName) {
+              return this.handleEquipmentInitialization(slot, item);
+            }
+          }
+        );
+
+        // 等待所有裝備初始化完成
+        await Promise.all(equipmentPromises);
+
+        console.log("裝備渲染初始化完成");
+        return true;
+      } catch (error) {
+        console.error("裝備渲染初始化失敗:", error);
+        return false;
+      }
+    },
     async initializeInventory(account) {
       try {
         this.account = account;
