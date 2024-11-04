@@ -147,6 +147,7 @@ onMounted(() => {
 
 #player p {
   margin: 2px; /* 移除所有方向的 margin */
-  font-family: "cwTeXYen", "Balsamiq Sans", sans-serif;
+  /* 套用font.css效果暫時註解
+  font-family: "cwTeXYen", "Balsamiq Sans", sans-serif; */
 }
 </style>

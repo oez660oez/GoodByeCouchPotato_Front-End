@@ -1,0 +1,24 @@
+@font-face {
+    font-family: 'Cubic11';
+    src: url('/fonts/Cubic_11.woff2') format('woff2'),
+         url('/fonts/Cubic_11.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  /* 定義全域字體變數 */
+  :root {
+    --font-primary: 'Cubic11', sans-serif;
+  }
+  /* 為常用容器添加字體樣式 */
+.container,
+template,
+body,
+[class*="container-"] { /* 支援container-fluid等變體 */
+  font-family: var(--font-primary);
+}
+
+/* 若使用Vue 3 的 <template> 需確保字體能傳遞給子元素 */
+template > * {
+  font-family: inherit;
+}

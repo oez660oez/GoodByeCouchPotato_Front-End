@@ -180,7 +180,7 @@ onMounted(()=>{
     <!-- offset控制留白 -->
     <!-- name其實是select最重要的屬性，沒有會無法傳資料 -->
     <div class="container">
-      <div class="row">
+      <div class="row" id="Frame">
         <h2 class="col-12 mt-5 mb-5 text-center">每月填寫體重</h2>
       </div>
       <!-- end -->
@@ -220,15 +220,16 @@ onMounted(()=>{
         <div class="col-12 text-center">
           <!-- input:submit -->
           <button type="submit" class="button-62">更新</button>
+          <div v-if="errors.general" class="row">
+        <div class="col-12 text-center text-danger" id="error">
+          {{ errors.general }}
+        </div>
+      </div>
         </div>
       </div>
       <!-- end -->
       <!-- 一般錯誤訊息 -->
-      <div v-if="errors.general" class="row">
-        <div class="col-12 text-center text-danger">
-          {{ errors.general }}
-        </div>
-      </div>
+
     </div>
   </form>
 </template>
@@ -236,30 +237,14 @@ onMounted(()=>{
 <style lang="css" scoped>
 .container {
   width: 900px;
-  height: 400px;
-  background: linear-gradient(161.98deg, #fff9e6 13.65%, #fdbdbd 87.85%);
+  height: 450px;
+  background-image: url('/images/WeightForm.png');
   margin: 100px auto;
   position: relative;
-  border-radius: 20px;
-  box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
 }
-/* 修改後的 SweetAlert2 自訂樣式 */
-.swal2-popup.swal-custom-popup {
-  background-image: url("/images/SweetAlert2_Background_test.png") !important;
-  width: 500px;
-  height: 300px;
+#Frame{
+  padding-top: 40px;
 }
-
-/* 如果需要調整按鈕樣式 */
-.swal2-popup.swal-custom-popup .swal2-confirm {
-  background-image: url("/images/SweetAlert2_Button_test.png") !important;
-  background-color: transparent !important;
-  border: none;
-  border-radius: 12px;
-  width: 86px;
-  height: 40px;
-}
-
 .form-control.is-invalid {
   border-color: #dc3545;
   padding-right: calc(1.5em + 0.75rem);
