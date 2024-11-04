@@ -68,15 +68,14 @@ const handleSubmit = async () => {
     const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
+      imageUrl: "/images/SweetAlert2_ERROR.png",
       customClass: {
-        popup: 'swal-custom-popup'
+        popup: "swal-custom-popup",
       },
       imageHeight: 100,
       imageWidth: 380,
       imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
+      confirmButtonText: "",
     });
       return;
     }
@@ -85,15 +84,14 @@ const handleSubmit = async () => {
 
     if (!playerAccount) {
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
+      imageUrl: "/images/SweetAlert2_ERROR.png",
       customClass: {
-        popup: 'swal-custom-popup'
+        popup: "swal-custom-popup",
       },
       imageHeight: 100,
       imageWidth: 380,
       imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
+      confirmButtonText: "",
     });
       return;
     }
@@ -112,9 +110,14 @@ try {
   });
   if (response.ok) {
     await Swal.fire({
-      icon: "success",
-      title: "成功",
-      text: "送出表單成功！",
+      imageUrl: "/images/SweetAlert2_SUCCESS.png",
+      customClass: {
+        popup: "swal-custom-popup", // 更改類別名稱
+      },
+      imageHeight: 100,
+      imageWidth: 390,
+      imageAlt: "A SUCCESS image",
+      confirmButtonText: "",
     });
     //重新載入上個月紀錄
     await loadLastMonthRecord();
@@ -125,44 +128,41 @@ try {
     const errorData = await response.json();
     errors.value.general = errorData.message || "送出表單失敗，請稍後再試";
     await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
+      imageUrl: "/images/SweetAlert2_ERROR.png",
       customClass: {
-        popup: 'swal-custom-popup'
+        popup: "swal-custom-popup",
       },
       imageHeight: 100,
       imageWidth: 380,
       imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
+      confirmButtonText: "",
     });
   }
 } catch (error) {
   console.error("發生錯誤:", error);
   errors.value.general = "發生錯誤，請稍後再試";
-    await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
+  await Swal.fire({
+      imageUrl: "/images/SweetAlert2_ERROR.png",
       customClass: {
-        popup: 'swal-custom-popup'
+        popup: "swal-custom-popup",
       },
       imageHeight: 100,
       imageWidth: 380,
       imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
+      confirmButtonText: "",
     });
 }
   } catch (error) {
     console.error("解析 UserAccount 失敗:", error);
     await Swal.fire({
-      imageUrl: "/images/SweetAlert2_test.png",
+      imageUrl: "/images/SweetAlert2_ERROR.png",
       customClass: {
-        popup: 'swal-custom-popup'
+        popup: "swal-custom-popup",
       },
       imageHeight: 100,
       imageWidth: 380,
       imageAlt: "A Error image",
-      background:"#fff url(/images/SweetAlert2_Background_test.png)",
-      confirmButtonText: '',
+      confirmButtonText: "",
     });
     return;
   }
