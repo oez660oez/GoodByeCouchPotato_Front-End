@@ -52,7 +52,7 @@ const buttonstart = () => {
     }
   }
 };
-const buttonend = () => {
+const buttonup = () => {
   const ctx = context.value;
   if (CutImage.value.length > 0) {
     {
@@ -63,7 +63,16 @@ const buttonend = () => {
       }
     }
   }
+};
+
+const buttonend = () => {
+  buttonup();
   emit("goback");
+};
+
+//避免長按之後沒放開，移開滑鼠會一直卡再下去的畫面
+const buttonNoend = () => {
+  buttonup();
 };
 </script>
 
@@ -76,6 +85,7 @@ const buttonend = () => {
     :width="canvasWidth"
     @mousedown="buttonstart"
     @mouseup="buttonend"
+    @mouseleave="buttonNoend"
   ></canvas>
   <!-- <img :src="chachaURL" /> -->
 </template>

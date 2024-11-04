@@ -27,7 +27,7 @@ const viewComponents = {
   bed: SleepReport,
   smile: MoodReport,
   food: EatingReport,
-  weekiy: WeeklyReport
+  weekiy: WeeklyReport,
 };
 
 // 設置活動按鈕並切換視圖
@@ -120,7 +120,7 @@ onMounted(() => {});
         :class="{ active: activeButton === 'weekiy' }"
         @click="setActiveButton('weekiy')"
       >
-      <i class="fa-solid fa-bicycle"></i>
+        <i class="fa-solid fa-bicycle"></i>
       </button>
     </div>
 

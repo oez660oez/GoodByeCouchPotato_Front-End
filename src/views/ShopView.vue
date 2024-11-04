@@ -87,11 +87,11 @@ const goBack = () => {
 }
 
 .charbody {
-  width: 320px;
+  width: 330px;
   height: 576px;
   /* border: 1px solid rgb(34, 49, 51); */
   margin-top: 30px;
-  margin-left: 50px;
+  margin-left: 30px;
   /* background-color: rgb(199, 180, 154); */
 }
 
@@ -100,7 +100,6 @@ const goBack = () => {
   height: 570px;
   /* border: 1px solid rgb(21, 32, 5); */
   margin-top: 30px;
-  margin-left: 20px;
   /* background-color: rgb(165, 134, 42); */
 }
 
@@ -112,7 +111,10 @@ const goBack = () => {
 
 li {
   background-color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
+
 a,
 a:hover,
 a:visited,

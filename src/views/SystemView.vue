@@ -42,7 +42,7 @@ const goBack = () => {
       <button class="sysbtnfeed">聯絡我們</button></RouterLink
     >
 
-    <div class="goback">
+    <div class="Systemgoback">
       <GoBackComponent @goback="goBack"></GoBackComponent>
     </div>
   </div>
@@ -55,13 +55,15 @@ const goBack = () => {
 #formborder {
   /* display: flex;
     justify-content: flex-end; */
-  border: 1px solid rgb(12, 61, 70);
-  background-color: rgb(245, 235, 225);
-  width: 912px;
-  height: 608px;
+  /* border: 1px solid rgb(12, 61, 70);
+  background-color: rgb(245, 235, 225); */
+  width: 510px;
+  height: 590px;
   position: fixed;
   top: 50px;
   left: 350px;
+  background-image: url("@/assets/system.png");
+  background-size: cover;
 }
 .sysbtnchange {
   position: absolute;

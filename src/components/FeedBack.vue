@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { useRouter, useRoute } from 'vue-router';
-
+import { useRouter, useRoute } from "vue-router";
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const router = useRouter();
@@ -13,26 +12,25 @@ const goBack = () => {
   } else {
     router.go(-1);
   }
-}
+};
 
 // ---開啟表單----------------------------
 const API_URLgetmail = `${Base_URL}/Feedbacks`;
 async function getmail(account) {
   try {
-        var response = await fetch(API_URLgetmail,{
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(account)
-        });
-        if (response.ok) {
-          const feedbackresponseData = await response.json();  // 解析 JSON 回應
-          feedbackdata.value.Email = feedbackresponseData.message;
-        }
-  }
-  catch (error) {
-        // 錯誤處理
-        console.error('There was a problem with the fetch operation:', error);
+    var response = await fetch(API_URLgetmail, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(account),
+    });
+    if (response.ok) {
+      const feedbackresponseData = await response.json(); // 解析 JSON 回應
+      feedbackdata.value.Email = feedbackresponseData.message;
     }
+  } catch (error) {
+    // 錯誤處理
+    console.error("There was a problem with the fetch operation:", error);
+  }
 }
 onMounted(() => {
   const userAccountString = sessionStorage.getItem("UserAccount");
@@ -40,7 +38,6 @@ onMounted(() => {
   const account = userAccount.playerAccount;
   getmail(account);
 });
-
 
 // ---開啟表單 end -----------------------
 
@@ -73,41 +70,60 @@ const feedbacksub = async (event) => {
     }
   }
 
-  form.classList.add('was-validated');  // 添加檢核標記，只有提交後才檢核
+  form.classList.add("was-validated"); // 添加檢核標記，只有提交後才檢核
 };
 
 // ---提交表單 end -----------------------
 </script>
 
 <template>
-    <div id="feedbackborder">
-      <p id="title">聯絡我們</p>
-      <button id="back" class="bi bi-x-circle" @click="goBack"></button>
-  
-      <form class="needs-validation" name="feedbackdata" novalidate @submit.prevent="feedbacksub">
+  <div id="feedbackborder">
+    <p id="title">聯絡我們</p>
+    <!-- <button id="back" class="bi bi-x-circle" @click="goBack"></button> -->
+    <div class="inside">
+      <form
+        class="needs-validation"
+        name="feedbackdata"
+        novalidate
+        @submit.prevent="feedbacksub"
+      >
         <div>
-          <div style="margin-top: 150px; position: relative;">
-            <label for="Email" style="width: 12%; text-align: right">信箱 &nbsp;</label>
+          <div style="margin-top: 150px; position: relative">
+            <label for="Email" style="width: 12%; text-align: right"
+              >信箱 &nbsp;</label
+            >
             <input
               id="Email"
               type="email"
               class="form-control"
-              style="display: inline-block; margin-left: 5px; width: 80% ;height: 24px;"
+              style="
+                display: inline-block;
+                margin-left: 5px;
+                width: 80%;
+                height: 24px;
+              "
               placeholder="請輸入可聯絡之信箱"
               required
               v-model="feedbackdata.Email"
             />
             <div class="invalid-feedback">請輸入正確信箱</div>
           </div>
-  
-          <div style="margin-top: 30px; position: relative;">
+
+          <div style="margin-top: 30px; position: relative">
             <div style="display: flex; flex-wrap: wrap">
-              <label for="feedback" style="width: 12%; text-align: right">您的意見&nbsp;</label>
+              <label for="feedback" style="width: 12%; text-align: right"
+                >您的意見&nbsp;</label
+              >
               <textarea
                 name="feedback"
                 id="feedbackcontent"
                 class="form-control"
-                style="margin-left: 7px; resize: none; width: 80%; height: 200px;"
+                style="
+                  margin-left: 7px;
+                  resize: none;
+                  width: 80%;
+                  height: 200px;
+                "
                 required
                 v-model="feedbackdata.Content"
               ></textarea>
@@ -115,39 +131,44 @@ const feedbacksub = async (event) => {
             </div>
           </div>
         </div>
-  
+
         <div class="modal-footer justify-content-center" style="margin-top: 5%">
-          <button type="button" class="btn button-71" @click="goBack">取消</button>
+          <button type="button" class="btn button-71" @click="goBack">
+            取消
+          </button>
           <button type="submit" class="btn button-70">傳送</button>
         </div>
       </form>
     </div>
+  </div>
 </template>
 
 <style scoped>
 #feedbackborder {
-  border: 1px solid rgb(12, 61, 70);
-  background-color: rgb(230, 213, 198);
+  /* border: 1px solid rgb(12, 61, 70);
+  background-color: rgb(230, 213, 198); */
   width: 912px;
   height: 608px;
   position: fixed;
   top: 50px;
   left: 350px;
+  background-image: url("@/assets/border.png");
+  background-size: cover;
 }
 
-#back {
+/* #back {
   position: absolute;
   border: none;
   top: 0px;
   right: 5px;
   z-index: 1;
-}
+} */
 
 #title {
   font-size: 30px;
   color: rgb(17, 63, 103);
   position: absolute;
-  top: 30px;
+  top: 40px;
   left: 45%;
 }
 
@@ -169,5 +190,9 @@ const feedbacksub = async (event) => {
 .form-control {
   margin-bottom: 0;
   min-height: 40px; /* 確保不會位移 */
+}
+.inside {
+  width: 800px;
+  margin-left: 50px;
 }
 </style>

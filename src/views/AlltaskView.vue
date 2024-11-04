@@ -305,7 +305,7 @@ const goBack = () => {
 #feedbackborder {
   /* border: 1px solid rgb(12, 61, 70);
   background-color: rgb(230, 213, 198); */
-  background-image: url("@/assets/border.png");
+  background-image: url("@/assets/Taskborder.png");
   background-size: cover;
   width: 912px;
   height: 620px;
@@ -314,17 +314,19 @@ const goBack = () => {
   left: 350px;
 }
 
-#back {
+/* #back {
   position: absolute;
   border: none;
   top: 0px;
   right: 5px;
   z-index: 1;
-}
+} */
 
 #title {
   font-size: 30px;
-  margin-top: 30px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
 }
 
 .task-group {

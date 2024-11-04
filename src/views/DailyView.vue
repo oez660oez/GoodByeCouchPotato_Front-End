@@ -230,164 +230,172 @@ const moodOptions = ref([
 <template>
   <div id="formborder">
     <div class="container mt-5 form-container">
-      <h3 class="header-text">每日健康紀錄表</h3>
-      <form @submit.prevent="submitData" novalidate>
-        <!-- 飲水量和步數 -->
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="water" class="form-label">飲水量</label>
-            <div class="input-group">
+      <div class="inside">
+        <h3 class="header-text">每日健康紀錄表</h3>
+        <form @submit.prevent="submitData" novalidate>
+          <!-- 飲水量和步數 -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="water" class="form-label">飲水量</label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="water"
+                  id="water"
+                  v-model="dailyHealthDataSubmit.water"
+                  placeholder="0"
+                  @input="validateWater"
+                  :class="{ 'is-invalid': waterisValid }"
+                  maxlength="5"
+                  min="0"
+                />
+                <span class="input-group-text">c.c.</span>
+              </div>
+              <span v-if="isExistingRecord" class="small-text"
+                >{{ dailyHealthData.water }}c.c. /{{ targetWater }} c.c.</span
+              >
+              <span v-else class="small-text"
+                >0c.c. /{{ targetWater }} c.c.</span
+              >
+              <div class="invalid-feedback">僅能輸入數字，最大長度為5位</div>
+            </div>
+            <div class="col-md-6">
+              <label for="steps" class="form-label">步數</label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="steps"
+                  id="steps"
+                  v-model="dailyHealthDataSubmit.steps"
+                  placeholder="0"
+                  @input="validateSteps"
+                  :class="{ 'is-invalid': stepsisValid }"
+                  maxlength="7"
+                  min="0"
+                />
+                <span class="input-group-text">步</span>
+              </div>
+              <span v-if="isExistingRecord" class="small-text"
+                >{{ dailyHealthData.steps }}步 /{{ targetStep }}步</span
+              >
+              <span v-else class="small-text">0步 /{{ targetStep }}步</span>
+              <div class="invalid-feedback">僅能輸入數字，最大長度為7位</div>
+            </div>
+          </div>
+
+          <!-- 睡眠時間 -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="sleep" class="form-label">睡眠時間</label>
+              <div class="input-group">
+                <input
+                  type="time"
+                  class="form-control"
+                  name="sleep"
+                  id="sleep-time"
+                  v-model="dailyHealthDataSubmit.sleep"
+                />
+              </div>
+              <span class="small-text">{{ dailyHealthData.sleep }}</span>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+              <button type="button" @click="getCurrentTime">
+                取得現在時間
+              </button>
+            </div>
+          </div>
+
+          <!-- 心情狀態 -->
+          <div class="mb-3">
+            <label class="form-label">心情狀態</label>
+            <div>
+              <div
+                v-for="option in moodOptions"
+                :key="option.value"
+                class="form-check form-check-inline"
+              >
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  :name="option.value"
+                  :id="option.value"
+                  :value="option.value"
+                  v-model="dailyHealthDataSubmit.mood"
+                />
+                <label class="form-check-label" :for="option.value">{{
+                  option.label
+                }}</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 飲食記錄 -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="fruits" class="form-label">蔬果</label>
               <input
                 type="text"
                 class="form-control"
-                name="water"
-                id="water"
-                v-model="dailyHealthDataSubmit.water"
+                name="fruits"
+                id="fruits"
+                v-model="dailyHealthDataSubmit.vegetables"
                 placeholder="0"
-                @input="validateWater"
-                :class="{ 'is-invalid': waterisValid }"
-                maxlength="5"
+                @input="validateVegetables"
+                :class="{ 'is-invalid': vegetablesisValid }"
+                maxlength="2"
                 min="0"
               />
-              <span class="input-group-text">c.c.</span>
+              <span v-if="isExistingRecord" class="small-text"
+                >{{ dailyHealthData.vegetables }}份</span
+              >
+              <span v-else class="small-text">0份</span>
+
+              <div class="invalid-feedback">一日最多輸入10份</div>
             </div>
-            <span v-if="isExistingRecord" class="small-text"
-              >{{ dailyHealthData.water }}c.c. /{{ targetWater }} c.c.</span
-            >
-            <span v-else class="small-text">0c.c. /{{ targetWater }} c.c.</span>
-            <div class="invalid-feedback">僅能輸入數字，最大長度為5位</div>
-          </div>
-          <div class="col-md-6">
-            <label for="steps" class="form-label">步數</label>
-            <div class="input-group">
+
+            <div class="col-md-6">
+              <label for="sugar-drinks" class="form-label"
+                >含糖飲料、點心、消夜</label
+              >
               <input
                 type="text"
                 class="form-control"
-                name="steps"
-                id="steps"
-                v-model="dailyHealthDataSubmit.steps"
+                name="sugar-drinks"
+                id="sugar-drinks"
+                v-model="dailyHealthDataSubmit.snacks"
                 placeholder="0"
-                @input="validateSteps"
-                :class="{ 'is-invalid': stepsisValid }"
-                maxlength="7"
+                @input="validateSnacks"
+                :class="{ 'is-invalid': snacksisValid }"
+                maxlength="2"
                 min="0"
               />
-              <span class="input-group-text">步</span>
-            </div>
-            <span v-if="isExistingRecord" class="small-text"
-              >{{ dailyHealthData.steps }}步 /{{ targetStep }}步</span
-            >
-            <span v-else class="small-text">0步 /{{ targetStep }}步</span>
-            <div class="invalid-feedback">僅能輸入數字，最大長度為7位</div>
-          </div>
-        </div>
+              <span v-if="isExistingRecord" class="small-text"
+                >{{ dailyHealthData.snacks }}份</span
+              >
+              <span v-else class="small-text">0份</span>
 
-        <!-- 睡眠時間 -->
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="sleep" class="form-label">睡眠時間</label>
-            <div class="input-group">
-              <input
-                type="time"
-                class="form-control"
-                name="sleep"
-                id="sleep-time"
-                v-model="dailyHealthDataSubmit.sleep"
-              />
-            </div>
-            <span class="small-text">{{ dailyHealthData.sleep }}</span>
-          </div>
-          <div class="col-md-6 d-flex align-items-end">
-            <button type="button" @click="getCurrentTime">取得現在時間</button>
-          </div>
-        </div>
-
-        <!-- 心情狀態 -->
-        <div class="mb-3">
-          <label class="form-label">心情狀態</label>
-          <div>
-            <div
-              v-for="option in moodOptions"
-              :key="option.value"
-              class="form-check form-check-inline"
-            >
-              <input
-                class="form-check-input"
-                type="radio"
-                :name="option.value"
-                :id="option.value"
-                :value="option.value"
-                v-model="dailyHealthDataSubmit.mood"
-              />
-              <label class="form-check-label" :for="option.value">{{
-                option.label
-              }}</label>
+              <div class="invalid-feedback">一日最多輸入10份</div>
             </div>
           </div>
-        </div>
 
-        <!-- 飲食記錄 -->
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="fruits" class="form-label">蔬果</label>
-            <input
-              type="text"
-              class="form-control"
-              name="fruits"
-              id="fruits"
-              v-model="dailyHealthDataSubmit.vegetables"
-              placeholder="0"
-              @input="validateVegetables"
-              :class="{ 'is-invalid': vegetablesisValid }"
-              maxlength="2"
-              min="0"
-            />
-            <span v-if="isExistingRecord" class="small-text"
-              >{{ dailyHealthData.vegetables }}份</span
-            >
-            <span v-else class="small-text">0份</span>
-
-            <div class="invalid-feedback">一日最多輸入10份</div>
-          </div>
-
-          <div class="col-md-6">
-            <label for="sugar-drinks" class="form-label"
-              >含糖飲料、點心、消夜</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              name="sugar-drinks"
-              id="sugar-drinks"
-              v-model="dailyHealthDataSubmit.snacks"
-              placeholder="0"
-              @input="validateSnacks"
-              :class="{ 'is-invalid': snacksisValid }"
-              maxlength="2"
-              min="0"
-            />
-            <span v-if="isExistingRecord" class="small-text"
-              >{{ dailyHealthData.snacks }}份</span
-            >
-            <span v-else class="small-text">0份</span>
-
-            <div class="invalid-feedback">一日最多輸入10份</div>
-          </div>
-        </div>
-
-        <!-- 提交按鈕 -->
-        <button
-          v-if="isExistingRecord"
-          type="submit"
-          class="btn btn-primary w-100"
-        >
-          更新
-        </button>
-        <button v-else type="submit" class="btn btn-primary w-100">Done</button>
-      </form>
-    </div>
-    <div class="goback">
-      <GoBackComponent @goback="goBack"></GoBackComponent>
+          <!-- 提交按鈕 -->
+          <button
+            v-if="isExistingRecord"
+            type="submit"
+            class="btn btn-primary w-100"
+          >
+            更新
+          </button>
+          <button v-else type="submit" class="btn btn-primary w-100">
+            Done
+          </button>
+        </form>
+      </div>
+      <div class="goback">
+        <GoBackComponent @goback="goBack"></GoBackComponent>
+      </div>
     </div>
   </div>
 </template>
@@ -405,5 +413,10 @@ const moodOptions = ref([
   left: 350px;
   background-image: url("@/assets/border.png");
   background-size: cover;
+}
+
+.inside {
+  width: 800px;
+  margin-left: 6%;
 }
 </style>

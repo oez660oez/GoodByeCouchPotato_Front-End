@@ -310,4 +310,10 @@ button {
 .underbutton button {
   margin-left: 20px;
 }
+button {
+  background-color: transparent;
+  border: none;
+  background-image: url("@/assets/Notextbutton.png");
+  width: 80px;
+}
 </style>

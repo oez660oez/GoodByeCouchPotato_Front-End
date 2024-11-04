@@ -380,4 +380,10 @@ button {
   border-radius: 10px;
   position: absolute;
 }
+
+button {
+  background-color: rgba(82, 50, 50, 0.847);
+  border: 1.5px dashed rgba(250, 250, 250, 0.847);
+  color: white;
+}
 </style>

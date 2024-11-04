@@ -6,8 +6,15 @@
 }
 
 .goback {
-  top: 2.5%;
-  left: 850px;
+  top: 5%;
+  left: 840px;
+  position: absolute;
+  z-index: 10;
+}
+
+.Systemgoback {
+  top: 6%;
+  left: 440px;
   position: absolute;
   z-index: 10;
 }

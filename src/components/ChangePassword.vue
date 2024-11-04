@@ -55,7 +55,6 @@ const changepassword = async () => {
 <template>
   <div id="feedbackborder">
     <p id="title">更改密碼</p>
-    <button id="back" class="bi bi-x-circle" @click="goBack"></button>
     <form
       name="renewpassword"
       class="changepasswordform"
@@ -105,26 +104,20 @@ const changepassword = async () => {
 
 <style lang="css" scoped>
 #feedbackborder {
-  border: 1px solid rgb(12, 61, 70);
-  background-color: rgb(246, 232, 204);
   width: 912px;
   height: 608px;
   position: fixed;
   top: 50px;
   left: 350px;
+  background-image: url("@/assets/border.png");
+  background-size: cover;
 }
-#back {
-  position: absolute;
-  border: none;
-  top: 0px;
-  right: 5px;
-  z-index: 1;
-}
+
 #title {
   font-size: 30px;
   color: rgb(0, 0, 0);
   position: absolute;
-  top: 30px;
+  top: 40px;
   left: 45%;
 }
 .changepasswordform {
