@@ -147,13 +147,14 @@ const fetchPreviousCharacters = async () => {
 #formborder {
   display: flex;
   justify-content: flex-end;
-  border: 1px solid rgb(12, 24, 70);
-  background-color: rgb(227, 225, 245);
+  /* border: 1px solid rgb(12, 24, 70); */
+  /* background-color: rgb(227, 225, 245); */
   width: 912px;
   height: 608px;
   position: fixed;
   top: 50px;
   left: 350px;
+  background-image: url('@/components/image/form.png');
 }
 
 .accordion {

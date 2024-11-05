@@ -1,14 +1,24 @@
 <template>
-  <div ref="shadowRootContainer" class="calendar-container"></div>
+  <div id="formborder">
+    <div ref="shadowRootContainer" id="form"></div>
+  </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, onBeforeUnmount } from 'vue';
 import { createApp, h } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useReportDataStore } from '@/Stores/reportDataStore';
+
+const calendarApp = ref(null); // 用於保存日曆應用實例
+const shadowRootContainer = ref(null);
+
+const props = defineProps({
+  currentFullcalendar: String,
+  selectedMonth: String
+});
 
 const getreportData = useReportDataStore();
 
@@ -16,17 +26,25 @@ const dailyhealthData = ref([]);
 const specialDates = ref([]);
 const vegetables = ref([]);
 const snacks = ref([]);
+const exercise = ref([]);
+const cleaning = ref([]);
+
 const datesWithVegetables = ref([]);
 const datesWithSnacks = ref([]);
+const datesWithExercise = ref([]);
+const datesWithCleaning = ref([]);
 
 const imageUrl1 = '/images/Good.png';
 const imageUrl2 = '/images/Bad.png';
+const imageUrl3 = '/images/V.png';
 
 const getData = () => {
   dailyhealthData.value = getreportData.Data;
   specialDates.value = dailyhealthData.value.map((item) => item.hrecordDate);
   vegetables.value = dailyhealthData.value.map((item) => item.vegetables);
   snacks.value = dailyhealthData.value.map((item) => item.snacks);
+  exercise.value = dailyhealthData.value.map((item) => item.exercise);
+  cleaning.value = dailyhealthData.value.map((item) => item.cleaning);
 
   datesWithVegetables.value = specialDates.value.filter(
     (date, index) => vegetables.value[index] > 0
@@ -34,6 +52,96 @@ const getData = () => {
   datesWithSnacks.value = specialDates.value.filter(
     (date, index) => snacks.value[index] > 0
   );
+  datesWithExercise.value = specialDates.value.filter(
+    (date, index) => exercise.value[index] === true
+  );
+  datesWithCleaning.value = specialDates.value.filter(
+    (date, index) => cleaning.value[index] === true
+  );
+};
+
+// 通用函數：根據條件添加圖片
+const addImageToDayCell = (dayCell, date, imageUrl, className, altText) => {
+  if (!dayCell.querySelector(`img.${className}`)) {
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = altText;
+    img.className = className;
+    dayCell.appendChild(img);
+  }
+};
+
+// 主函數：處理不同的 fullcalendar 狀態並添加圖片
+const handleCalendarImages = (dayCell, date) => {
+  if (props.currentFullcalendar === 'health') {
+    if (datesWithVegetables.value.includes(date)) {
+      addImageToDayCell(dayCell, date, imageUrl1, 'img1', 'Vegetables Image');
+    }
+    if (datesWithSnacks.value.includes(date)) {
+      addImageToDayCell(dayCell, date, imageUrl2, 'img2', 'Snacks Image');
+    }
+  } else if (props.currentFullcalendar === 'exercise') {
+    if (datesWithExercise.value.includes(date)) {
+      addImageToDayCell(dayCell, date, imageUrl3, 'img3', 'Exercise Image');
+    }
+  } else if (props.currentFullcalendar === 'cleaning') {
+    if (datesWithCleaning.value.includes(date)) {
+      addImageToDayCell(dayCell, date, imageUrl3, 'img4', 'Cleaning Image');
+    }
+  }
+};
+
+// 渲染日曆函數
+const renderCalendar = () => {
+  if (calendarApp.value) {
+    calendarApp.value.unmount(); // 如果日曆實例已存在，先銷毀它
+  }
+
+  // 檢查並創建 Shadow DOM（僅在初次渲染時創建）
+  let shadowRoot;
+  if (!shadowRootContainer.value.shadowRoot) {
+    shadowRoot = shadowRootContainer.value.attachShadow({ mode: 'open' });
+  } else {
+    shadowRoot = shadowRootContainer.value.shadowRoot;
+  }
+
+  const calendarContainer = document.createElement('div');
+  shadowRoot.appendChild(calendarContainer);
+
+  // 創建並應用樣式
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    .fc-daygrid-day {
+      width: 10px;
+    }
+    .fc .fc-scroller {
+      overflow: hidden;
+    }
+    .fc-daygrid {
+      overflow: hidden;
+    }
+  `;
+  shadowRoot.appendChild(styleElement);
+
+  // 建立日曆應用實例
+  calendarApp.value = createApp({
+    render() {
+      return h(FullCalendar, { options: calendarOptions });
+    }
+  });
+
+  calendarApp.value.mount(calendarContainer);
+
+  // 設置 MutationObserver 觀察變化
+  const observer = new MutationObserver(() => {
+    const dayCells = shadowRoot.querySelectorAll('.fc-daygrid-day');
+    dayCells.forEach((dayCell) => {
+      const date = dayCell.getAttribute('data-date');
+      handleCalendarImages(dayCell, date);
+    });
+  });
+
+  observer.observe(calendarContainer, { childList: true, subtree: true });
 };
 
 const calendarOptions = {
@@ -43,97 +151,80 @@ const calendarOptions = {
     center: 'title',
     right: 'next'
   },
-  aspectRatio: 0.9, // 調整顯示比例，數字越小格子越高
-  contentHeight: 500,
+  height: 600,
   events: specialDates.value.map((date) => ({
     start: date,
     display: 'background'
   }))
 };
 
-const shadowRootContainer = ref(null);
-
+// 在組件加載時初始化日曆
 onMounted(() => {
   getData();
-  const shadowRoot = shadowRootContainer.value.attachShadow({ mode: 'open' });
-
-  const calendarContainer = document.createElement('div');
-  shadowRoot.appendChild(calendarContainer);
-
-  const app = createApp({
-    render() {
-      return h(FullCalendar, {
-        options: calendarOptions
-      });
-    }
-  });
-
-  app.mount(calendarContainer);
-
-  const observer = new MutationObserver(() => {
-    const dayCells = shadowRoot.querySelectorAll('.fc-daygrid-day');
-    dayCells.forEach((dayCell) => {
-      const date = dayCell.getAttribute('data-date');
-      if (
-        datesWithVegetables.value.includes(date) &&
-        !dayCell.querySelector('img.img1')
-      ) {
-        const img1 = document.createElement('img');
-        img1.src = imageUrl1;
-        img1.alt = 'Event Image 1';
-        img1.className = 'img1';
-        dayCell.appendChild(img1);
-      }
-
-      if (
-        datesWithSnacks.value.includes(date) &&
-        !dayCell.querySelector('img.img2')
-      ) {
-        const img2 = document.createElement('img');
-        img2.src = imageUrl2;
-        img2.alt = 'Event Image 2';
-        img2.className = 'img2';
-        dayCell.appendChild(img2);
-      }
-    });
-  });
-
-  observer.observe(calendarContainer, { childList: true, subtree: true });
+  renderCalendar(); // 初次渲染日曆
 });
 
+// 銷毀日曆應用實例
+onBeforeUnmount(() => {
+  if (calendarApp.value) {
+    calendarApp.value.unmount();
+  }
+});
+
+// 監聽 currentFullcalendar 的變化，重新渲染日曆
+watch(
+  () => props.currentFullcalendar,
+  () => {
+    renderCalendar(); // 重新渲染日曆
+  }
+);
+
+// 監聽報告資料變化，重新渲染日曆
 watch(
   () => getreportData.Data,
   () => {
     getData();
+    // renderCalendar();
   }
 );
 </script>
 
-<style scoped>
-/* 主日曆容器 */
+<style lang="css" scoped>
+#formborder {
+  display: flex;
+  justify-content: flex-end;
+  width: 912px;
+  height: 608px;
+  position: fixed;
+  top: 50px;
+  left: 350px;
+}
+#form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 600px;
+}
+
 .calendar-container {
-  width: 90%;
-  /* max-width: 900px; */
-  max-height: 600px;
-  margin-bottom: 20px;
-  margin-left: 89px;
-  overflow: hidden; /* 禁止外層滾動 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 912px;
+  height: 608px;
+  overflow: hidden;
 }
 
-.fc-daygrid-day {
-  overflow: hidden; /* 隱藏超出內容 */
-  height: 10px; /* 調整高度 */
-  width: 50px; /* 調整寬度 */
-  white-space: nowrap;
-}
-
-/* 圖片樣式調整 */
 .img1,
-.img2 {
+.img2,
+.img3,
+.img4 {
   width: 40%;
   height: 40%;
-  position: absolute;
-  z-index: 10; /* 確保圖片在其他元素之上 */
+  position: relative;
+  z-index: 10;
 }
 
 .img1 {
@@ -144,18 +235,12 @@ watch(
 .img2 {
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* 中心對齊 */
+  transform: translate(-50%, -50%);
 }
 
-.fc-daygrid {
-  overflow: hidden;
-}
-
-.fc-view-harness {
-  overflow: hidden;
-}
-
-.fc .fc-scroller {
-  overflow: hidden; /* 禁止 FullCalendar 滾動 */
+.img3,
+.img4 {
+  top: 10%;
+  left: 10%;
 }
 </style>

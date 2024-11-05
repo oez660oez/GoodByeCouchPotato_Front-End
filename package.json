@@ -17,6 +17,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.5",
+    "date-fns": "^4.1.0",
     "echarts": "^5.5.1",
     "font-awesome": "^4.7.0",
     "pinia": "^2.2.4",
