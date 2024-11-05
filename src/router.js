@@ -19,6 +19,7 @@ import Reportdata from "./components/Reportdata.vue";
 import WeighttaskView from "./views/WeighttaskView.vue";
 import GameView from "./views/GameView.vue";
 import ShadowCalendar from "./views/ShadowCalendar.vue";
+import StartStory from "./views/StartStory.vue";
 
 const routes = [
   {
@@ -191,6 +192,11 @@ const routes = [
     path: "/shadowcalendar",
     component: ShadowCalendar,
     name: "shadowcalendar",
+  },
+  {
+    path: "/StartStory",
+    component: StartStory,
+    name: "startstory",
   },
 ];
 
