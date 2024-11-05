@@ -189,7 +189,7 @@ onMounted(()=>{
         <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="weight" class="form-label">體重</label>
         </div>
-        <div class="col-4 col-xl-3">
+        <div class="col-4 col-xl-3" id="input-wrapper">
           <input
             v-model="form.weight"
             type="text"
@@ -221,7 +221,7 @@ onMounted(()=>{
           <!-- input:submit -->
           <button type="submit" class="button-62">更新</button>
           <div v-if="errors.general" class="row">
-        <div class="col-12 text-center text-danger" id="error">
+        <div class="col-12 text-center text-danger" id="buttonError">
           {{ errors.general }}
         </div>
       </div>
@@ -236,14 +236,34 @@ onMounted(()=>{
 
 <style lang="css" scoped>
 .container {
-  width: 900px;
-  height: 450px;
+  max-width: 900px; /* 改用最大寬度 */
+  min-width: 320px; /* 設定最小寬度避免過度壓縮 */
+  height: auto; /* 高度自適應 */
+  min-height: 450px;
   background-image: url('/images/WeightForm.png');
+  background-size: 100% 100%; /* 確保背景圖片完整顯示 */
+  background-repeat: no-repeat;
   margin: 100px auto;
   position: relative;
+  padding: 40px 15px; /* 增加左右內距 */
+}
+@media (max-width: 768px) {
+  .container {
+    margin: 15px auto;
+    padding: 20px 10px;
+  }
 }
 #Frame{
   padding-top: 40px;
+}
+#input-wrapper{
+  position: relative;
+}
+.invalid-feedback{
+  position: absolute;
+}
+#buttonError{
+  position: absolute;
 }
 .form-control.is-invalid {
   border-color: #dc3545;
