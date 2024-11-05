@@ -194,11 +194,11 @@ onMounted(() => {
 
 .view-area {
   padding: 10px;
-  margin-top: 70px;
+  margin-top: 50px;
   margin-left: 30px;
   margin-right: 90px; /* 為右側按鈕預留空間 */
   /* height: calc(100% - 30px); 減去標題的高度 */
   overflow-y: auto; /* 內容過多時可以滾動 */
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
 </style>
