@@ -57,7 +57,9 @@ const goBack = () => {
   }
 };
 
-onMounted(() => {});
+onMounted(() => {
+  setActiveButton("shoes");
+});
 </script>
 
 <template>
@@ -133,7 +135,7 @@ onMounted(() => {});
 <style lang="css" scoped>
 #formborder {
   border: 1px solid rgb(12, 61, 70);
-  background-color: rgb(230, 213, 198);
+  background-color: rgb(227, 224, 222);
   width: 912px;
   height: 608px;
   position: fixed;
@@ -143,12 +145,12 @@ onMounted(() => {});
 
 .button-container {
   position: absolute;
-  right: 20px;
-  top: 55%;
+  right: 31px;
+  top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  /* gap: 5px; */
 }
 
 .icon-button {
@@ -157,7 +159,7 @@ onMounted(() => {});
   cursor: pointer;
   padding: 10px;
   font-size: 30px;
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
 }
 
 .icon-button.active {
@@ -166,7 +168,7 @@ onMounted(() => {});
 }
 
 .icon-button:hover {
-  transform: scale(1.1);
+  transform: scale(1);
   color: rgb(240, 246, 247);
   background-color: rgba(20, 77, 87, 0.668);
 }
@@ -192,9 +194,9 @@ onMounted(() => {});
 
 .view-area {
   padding: 10px;
-  margin-top: 50px;
-  margin-left: 10px;
-  margin-right: 100px; /* 為右側按鈕預留空間 */
+  margin-top: 70px;
+  margin-left: 30px;
+  margin-right: 90px; /* 為右側按鈕預留空間 */
   /* height: calc(100% - 30px); 減去標題的高度 */
   overflow-y: auto; /* 內容過多時可以滾動 */
   border: 1px solid black;
