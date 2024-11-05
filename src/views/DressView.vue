@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, onBeforeMount } from "vue";
 import { useRouter, useRoute } from 'vue-router';
 import { useGameStore } from "@/Stores/gameStore";
 import { useGameEvents } from "@/composables/useGameEvents";
 import InventoryCanvas from '@/components/game/InventoryCanvas.vue';
+import GoBackComponent from "@/components/GoBackComponent.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -33,7 +34,6 @@ const initializeInventory = async () => {
   }
 };
 
-
 onMounted(async () => {
   try {
     await initializeInventory();
@@ -57,6 +57,7 @@ onUnmounted(async () => {
 const goBack = async () => {
   try {
     await gameStore.saveInventoryState();
+    await gameStore.syncEquipmentToPinia();
   } catch (error) {
     console.error("Failed to save inventory state:", error);
   }
@@ -72,11 +73,13 @@ const goBack = async () => {
 <template>
   <div id="formborder">
     <div class="canvas-container">
-      <button id="back" @click="goBack"></button>
+      <div class="dress">
+      <GoBackComponent @goback="goBack"></GoBackComponent>
+    </div>
       <InventoryCanvas
         ref="inventoryCanvasRef"
-        :width="1092"
-        :height="622"
+        :width="802"
+        :height="535"
       />
     </div>
   </div>
@@ -87,20 +90,18 @@ const goBack = async () => {
   display: flex;
   flex-direction: column;
   background-color: transparent;
-  width: 1092px;
-  height: 622px;
   position: fixed;
-  top: 40px;
+  top: 60px;
   left: 332px;
 }
 
-#back {
+.dress {
   border: none;
   position: absolute;
-  width: 45px;
-  height: 45px;
-  top: 5px;
-  right: 5px;
+  width: 32px;
+  height: 42px;
+  top: 90px;
+  left: 725px;
   background-color: transparent;
 }
 

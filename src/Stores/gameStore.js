@@ -7,7 +7,14 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 export const useGameStore = defineStore("game", {
   state: () => ({
-    inventoryItems: new Array(15).fill(null),
+    inventoryItems: [],
+    currentPage: 0,
+    itemsPerPage: 9,
+    totalPages: 0,
+    paginationButtons: {
+      prev: { x: 0, y: 0, width: 30, height: 30 },
+      next: { x: 0, y: 0, width: 30, height: 30 },
+    },
     equipmentSlots: [null, null, null],
     equippedItems: {
       accessory: null,
@@ -17,12 +24,14 @@ export const useGameStore = defineStore("game", {
     itemsData: new Map(),
     inventoryOpen: false,
     inventoryBackground: null,
+    prevButtonImg: null,
+    nextButtonImg: null,
     account: null,
     slotConfig: {
-      size: 105,
-      cols: 5,
+      size: 70,
+      cols: 3,
       rows: 3,
-      padding: 15.5,
+      padding: 35,
     },
     inventoryPosition: {
       x: 0,
@@ -61,104 +70,120 @@ export const useGameStore = defineStore("game", {
     equippedItemsMap: new Map(), // 追踪哪些物品已被裝備
     grayImageCache: new Map(), // 緩存灰色版本的圖片
   }),
-  actions: {
-    initializePositions(canvas) {
-      if (!canvas) return;
-
-      const inventoryX = canvas.width / 3 - 200;
-      const inventoryY = canvas.height / 3 - 200;
-
-      this.inventoryPosition = { x: inventoryX, y: inventoryY };
-
-      this.itemSlots = [];
-      for (let row = 0; row < this.slotConfig.rows; row++) {
-        for (let col = 0; col < this.slotConfig.cols; col++) {
-          this.itemSlots.push({
-            x:
-              inventoryX +
-              437 +
-              col * (this.slotConfig.size + this.slotConfig.padding),
-            y:
-              inventoryY +
-              163 +
-              row * (this.slotConfig.size + this.slotConfig.padding),
-          });
-        }
-      }
-
-      this.equipmentSlotsPosition = [];
-      for (let i = 0; i < 3; i++) {
-        this.equipmentSlotsPosition.push({
-          x: inventoryX + 253,
-          y:
-            inventoryY +
-            193 +
-            i * (this.slotConfig.size + this.slotConfig.padding),
-        });
-      }
-
-      this.previewBox = {
-        x: inventoryX + 40,
-        y: inventoryY + 200,
-        width: 185,
-        height: 300,
-      };
+  getters: {
+    currentPageItems() {
+      const start = this.currentPage * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.inventoryItems.slice(start, end);
     },
-    async initializeInventory(account) {
+  },
+  actions: {
+    async initializeEquipmentRender(equipment, account) {
       try {
+        // 設置 account
         this.account = account;
-        this.loadedSprites.clear();
-        console.log("初始化背包 - 開始");
-        this.inventoryBackground = await this.loadImage(
-          "/images/BackPack_Test.png"
-        );
 
-        const [equipment, userItems] = await Promise.all([
-          itemApi.getCharacterEquipment(account),
-          itemApi.getUserItems(account),
-        ]);
-        console.log("當前裝備狀態:", equipment);
-        this.inventoryItems = new Array(15).fill(null);
+        // 清空現有裝備狀態
         this.equipmentSlots = [null, null, null];
         this.equippedItems = {
           accessory: null,
           hairstyle: null,
           outfit: null,
         };
-        const equippedImageNames = new Set();
+
+        // 如果沒有傳入裝備數據，則從 API 獲取
+        if (!equipment) {
+          console.log(this.account);
+          equipment = await itemApi.getCharacterEquipment(this.account);
+        }
+
+        console.log("當前裝備狀態:", equipment);
+
+        // 處理每個裝備槽位
+        const equipmentPromises = Object.entries(equipment).map(
+          async ([slot, item]) => {
+            if (item && item.imageName) {
+              return this.handleEquipmentInitialization(slot, item);
+            }
+          }
+        );
+
+        // 等待所有裝備初始化完成
+        await Promise.all(equipmentPromises);
+
+        console.log("裝備渲染初始化完成");
+        return true;
+      } catch (error) {
+        console.error("裝備渲染初始化失敗:", error);
+        return false;
+      }
+    },
+    async initializeInventory(account) {
+      try {
+        this.account = account;
+        this.loadedSprites.clear();
+        this.inventoryItems = []; // 清空物品陣列
+        this.currentPage = 0;
+        this.equipmentSlots = [null, null, null];
+        this.equippedItems = {
+          accessory: null,
+          hairstyle: null,
+          outfit: null,
+        };
+        this.itemsData.clear(); // 清空物品數據
+        console.log("初始化背包 - 開始");
+        this.inventoryBackground = await this.loadImage("/images/BackPack.png");
+
+        const [equipment, userItems] = await Promise.all([
+          itemApi.getCharacterEquipment(account),
+          itemApi.getUserItems(account),
+        ]);
+        console.log("當前裝備狀態:", equipment);
         for (const [slot, item] of Object.entries(equipment)) {
           if (item && item.imageName) {
             await this.handleEquipmentInitialization(slot, item);
           }
         }
 
-        // 處理物品欄的物品
-        let inventoryIndex = 0;
+        // 處理背包物品
+        const processedItems = new Set(); // 用於追蹤已處理的物品
         for (const item of userItems) {
-          if (inventoryIndex < 15) {
-            const shopImage = await this.loadImage(item.imageName);
-            if (shopImage) {
-              const imageName = item.imageName.split("/").pop();
+          const shopImage = await this.loadImage(item.imageName);
+          if (shopImage) {
+            const imageName = item.imageName.split("/").pop();
+            // 檢查是否已經處理過這個物品
+            if (!processedItems.has(imageName)) {
               const itemData = await itemApi.getItemByShopImage(imageName);
-
               if (itemData) {
                 this.itemsData.set(shopImage, {
                   type: this.typeMapping[itemData.pClass] || itemData.pClass,
                   imageName: imageName,
                   fullImagePath: itemData.pImageAll,
                 });
-                this.inventoryItems[inventoryIndex] = shopImage;
-                inventoryIndex++;
+                this.inventoryItems.push(shopImage);
+                processedItems.add(imageName); // 標記為已處理
               }
             }
           }
         }
-        console.log("背包初始化完成");
+
+        this.totalPages = Math.ceil(
+          this.inventoryItems.length / this.itemsPerPage
+        );
+        this.currentPage = 0;
+        console.log("背包初始化完成，總頁數：", this.totalPages);
 
         await this.syncEquipmentToPinia();
       } catch (error) {
         console.error("Error in initializeInventory:", error);
         throw error;
+      }
+    },
+    changePage(direction) {
+      if (direction === "next" && this.currentPage < this.totalPages - 1) {
+        this.currentPage++;
+      } else if (direction === "prev" && this.currentPage > 0) {
+        this.currentPage--;
       }
     },
     async createEquippedSprite(imageName) {
@@ -179,7 +204,7 @@ export const useGameStore = defineStore("game", {
         await new Promise((resolve) => {
           const checkLoaded = () => {
             if (sprite.loaded) resolve();
-            else setTimeout(checkLoaded, 100);
+            else setTimeout(checkLoaded, 10);
           };
           checkLoaded();
         });
@@ -278,10 +303,22 @@ export const useGameStore = defineStore("game", {
           equipmentData.outfit?.imageName
         );
 
+        console.log("更新前的 Pinia 狀態:", {
+          Head: playerCharacterStore.Head,
+          Upper: playerCharacterStore.Upper,
+          Lower: playerCharacterStore.Lower,
+        });
+
         // 更新 Pinia store
         playerCharacterStore.Head = accessoryCode?.toString() || "";
         playerCharacterStore.Upper = hairstyleCode?.toString() || "";
         playerCharacterStore.Lower = outfitCode?.toString() || "";
+
+        console.log("更新後的 Pinia 狀態:", {
+          Head: playerCharacterStore.Head,
+          Upper: playerCharacterStore.Upper,
+          Lower: playerCharacterStore.Lower,
+        });
 
         return true;
       } catch (error) {
@@ -357,7 +394,9 @@ export const useGameStore = defineStore("game", {
     async handleEquip(itemImage, fromIndex) {
       try {
         console.log("開始裝備物品:", fromIndex);
-        let itemInfo = this.itemsData.get(itemImage);
+        const actualItem = this.inventoryItems[fromIndex];
+        let itemInfo = this.itemsData.get(actualItem);
+
         if (!itemInfo) {
           console.warn("找不到物品資訊");
           return;
@@ -377,7 +416,7 @@ export const useGameStore = defineStore("game", {
 
         if (slotIndex !== -1) {
           // 設置新裝備
-          this.equipmentSlots[slotIndex] = itemImage;
+          this.equipmentSlots[slotIndex] = actualItem;
           this.equippedItems[slotType] = result.sprite;
         }
       } catch (error) {
@@ -432,8 +471,9 @@ export const useGameStore = defineStore("game", {
       }
 
       // 渲染物品欄
+      const currentItems = this.currentPageItems;
       this.itemSlots.forEach((slot, index) => {
-        const item = this.inventoryItems[index];
+        const item = currentItems[index];
         if (item && item instanceof Image) {
           // 檢查該物品是否在裝備欄中
           const isEquipped = this.equipmentSlots.some((equippedItem) => {
@@ -489,8 +529,79 @@ export const useGameStore = defineStore("game", {
           this.slotConfig.size
         );
       }
+      this.renderPaginationButtons(ctx);
     },
+    async renderPaginationButtons(ctx) {
+      // 確保按鈕圖片已載入
+      if (!this.prevButtonImg) {
+        this.prevButtonImg = await this.loadImage("/images/lastpagebutton.png");
+      }
+      if (!this.nextButtonImg) {
+        this.nextButtonImg = await this.loadImage("/images/nextpagebutton.png");
+      }
 
+      // 檢查圖片是否成功載入
+      if (!this.prevButtonImg || !this.nextButtonImg) {
+        console.warn("分頁按鈕圖片載入失敗");
+        return;
+      }
+
+      // 繪製上一頁按鈕
+      if (this.currentPage > 0) {
+        ctx.drawImage(
+          this.prevButtonImg,
+          this.paginationButtons.prev.x,
+          this.paginationButtons.prev.y,
+          this.paginationButtons.prev.width,
+          this.paginationButtons.prev.height
+        );
+      } else {
+        // 如果是第一頁，繪製半透明的按鈕
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(
+          this.prevButtonImg,
+          this.paginationButtons.prev.x,
+          this.paginationButtons.prev.y,
+          this.paginationButtons.prev.width,
+          this.paginationButtons.prev.height
+        );
+        ctx.globalAlpha = 1.0;
+      }
+
+      // 繪製下一頁按鈕
+      if (this.currentPage < this.totalPages - 1) {
+        ctx.drawImage(
+          this.nextButtonImg,
+          this.paginationButtons.next.x,
+          this.paginationButtons.next.y,
+          this.paginationButtons.next.width,
+          this.paginationButtons.next.height
+        );
+      } else {
+        // 如果是最後一頁，繪製半透明的按鈕
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(
+          this.nextButtonImg,
+          this.paginationButtons.next.x,
+          this.paginationButtons.next.y,
+          this.paginationButtons.next.width,
+          this.paginationButtons.next.height
+        );
+        ctx.globalAlpha = 1.0;
+      }
+
+      // 繪製頁碼文字
+      ctx.fillStyle = "#000000";
+      ctx.font = "bold 20px 微軟正黑體";
+      ctx.textAlign = "center";
+
+      const pageText = `${this.currentPage + 1}/${this.totalPages}`;
+      ctx.fillText(
+        pageText,
+        this.paginationButtons.prev.x + 75,
+        this.paginationButtons.prev.y + 23
+      );
+    },
     drawPreviewBox(ctx, player) {
       if (!player) return;
       if (player && player.image) {
@@ -542,22 +653,45 @@ export const useGameStore = defineStore("game", {
 
       let offsetX, offsetY;
       if (type === "inventory") {
-        offsetX = clickX - this.itemSlots[index].x;
-        offsetY = clickY - this.itemSlots[index].y;
-      } else {
-        offsetX = clickX - this.equipmentSlotsPosition[index].x;
-        offsetY = clickY - this.equipmentSlotsPosition[index].y;
-      }
+        const slot = this.itemSlots[index];
 
-      this.dragState = {
-        isDragging: true,
-        draggedItem: item,
-        sourceIndex: index,
-        sourceType: type,
-        dragImage: item,
-        offsetX,
-        offsetY,
-      };
+        if (!slot) {
+          console.warn("無法找到對應的物品格子位置");
+          return;
+        }
+
+        offsetX = clickX - slot.x;
+        offsetY = clickY - slot.y;
+        const actualIndex = this.currentPage * this.itemsPerPage + index;
+        const actualItem = this.inventoryItems[actualIndex];
+        this.dragState = {
+          isDragging: true,
+          draggedItem: actualItem, // 使用實際的物品
+          sourceIndex: actualIndex, // 儲存實際的索引
+          sourceType: type,
+          dragImage: actualItem,
+          offsetX,
+          offsetY,
+        };
+      } else {
+        const slot = this.equipmentSlotsPosition[index];
+        if (!slot) {
+          console.warn("無法找到對應的裝備格子位置");
+          return;
+        }
+        offsetX = clickX - slot.x;
+        offsetY = clickY - slot.y;
+
+        this.dragState = {
+          isDragging: true,
+          draggedItem: item,
+          sourceIndex: index,
+          sourceType: type,
+          dragImage: item,
+          offsetX,
+          offsetY,
+        };
+      }
     },
 
     updateDrag(event) {
@@ -635,6 +769,14 @@ export const useGameStore = defineStore("game", {
     handleInventoryClick(x, y) {
       if (!this.inventoryOpen) return;
 
+      if (this.isClickInButton(x, y, this.paginationButtons.prev)) {
+        this.changePage("prev");
+        return;
+      }
+      if (this.isClickInButton(x, y, this.paginationButtons.next)) {
+        this.changePage("next");
+        return;
+      }
       // 處理物品欄點擊
       const inventorySlotIndex = this.itemSlots.findIndex(
         (slot) =>
@@ -674,13 +816,20 @@ export const useGameStore = defineStore("game", {
           y >= slot.y &&
           y <= slot.y + this.slotConfig.size
       );
-
       if (
         equipmentSlotIndex !== -1 &&
         this.equipmentSlots[equipmentSlotIndex]
       ) {
         this.handleUnequip(equipmentSlotIndex);
       }
+    },
+    isClickInButton(x, y, button) {
+      return (
+        x >= button.x &&
+        x <= button.x + button.width &&
+        y >= button.y &&
+        y <= button.y + button.height
+      );
     },
     async saveInventoryState() {
       try {
@@ -754,7 +903,6 @@ export const useGameStore = defineStore("game", {
     getItemData(item) {
       return this.itemsData.get(item);
     },
-
     async toggleInventory() {
       if (this.inventoryOpen) {
         // 關閉物品欄時儲存狀態
@@ -775,76 +923,8 @@ export const useGameStore = defineStore("game", {
         console.log("準備開啟背包");
         try {
           if (this.account) {
-            const currentEquipment = {
-              accessory: this.equippedItems.accessory,
-              hairstyle: this.equippedItems.hairstyle,
-              outfit: this.equippedItems.outfit,
-            };
-            const currentEquipmentSlots = [...this.equipmentSlots];
-
-            const [equipment, userItems] = await Promise.all([
-              itemApi.getCharacterEquipment(this.account),
-              itemApi.getUserItems(this.account),
-            ]);
-
-            // 重置物品欄和裝備數據
-            this.inventoryItems = new Array(15).fill(null);
-            this.equippedItemsMap.clear(); // 重置已裝備物品的追蹤
-            // 如果沒有現有裝備，才初始化裝備欄
-            if (
-              !currentEquipment.accessory &&
-              !currentEquipment.hairstyle &&
-              !currentEquipment.outfit
-            ) {
-              this.equipmentSlots = [null, null, null];
-              this.equippedItems = {
-                accessory: null,
-                hairstyle: null,
-                outfit: null,
-              };
-
-              // 處理裝備數據
-              for (const [slot, item] of Object.entries(equipment)) {
-                if (item && item.imageName) {
-                  await this.handleEquipmentInitialization(slot, item);
-                }
-              }
-            } else {
-              // 保持現有裝備狀態
-              this.equipmentSlots = currentEquipmentSlots;
-              this.equippedItems = currentEquipment;
-            }
-            // 處理物品欄數據
-            let inventoryIndex = 0;
-            for (const item of userItems) {
-              if (inventoryIndex < 15) {
-                const shopImage = await this.loadImage(item.imageName);
-                if (shopImage) {
-                  const imageName = item.imageName.split("/").pop();
-                  const itemData = await itemApi.getItemByShopImage(imageName);
-
-                  if (itemData) {
-                    this.itemsData.set(shopImage, {
-                      type:
-                        this.typeMapping[itemData.pClass] || itemData.pClass,
-                      imageName: imageName,
-                      fullImagePath: itemData.pImageAll,
-                    });
-                    this.inventoryItems[inventoryIndex] = shopImage;
-
-                    // 檢查此物品是否已裝備
-                    const isEquipped = Object.values(equipment).some(
-                      (equip) => equip && equip.imageName === item.imageName
-                    );
-                    if (isEquipped) {
-                      this.equippedItemsMap.set(shopImage, true);
-                    }
-
-                    inventoryIndex++;
-                  }
-                }
-              }
-            }
+            // 只有當物品清單為空時才重新初始化
+            await this.initializeInventory(this.account);
           }
           this.inventoryOpen = true;
           router.push("/outdoor/dress");

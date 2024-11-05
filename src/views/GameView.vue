@@ -54,8 +54,9 @@ watch(
 );
 
 onMounted(async () => {
+  gameStore.account = playerAccount
   console.log("Component mounted");
-  gameStore.initializeInventory(playerAccount)
+  gameStore.initializeEquipmentRender(null,playerAccount);
   await initializeGame();
 });
 
