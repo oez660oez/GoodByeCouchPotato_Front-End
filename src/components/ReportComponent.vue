@@ -1,9 +1,3 @@
-<template>
-  <div id="formborder">
-    <div ref="chartRef" id="form" style="width: 100%; height: 100%"></div>
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import * as echarts from 'echarts';
@@ -12,7 +6,7 @@ import { format, eachDayOfInterval } from 'date-fns';
 
 const props = defineProps({
   currentChart: String,
-  selectedMonth: String // 接收選擇的月份
+  selectedMonth: String
 });
 
 const getreportData = useReportDataStore();
@@ -31,48 +25,40 @@ const allDates = ref([]);
 const generateMonthDates = (selectedMonth) => {
   const [year, month] = selectedMonth.split('-').map(Number);
   const startDate = new Date(year, month - 1, 1);
-  const endDate = new Date(year, month, 0); // 該月最後一天
+  const endDate = new Date(year, month, 0);
   const allDates = eachDayOfInterval({ start: startDate, end: endDate }).map(
     (date) => format(date, 'yyyy-MM-dd')
   );
-
-  // 選取每隔一天的日期
   return allDates.filter((_, index) => index % 2 === 0);
 };
+
 // 篩選並處理當月的資料
 const filterDataByMonth = () => {
-  const allData = getreportData.Data; // 從 getreportData 取出資料
+  const allData = getreportData.Data;
   allDates.value = generateMonthDates(props.selectedMonth);
 
-  // 根據 selectedMonth 篩選符合該月份的資料
   const filteredData = allData.filter((record) => {
-    const recordMonth = record.hrecordDate.slice(0, 7); // 提取 YYYY-MM 格式
+    const recordMonth = record.hrecordDate.slice(0, 7);
     return recordMonth === props.selectedMonth;
   });
 
-  // 建立一個日期到資料的映射
   const dataMap = {};
   filteredData.forEach((record) => {
     dataMap[record.hrecordDate] = record;
   });
 
-  // 將資料按照 allDates 補齊缺失的日期，使用 0 填補缺失數據
   waterData.value = allDates.value.map((date) =>
     dataMap[date] ? dataMap[date].water : 0
   );
-
   stepsData.value = allDates.value.map((date) =>
     dataMap[date] ? dataMap[date].steps : 0
   );
-
   sleepData.value = allDates.value.map((date) =>
     dataMap[date] ? convertTimeToHourDecimal(dataMap[date].sleep) : 0
   );
-
   moodData.value = allDates.value.map((date) =>
     dataMap[date] ? moodToValue[dataMap[date].mood] : 0
   );
-  // console.log('4555', moodData.value);
   labels.value = filteredData.map((record) => record.hrecordDate);
 };
 
@@ -100,7 +86,34 @@ const initializeChart = () => {
 
   let chartOptions = {
     title: { text: '飲水量' },
-    xAxis: { type: 'category', data: allDates.value },
+    tooltip: {
+      trigger: 'axis',
+      formatter: function (params) {
+        const dataPoint = params[0];
+        if (!dataPoint) return '無數據';
+        return `${dataPoint.name} ${chartOptions.title.text}: ${dataPoint.value} ml`;
+      },
+      axisPointer: {
+        type: 'line',
+        lineStyle: {
+          color: 'black',
+          width: 1,
+          type: 'dashed'
+        }
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: allDates.value,
+      axisLabel: {
+        rotate: 45,
+        interval: 0,
+        margin: 15
+      },
+      axisTick: {
+        alignWithLabel: true
+      }
+    },
     yAxis: {
       type: 'value',
       min: 0,
@@ -112,93 +125,90 @@ const initializeChart = () => {
         name: 'Water Intake (ml)',
         type: 'bar',
         data: waterData.value,
-        itemStyle: { color: 'rgba(75, 192, 192, 1)' }
+        itemStyle: { color: '#82b1ff' }
       }
-    ]
+    ],
+    grid: {
+      left: '3%',
+      right: '3%',
+      bottom: '10%',
+      containLabel: true
+    }
   };
 
   if (props.currentChart === 'steps') {
-    chartOptions = {
-      title: { text: '步數' },
-      xAxis: { type: 'category', data: allDates.value },
-      yAxis: {
-        type: 'value',
-        min: 0,
-        max: 10000,
-        axisLabel: { formatter: '{value}步' }
-      },
-      series: [
-        {
-          name: '步數',
-          type: 'bar',
-          data: stepsData.value,
-          itemStyle: { color: 'orange' }
-        }
-      ]
+    chartOptions.title.text = '步數';
+    chartOptions.yAxis.max = 10000;
+    chartOptions.series[0].data = stepsData.value;
+    chartOptions.series[0].itemStyle.color = '#ffae42';
+    chartOptions.tooltip.formatter = function (params) {
+      const dataPoint = params[0];
+      return `${dataPoint.name} ${chartOptions.title.text}: ${dataPoint.value} 步`;
     };
   } else if (props.currentChart === 'sleep') {
-    chartOptions = {
-      title: { text: '入睡時間' },
-      xAxis: { type: 'category', data: allDates.value },
-      yAxis: {
-        type: 'value',
-        min: 0,
-        max: 24,
-        axisLabel: {
-          formatter: (value) => {
-            const hours = Math.floor(value);
-            const minutes = Math.round((value - hours) * 60);
-            return `${hours.toString().padStart(2, '0')}:${minutes
-              .toString()
-              .padStart(2, '0')}`;
-          }
+    chartOptions.title.text = '入睡時間';
+    chartOptions.yAxis = {
+      type: 'value',
+      min: 0,
+      max: 24,
+      axisLabel: {
+        formatter: (value) => {
+          const hours = Math.floor(value);
+          const minutes = Math.round((value - hours) * 60);
+          return `${hours.toString().padStart(2, '0')}:${minutes
+            .toString()
+            .padStart(2, '0')}`;
         }
-      },
-      series: [
-        {
-          name: 'Sleep Start Time',
-          type: 'line',
-          data: sleepData.value,
-          itemStyle: { color: 'purple' }
-        }
-      ]
+      }
+    };
+    chartOptions.series = [
+      {
+        type: 'line',
+        data: sleepData.value,
+        itemStyle: { color: '#4a6572' }
+      }
+    ];
+    chartOptions.tooltip.formatter = function (params) {
+      const dataPoint = params[0];
+      const hours = Math.floor(dataPoint.value);
+      const minutes = Math.round((dataPoint.value - hours) * 60);
+      return `${dataPoint.name} ${chartOptions.title.text}: ${hours
+        .toString()
+        .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     };
   } else if (props.currentChart === 'mood') {
-    chartOptions = {
-      title: { text: '心情' },
-      xAxis: { type: 'category', data: allDates.value },
-      yAxis: {
-        type: 'value',
-        min: 0,
-        max: 5,
-        axisLabel: {
-          formatter: (value) => {
-            const moodLabels = [
-              '不透露',
-              '不開心',
-              '有點不開心',
-              '普通',
-              '開心',
-              '非常開心'
-            ];
-            return moodLabels[value];
-          }
-        }
-      },
-      series: [
-        {
-          type: 'line',
-          data: moodData.value,
-          itemStyle: { color: 'blue' },
-          connectNulls: true
-        }
-      ]
+    chartOptions.title.text = '心情';
+    chartOptions.yAxis = {
+      type: 'value',
+      min: 0,
+      max: 5,
+      axisLabel: {
+        formatter: (value) =>
+          ['不透露', '不開心', '有點不開心', '普通', '開心', '非常開心'][
+            value
+          ] || '不透露'
+      }
+    };
+    chartOptions.series = [
+      {
+        type: 'line',
+        data: moodData.value,
+        itemStyle: { color: '#a682ff' },
+        connectNulls: true
+      }
+    ];
+    chartOptions.tooltip.formatter = function (params) {
+      const dataPoint = params[0];
+      return `${dataPoint.name} ${chartOptions.title.text}: ${
+        ['不透露', '不開心', '有點不開心', '普通', '開心', '非常開心'][
+          dataPoint.value
+        ] || '不透露'
+      }`;
     };
   }
 
   chartInstance.setOption(chartOptions);
 };
-
 // 掛載時初始化圖表和數據
 onMounted(() => {
   filterDataByMonth();
@@ -223,17 +233,27 @@ watch(
 );
 </script>
 
+<template>
+  <div id="formborder">
+    <div ref="chartRef" class="chart-container"></div>
+  </div>
+</template>
+
 <style lang="css" scoped>
 .chart-container {
-  width: 100%;
-  height: 80%;
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  height: 489px;
+  margin-top: auto;
+  margin-bottom: 20px;
 }
 
 #formborder {
   display: flex;
   justify-content: flex-end;
   width: 912px;
-  height: 608px;
+  height: 489px;
   position: fixed;
   top: 50px;
   left: 350px;

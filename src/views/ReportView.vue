@@ -91,8 +91,8 @@ const fetchPreviousCharacters = async () => {
 </script>
 
 <template>
-  <div class="container" id="formborder">
-    <div class="accordion accordion-flush" id="accordionFlushExample">
+  <div class="container">
+    <div class="accordion">
       <!-- 使用 v-for 生成每個角色的 Accordion 項目 -->
       <div
         class="accordion-item"
@@ -144,29 +144,103 @@ const fetchPreviousCharacters = async () => {
 </template>
 
 <style lang="css" scoped>
-#formborder {
+/* 容器樣式 */
+.container {
   display: flex;
-  justify-content: flex-end;
-  /* border: 1px solid rgb(12, 24, 70); */
-  /* background-color: rgb(227, 225, 245); */
+  justify-content: center;
+  align-items: center;
   width: 912px;
   height: 608px;
   position: fixed;
   top: 50px;
   left: 350px;
-  background-image: url('@/components/image/form.png');
+  background-image: url('/images/border.png');
 }
 
+/* Accordion 主體樣式 */
 .accordion {
+  margin: 30px 0 auto;
+  width: 100%;
+  max-width: 850px;
+  height: 100%;
+  max-height: 550px;
   flex-grow: 1;
-  overflow-y: auto;
+  overflow-y: scroll; /* 始終顯示垂直滾動軸 */
+  overflow-x: hidden; /* 隱藏水平滾動軸 */
 }
 
-#back {
-  height: 30px;
+/* Accordion 項目樣式 */
+.accordion-item {
+  width: 800px;
+  background-color: #f2e8d5; /* 項目背景顏色 */
+}
+
+/* Accordion 按鈕樣式 */
+.accordion-button {
+  padding: 12px 15px;
+  background-color: transparent;
+  background-image: url('/images/accordion btn.png'); /* 自訂按鈕圖片 */
+  background-size: 100% 100%;
   border: none;
-  justify-content: flex-end;
-  margin-right: 5px;
-  background-color: white;
+  color: inherit; /* 保持文字顏色不變 */
+  box-shadow: none; /* 移除陰影效果 */
+  transition: transform 0.1s ease;
+}
+
+.accordion-button.collapsed::after {
+  content: '';
+  display: inline-block;
+  background-image: url('/images/accordion.png');
+  background-size: contain;
+  transform: rotate(180deg);
+}
+
+.accordion-button::after {
+  content: '';
+  display: inline-block;
+  background-image: url('/images/accoridion2.png');
+  background-size: contain;
+}
+
+.accordion-button:hover {
+  background-color: inherit;
+  color: inherit;
+  border-color: inherit;
+}
+
+/* Accordion 內容樣式 */
+.accordion-body {
+  background-color: transparent;
+  color: #6c757d; /* 內容文字顏色 */
+}
+
+/* 自訂滾動條樣式 */
+.accordion::-webkit-scrollbar {
+  width: 15px;
+  background: url('/images/scroll bar.png');
+  background-size: 100% 100%; /* 確保圖片填滿滑道 */
+}
+
+.accordion::-webkit-scrollbar-thumb {
+  background-image: url('/images/scroll bar hover.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom; /* 圖片靠下對齊 */
+  min-height: 27px; /* 設置滑塊的最小高度 */
+  border-radius: 10px;
+}
+
+.accordion::-webkit-scrollbar-thumb:hover {
+  background-image: url('/images/scroll bar nohover.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  min-height: 27px;
+}
+
+.accordion::-webkit-scrollbar-track {
+  background: url('/images/scroll bar.png');
+  background-size: 100% 100%; /* 確保圖片填滿滑道 */
+  border-radius: 10px;
 }
 </style>
