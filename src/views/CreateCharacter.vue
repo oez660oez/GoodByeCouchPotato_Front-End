@@ -7,6 +7,37 @@ const PiniaPlayer = Playerinformation(); //初始化
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/CreateCharacter`;
 
+//Alert樣式
+const showErrorAlert = async (message) => {
+  await Swal.fire({
+    imageUrl: "/images/SweetAlert2_ERROR.png",
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageHeight: 100,
+    imageWidth: 300,
+    imageAlt: "A Error image",
+    title: message,
+    confirmButtonText: "",
+  });
+};
+
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
+
 //玩家在input填入的資訊儲存在這裡
 const form = ref({
   name: "",
@@ -101,62 +132,26 @@ const handleSubmit = async () => {
   try {
     const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_ERROR.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 380,
-        imageAlt: "A Error image",
-        confirmButtonText: "",
-      });
+      await showErrorAlert();
       return;
     }
     const userAccount = JSON.parse(userAccountJson);
     playerAccount = userAccount.playerAccount;
 
     if (!playerAccount) {
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_ERROR.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 380,
-        imageAlt: "A Error image",
-        confirmButtonText: "",
-      });
+      await showErrorAlert();
       return;
     }
   } catch (error) {
     console.error("解析 UserAccount 失敗:", error);
-    await Swal.fire({
-      imageUrl: "/images/SweetAlert2_ERROR.png",
-      customClass: {
-        popup: "swal-custom-popup", // 更改類別名稱
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      confirmButtonText: "",
-    });
+    await showErrorAlert();
     return;
   }
   try {
     //檢查現有角色狀態
     const livingStatus = await checkExistingCharacter(playerAccount);
     if (livingStatus === "居住") {
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_ERROR.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 380,
-        imageAlt: "A Error image",
-        confirmButtonText: "",
-      });
+      await showErrorAlert();
       return;
     }
     //傳出到後端api
@@ -180,45 +175,18 @@ const handleSubmit = async () => {
       PiniaPlayer.updatePlayerData(data.character);
       PiniaPlayer.updateCharacterBody(data.characterAccessorie);
 
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_SUCCESS.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 390,
-        imageAlt: "A SUCCESS image",
-        confirmButtonText: "",
-      });
+      await showSuccessAlert("創建角色成功！");
       window.location.href = "/outdoor";
       // 可以在這裡添加導航到其他頁面的邏輯
     } else {
       const errorData = await response.json();
       errors.value.general = errorData.message || "創建失敗，請稍後再試";
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_ERROR.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 380,
-        imageAlt: "A Error image",
-        confirmButtonText: "",
-      });
+      await showErrorAlert();
     }
   } catch (error) {
     console.error("發生錯誤:", error);
     errors.value.general = "發生錯誤，請稍後再試";
-    await Swal.fire({
-      imageUrl: "/images/SweetAlert2_ERROR.png",
-      customClass: {
-        popup: "swal-custom-popup", // 更改類別名稱
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      confirmButtonText: "",
-    });
+    await showErrorAlert();
   }
 };
 </script>
@@ -359,7 +327,8 @@ const handleSubmit = async () => {
   max-width: 900px; /* 改用最大寬度 */
   min-width: 320px; /* 設定最小寬度避免過度壓縮 */
   height: auto; /* 高度自適應 */
-  min-height: 640px; /* 最小高度保持原來的大小 */
+  min-height: 620px; /* 最小高度保持原來的大小 */
+  max-height: 630px;
   background-image: url("/images/CreateCharacterForm.png");
   background-size: 100% 100%; /* 確保背景圖片完整顯示 */
   background-repeat: no-repeat;
@@ -379,13 +348,13 @@ const handleSubmit = async () => {
   padding-top: 40px;
 }
 
-#input-wrapper{
+#input-wrapper {
   position: relative;
 }
-.invalid-feedback{
+.invalid-feedback {
   position: absolute;
 }
-#buttonError{
+#buttonError {
   position: absolute;
 }
 /* 修改後的 SweetAlert2 自訂樣式 */

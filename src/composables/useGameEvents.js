@@ -10,7 +10,6 @@ export function useGameEvents(gameCanvasRef, gameStore) {
     a: { pressed: false },
     s: { pressed: false },
     d: { pressed: false },
-    i: { pressed: false },
   });
 
   const lastKey = ref("");
@@ -80,10 +79,6 @@ export function useGameEvents(gameCanvasRef, gameStore) {
         keys.value[key].pressed = true;
         lastKey.value = key;
       }
-
-      if (key === "i") {
-        handleInventoryKeyPress();
-      }
     },
 
     keyup: (e) => {
@@ -112,26 +107,6 @@ export function useGameEvents(gameCanvasRef, gameStore) {
       if (!gameStore.inventoryOpen) return;
       handleInventoryClick(e);
     },
-  };
-
-  const handleInventoryKeyPress = async () => {
-    if (gameStore.inventoryOpen) {
-      try {
-        await gameStore.saveInventoryState();
-        await gameStore.syncEquipmentToPinia();
-        gameStore.inventoryOpen = false;
-        router.push('/outdoor');
-      } catch (error) {
-        console.error("Failed to close inventory:", error);
-      }
-    } else {
-      try {
-        gameStore.inventoryOpen = true;
-        router.push('/outdoor/dress');
-      } catch (error) {
-        console.error("Failed to open inventory:", error);
-      }
-    }
   };
 
   const handleInventoryMouseDown = (e) => {

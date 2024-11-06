@@ -1,6 +1,7 @@
 <script setup>
 import "bootstrap/dist/css/bootstrap.css";
 import { ref } from "vue";
+import Swal from "sweetalert2";
 
 const emit = defineEmits(["goback"]); //子傳父
 const closeComponent = () => {
@@ -9,6 +10,22 @@ const closeComponent = () => {
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/IndexPlayers/NewPassword`;
+
+//Alert樣式
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
 
 const props = defineProps({
   forgetemail: String,
@@ -35,7 +52,7 @@ const postnewpassword = async () => {
   });
   if (postforgerdata.ok) {
     const response = await postforgerdata.json();
-    alert(response.message);
+    await showSuccessAlert(response.message);
     emit("goback");
   }
 };

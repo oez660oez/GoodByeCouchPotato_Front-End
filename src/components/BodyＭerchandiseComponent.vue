@@ -5,6 +5,7 @@ import ShopselectComponentVue from "./ShopselectComponent.vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import { computed } from "vue";
 import { Merchandiselist } from "@/Stores/Merchandiselist";
+import Swal from "sweetalert2";
 const PiniaMerchandise = Merchandiselist();
 const PiniaPlayer = Playerinformation();
 
@@ -38,6 +39,37 @@ const selectedLevel = ref({
   Nochoose: "請選擇等級範圍",
   levelRanges: [], //用來儲存等級區間
 });
+
+//Alert樣式
+const showErrorAlert = async (message) => {
+  await Swal.fire({
+    imageUrl: "/images/SweetAlert2_ERROR.png",
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageHeight: 100,
+    imageWidth: 300,
+    imageAlt: "A Error image",
+    title: message,
+    confirmButtonText: "",
+  });
+};
+
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
 
 const generateLevelRanges = () => {
   if (GetItem.value.allqualifiedItem.length > 0) {
@@ -166,12 +198,12 @@ const purchase = async (pcode) => {
     });
     if (Getpurchase.ok) {
       const response = await Getpurchase.json();
-      alert(response.message);
+      await showSuccessAlert(response.message)
       PiniaPlayer.characterCoins = response.newcoins;
       RenewtheList();
     }
   } else {
-    alert("Coins或等級不足");
+    await showErrorAlert("Coins或等級不足");
   }
 };
 

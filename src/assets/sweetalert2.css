@@ -1,17 +1,15 @@
-/* 自定義彈窗樣式 */
-.swal2-popup {
-    height: 300px !important;
-    width: 500px !important;
-    background: transparent url('/images/SweetAlert2_Background.png') !important;
-    background-size: cover !important;
-  }
+.swal2-popup.swal-custom-popup {
+  height: 360px !important;
+  width: 512x !important;
+  background: transparent url('/images/SweetAlert2_Background.png') !important;
+  background-size: cover !important;
+}
 
-  /* 自定義確認按鈕樣式 */
-  .swal2-confirm {
-    background-image: url('/images/SweetAlert2_Confirm.png') !important;
-    background-color: transparent !important;
-    border: none !important;
-    border-radius: 12px !important;
-    width: 48px !important;
-    height: 51px !important;
-  }
+.swal2-confirm.swal-custom-confirm {
+  background-image: url('/images/SweetAlert2_Confirm.png') !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 12px !important;
+  width: 48px !important;
+  height: 51px !important;
+}
