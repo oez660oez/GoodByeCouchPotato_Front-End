@@ -66,10 +66,13 @@ const Login = async () => {
       } else {
         alert(data.message);
         console.log(data);
-        PiniaPlayer.logout();
-        if (data.respond == "newcharacter" || data.respond == "gameover") {
-          PiniaPlayer.playerAccount = LoginData.value.account;
-          PiniaPlayer.isLoggedIn = true;
+        if (data.respond == "gameover") {
+          PiniaPlayer.updatePlayerData(data.playerCharacter);
+          PiniaPlayer.updateCharacterBody(data.characterAccessorie);
+          // PiniaPlayer.playerAccount = LoginData.value.account;
+          // PiniaPlayer.isLoggedIn = true;
+          window.location.href = "/outdoor";
+        } else if (data.respond == "newcharacter") {
           window.location.href = "/createcharacter/";
         }
       }

@@ -3,6 +3,11 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { SpriteMap } from "@/core/Map";
 import { useGameLoop } from "@/composables/useGameLoop";
 import { Sprite } from "@/core/Player"; //裁切圖片並製作成動畫
+import StoryComponent from "@/components/StoryComponent.vue";
+import { useRouter } from "vue-router";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+const PiniaPlayer = Playerinformation();
+const router = useRouter();
 
 const backgroundImage_URL =
   "http://localhost:5173/src/components/image/index.png";
@@ -10,9 +15,11 @@ const backgroundImage_URL =
 const playerImage_URL =
   "http://localhost:5173/src/assets/images/person_Modify.png";
 
+const typename = "Startstory"; //用來識別對話框使用哪一段對話
+
 //設定畫布
 const canvasRef = ref(null);
-const canvasWidth = 1515;
+const canvasWidth = 1550;
 const canvasHeight = 800;
 const context = ref(null);
 const { startGameLoop, stopGameLoop } = useGameLoop();
@@ -22,41 +29,50 @@ const Currentoffset = {
   x: 0,
   y: 0,
 };
-let NoGo = ref(false); //用來判定是否一直撞牆，如果一直撞牆就不能走
 
 //設定圖片的碰撞區域，xy以左上角的為準，長寬決定碰撞區域大小
 const collisionAreas = [
   //這裡的xy是偏移量而不是絕對定位，因為是用玩家行走的數據去測量的
   {
-    offsetx: canvasWidth / 2 - 288 / 8 - 650,
+    offsetx: canvasWidth / 2 - 288 / 8 - 670,
     offsety: canvasHeight / 2 - 80 / 2 + 200,
     width: 200,
-    height: 80,
+    height: 65,
   }, //第一個椅子
   {
-    offsetx: canvasWidth / 2 - 288 / 8 - 375,
+    offsetx: canvasWidth / 2 - 288 / 8 - 390,
     offsety: canvasHeight / 2 - 80 / 2 + 165,
     width: 235,
-    height: 115,
+    height: 100,
   }, //第一組
   {
-    offsetx: canvasWidth / 2 - 288 / 8 - 85,
+    offsetx: canvasWidth / 2 - 288 / 8 - 105,
     offsety: canvasHeight / 2 - 80 / 2 + 165,
-    width: 240,
-    height: 115,
+    width: 235,
+    height: 100,
   }, //第二組
   {
-    offsetx: canvasWidth / 2 - 288 / 8 - -198,
+    offsetx: canvasWidth / 2 - 288 / 8 - -185,
     offsety: canvasHeight / 2 - 80 / 2 + 165,
-    width: 240,
-    height: 115,
+    width: 230,
+    height: 100,
   }, //第三組
   {
-    offsetx: canvasWidth / 2 - 288 / 8 - -489,
+    offsetx: canvasWidth / 2 - 288 / 8 - -475,
     offsety: canvasHeight / 2 - 80 / 2 + 165,
-    width: 240,
-    height: 115,
+    width: 235,
+    height: 100,
   }, //第四組
+];
+
+//設定進入遊戲的碰撞位置
+const GoInGame = [
+  {
+    offsetx: canvasWidth / 2 - 288 / 8 - 5,
+    offsety: canvasHeight / 2 - 80 / 2 + 327,
+    width: 48,
+    height: 48,
+  },
 ];
 
 //設定地圖圖片的大小
@@ -97,7 +113,13 @@ function moveObjects(offset) {
 //xy軸是越右邊越下面數值越大
 //moveOffset是目前移動了的xy偏移變量
 const checkCollisions = (moveOffset) => {
-  const playerPosition = {
+  const nextMapOffset = {
+    //預估地圖下一步，因為我們實際上移動的是地圖，currentoffser保存的是目前的偏移量而不是地圖的實際定位
+    x: Currentoffset.x + moveOffset.x,
+    y: Currentoffset.y + moveOffset.y,
+  };
+  //這個只是取出角色目前的位置及大小的資料，沒有改任何東西
+  const NextplayerPosition = {
     x: player.value.position.x,
     y: player.value.position.y,
     width: player.value.width,
@@ -106,28 +128,61 @@ const checkCollisions = (moveOffset) => {
 
   for (const area of collisionAreas) {
     const adjustedArea = {
-      x: area.offsetx + Currentoffset.x, // 將地圖偏移應用於碰撞區域
-      y: area.offsety + Currentoffset.y,
+      x: area.offsetx + nextMapOffset.x, // 將地圖偏移應用於碰撞區域
+      y: area.offsety + nextMapOffset.y, //碰撞的物品也得跟著移動，加上包含目前偏移以及正在偏移，才會移動到相對於我的角色的位置
       width: area.width,
       height: area.height,
     };
 
     if (
-      playerPosition.x < adjustedArea.x + adjustedArea.width &&
-      playerPosition.x + playerPosition.width > adjustedArea.x &&
-      playerPosition.y < adjustedArea.y + adjustedArea.height &&
-      playerPosition.y + playerPosition.height > adjustedArea.y
+      NextplayerPosition.x < adjustedArea.x + adjustedArea.width &&
+      NextplayerPosition.x + NextplayerPosition.width > adjustedArea.x &&
+      NextplayerPosition.y < adjustedArea.y + adjustedArea.height &&
+      NextplayerPosition.y + NextplayerPosition.height > adjustedArea.y
     ) {
       console.log("碰撞發生");
       return false; // 發生碰撞
     }
   }
-  NoGo.value = false;
   return true; // 沒有碰撞
 };
 
+//判斷是否進入切換頁面的空間
+const InGame = async (moveOffset) => {
+  //這個只是取出角色目前的位置及大小的資料，沒有改任何東西
+  const nextMapOffset = {
+    //預估地圖下一步，因為我們實際上移動的是地圖，currentoffser保存的是目前的偏移量而不是地圖的實際定位
+    x: Currentoffset.x + moveOffset.x,
+    y: Currentoffset.y + moveOffset.y,
+  };
+  const NextplayerPosition = {
+    x: player.value.position.x,
+    y: player.value.position.y,
+    width: player.value.width,
+    height: player.value.height,
+  };
+
+  const ingame = {
+    x: GoInGame[0].offsetx + nextMapOffset.x,
+    y: GoInGame[0].offsety + nextMapOffset.y, // 修正此行
+    width: GoInGame[0].width,
+    height: GoInGame[0].height,
+  };
+  if (
+    NextplayerPosition.x < ingame.x + ingame.width &&
+    NextplayerPosition.x + NextplayerPosition.width > ingame.x &&
+    NextplayerPosition.y < ingame.y + ingame.height &&
+    NextplayerPosition.y + NextplayerPosition.height > ingame.y
+  ) {
+    console.log("進入遊戲");
+    await router.push("/outdoor");
+  } else {
+    return true; // 沒有碰撞
+  }
+};
+
 //角色移動
-function handleMove(direction) {
+const handleMove = (direction) => {
   player.value.moving = true;
   const directionMap = {
     up: { direction: 1, offset: { x: 0, y: 3 } }, //如果按上就往上位移3px的距離
@@ -157,81 +212,99 @@ function handleMove(direction) {
       Currentoffset.x += moveOffset.x; //如果沒有碰撞才移動，如果有碰撞則不動
       Currentoffset.y += moveOffset.y;
       moveObjects(moveOffset);
+      InGame(moveOffset);
     } else {
       console.log("移動被阻止");
-      // if (NoGo.value) {
-      // } else {
-      //   NoGo.value = true;
-      //   let rollback = { x: 0, y: 0 };
-      //   switch (direction) {
-      //     case "up":
-      //       rollback.y = -3;
-      //       break;
-      //     case "left":
-      //       rollback.x = -3;
-      //       break;
-      //     case "down":
-      //       rollback.y = 3;
-      //       break;
-      //     case "right":
-      //       rollback.x = 3;
-      //       break;
-      //   }
-      // moveObjects(rollback); //這個是管理所有的碰撞區域一起變化，但是我這裡只放了地圖的，所以椅子的碰撞要再另外做
-      // for (const area of collisionAreas) {
-      //   area.offsetx = area.offsetx + rollback.x; // 將地圖偏移應用於碰撞區域
-      //   area.offsety = area.offsety + rollback.y;
-      // }
-      // }
+      player.value.moving = false;
+
       //玩家始終在中間，座標也沒有改變，實際移動的是地圖
     }
   }
-}
+};
+
+//移動監控
+window.addEventListener("keydown", (event) => {
+  switch (event.key) {
+    case "w" || "W":
+      handleMove("up");
+      break;
+    case "s" || "S":
+      handleMove("down");
+      break;
+    case "a" || "A":
+      handleMove("left");
+      break;
+    case "d" || "D":
+      handleMove("right");
+      break;
+  }
+});
+window.addEventListener("keyup", () => {
+  player.value.moving = false;
+});
 
 //遊戲循環
 const GameLoop = async () => {
+  //偵測使用者按下的按鍵，控制玩家的移動
   const ctx = context.value;
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   ctx.fillStyle = "#3a3a50"; // 畫布顏色填滿
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
   //繪製地圖
   background.value.draw(ctx);
+
+  //繪製進入遊戲的踩點
+  ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // 半透明紅色
+  ctx.fillRect(
+    GoInGame[0].offsetx + Currentoffset.x,
+    GoInGame[0].offsety + Currentoffset.y,
+    GoInGame[0].width,
+    GoInGame[0].height
+  );
   //繪製人物
   player.value.draw(ctx);
 
-  for (const area of collisionAreas) {
-    const adjustedArea = {
-      x: area.offsetx + Currentoffset.x,
-      y: area.offsety + Currentoffset.y,
-      width: area.width,
-      height: area.height,
-    };
-    ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // 半透明紅色
-    ctx.fillRect(
-      adjustedArea.x,
-      adjustedArea.y,
-      adjustedArea.width,
-      adjustedArea.height
-    );
-  }
-  ctx.fillStyle = "rgba(0, 0, 255, 0.5)"; // 藍色半透明
-  ctx.fillRect(
-    player.value.position.x,
-    player.value.position.y,
-    player.value.width,
-    player.value.height
-  );
+  //這個用來視覺化地看碰撞位置
+  //fillrect用來繪製實心的矩形
+  //ctx.fillRect(x, y, width, height); 設定矩形的左上角xy座標，然後高度與寬度，向右及下延伸
+  // for (const area of collisionAreas) {
+  //   const adjustedArea = {
+  //     x: area.offsetx + Currentoffset.x,
+  //     y: area.offsety + Currentoffset.y,
+  //     width: area.width,
+  //     height: area.height,
+  //   };
+  //   ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // 半透明紅色
+  //   ctx.fillRect(
+  //     adjustedArea.x,
+  //     adjustedArea.y,
+  //     adjustedArea.width,
+  //     adjustedArea.height
+  //   );
+  // }
+  // ctx.fillStyle = "rgba(0, 0, 255, 0.5)"; // 藍色半透明
+  // ctx.fillRect(
+  //   player.value.position.x,
+  //   player.value.position.y,
+  //   player.value.width,
+  //   player.value.height
+  // );
 };
 
 //=============方法end=================
 onMounted(async () => {
+  PiniaPlayer.isnewcharacter = true;
+  Currentoffset.x = 0;
+  Currentoffset.y = 0;
   const canvas = canvasRef.value;
   if (canvas) {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     context.value = canvas.getContext("2d");
-    const backgroundImg = await loadImage(backgroundImage_URL);
-    const playerImg = await loadImage(playerImage_URL);
+    const [backgroundImg, playerImg] = await Promise.all([
+      loadImage(backgroundImage_URL),
+      loadImage(playerImage_URL),
+    ]);
 
     background.value = new SpriteMap({
       position: { x: Currentoffset.x, y: Currentoffset.y },
@@ -249,24 +322,6 @@ onMounted(async () => {
 
     movables.value = [background.value].filter(Boolean); // 過濾掉任何無效的值。將要跟隨著玩家移動的資料存入
 
-    window.addEventListener("keydown", (event) => {
-      switch (event.key) {
-        case "w" || "W":
-          handleMove("up");
-          break;
-        case "s" || "S":
-          handleMove("down");
-          break;
-        case "a" || "A":
-          handleMove("left");
-          break;
-        case "d" || "D":
-          handleMove("right");
-          break;
-      }
-    });
-    movables.value = [background.value].filter(Boolean);
-
     console.log("圖片是否已加載:", background.value.image.complete);
     console.log("圖片是否已加載:", player.value.image.complete);
     startGameLoop(GameLoop);
@@ -280,19 +335,22 @@ onUnmounted(() => {
   stopGameLoop();
 });
 
-//令其他組件可以使用內部的物件
-defineExpose({
-  getCanvas: () => canvasRef.value,
-  getPlayer: () => player.value,
-  executeGameLoop: () => gameLoop(),
-  handleMove, //直接暴露 handleMove 函數，這樣外部組件可以通過 handleMove(direction) 調用來控制玩家的移動。
-});
+//令其他組件可以使用內部的物件，不過我沒用到
+// defineExpose({
+//   getCanvas: () => canvasRef.value,
+//   getPlayer: () => player.value,
+//   executeGameLoop: () => gameLoop(),
+//   handleMove, //直接暴露 handleMove 函數，這樣外部組件可以通過 handleMove(direction) 調用來控制玩家的移動。
+// });
 </script>
 
 <template>
-  <RouterLink class="nav-link" :to="{ name: 'roommap' }">
+  <!-- <RouterLink class="nav-link" :to="{ name: 'roommap' }">
     <i class="fa-regular fa-map"></i>
-  </RouterLink>
+  </RouterLink> -->
+  <div class="storyborder">
+    <StoryComponent :type="typename"></StoryComponent>
+  </div>
   <div class="game-view">
     <canvas
       ref="canvasRef"
@@ -304,18 +362,25 @@ defineExpose({
 
 <style lang="css" scoped>
 .nav-link {
-  z-index: 10;
+  z-index: 2;
   position: relative;
   background-color: white;
 }
 .game-view {
-  width: 99%;
-  height: 90vh;
+  width: 100%;
+  height: 92vh;
   display: flex;
   justify-content: center;
   align-items: center;
   /* background-color: #3a3a50; */
   z-index: 1;
-  position: relative;
+  position: fixed;
+}
+
+.storyborder {
+  z-index: 10;
+  position: absolute;
+  top: 60%;
+  left: 29.5%;
 }
 </style>

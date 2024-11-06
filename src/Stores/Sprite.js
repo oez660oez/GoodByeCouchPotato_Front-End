@@ -22,7 +22,7 @@ class Sprite {
 
     // 更新動畫幀
     this.frames.elapsed++;
-    if (this.frames.elapsed % 10 === 0) {
+    if (this.frames.elapsed % 5 === 0) {
       // 控制動畫速度
       this.frames.val = (this.frames.val + 1) % this.frames.max;
     }

@@ -1,6 +1,20 @@
 <script setup>
 import GameView from "./GameView.vue";
 import SidebarView from "./SidebarView.vue";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+
+const PiniaPlayer = Playerinformation();
+let GameOver = false;
+if (PiniaPlayer.characterEnvironment <= 0) {
+  GameOver = true;
+} else {
+  GameOver = false;
+}
+if (PiniaPlayer.isnewcharacter) {
+  //為了關閉導覽列，所以要先把兩個if條件都設置為true，然後判斷成false
+  //當環境值大於0並且isnewcharacter是false的時候，就會觸發上面的else再次改回false，導覽列就會出現
+  GameOver = true;
+}
 </script>
 
 <template>
@@ -8,7 +22,7 @@ import SidebarView from "./SidebarView.vue";
     <i class="fa-regular fa-map"></i>
   </RouterLink>
 
-  <div class="sidebarview">
+  <div class="sidebarview" v-if="!GameOver || !PiniaPlayer.isnewcharacter">
     <SidebarView></SidebarView>
   </div>
   <div class="game-view">

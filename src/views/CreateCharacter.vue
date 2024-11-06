@@ -2,6 +2,8 @@
 import { ref } from "vue";
 import Swal from "sweetalert2";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
+import { useRouter } from "vue-router";
+const router = useRouter();
 const PiniaPlayer = Playerinformation(); //初始化
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
@@ -102,15 +104,15 @@ const handleSubmit = async () => {
     const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_ERROR.png",
-      customClass: {
-        popup: "swal-custom-popup", // 更改類別名稱
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      confirmButtonText: "",
-    });
+        imageUrl: "/images/SweetAlert2_ERROR.png",
+        customClass: {
+          popup: "swal-custom-popup", // 更改類別名稱
+        },
+        imageHeight: 100,
+        imageWidth: 380,
+        imageAlt: "A Error image",
+        confirmButtonText: "",
+      });
       return;
     }
     const userAccount = JSON.parse(userAccountJson);
@@ -118,15 +120,15 @@ const handleSubmit = async () => {
 
     if (!playerAccount) {
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_ERROR.png",
-      customClass: {
-        popup: "swal-custom-popup", // 更改類別名稱
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      confirmButtonText: "",
-    });
+        imageUrl: "/images/SweetAlert2_ERROR.png",
+        customClass: {
+          popup: "swal-custom-popup", // 更改類別名稱
+        },
+        imageHeight: 100,
+        imageWidth: 380,
+        imageAlt: "A Error image",
+        confirmButtonText: "",
+      });
       return;
     }
   } catch (error) {
@@ -148,15 +150,15 @@ const handleSubmit = async () => {
     const livingStatus = await checkExistingCharacter(playerAccount);
     if (livingStatus === "居住") {
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_ERROR.png",
-      customClass: {
-        popup: "swal-custom-popup", // 更改類別名稱
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      confirmButtonText: "",
-    });
+        imageUrl: "/images/SweetAlert2_ERROR.png",
+        customClass: {
+          popup: "swal-custom-popup", // 更改類別名稱
+        },
+        imageHeight: 100,
+        imageWidth: 380,
+        imageAlt: "A Error image",
+        confirmButtonText: "",
+      });
       return;
     }
     //傳出到後端api
@@ -181,16 +183,16 @@ const handleSubmit = async () => {
       PiniaPlayer.updateCharacterBody(data.characterAccessorie);
 
       await Swal.fire({
-      imageUrl: "/images/SweetAlert2_SUCCESS.png",
-      customClass: {
-        popup: "swal-custom-popup", // 更改類別名稱
-      },
-      imageHeight: 100,
-      imageWidth: 390,
-      imageAlt: "A SUCCESS image",
-      confirmButtonText: "",
-    });
-      window.location.href = "/outdoor";
+        imageUrl: "/images/SweetAlert2_SUCCESS.png",
+        customClass: {
+          popup: "swal-custom-popup", // 更改類別名稱
+        },
+        imageHeight: 100,
+        imageWidth: 390,
+        imageAlt: "A SUCCESS image",
+        confirmButtonText: "",
+      });
+      await router.push("/StartStory");
       // 可以在這裡添加導航到其他頁面的邏輯
     } else {
       const errorData = await response.json();

@@ -21,6 +21,7 @@ export const Playerinformation = defineStore(
     const Head = ref(""); //頭
     const Upper = ref(""); //衣服
     const Lower = ref(""); //配件
+    const isnewcharacter = ref(false); //是否是新角色，要不要觸發劇情,true為新角色
 
     // 建立一個方法，把資料更新到狀態裡
     const updatePlayerData = (data) => {
@@ -83,6 +84,7 @@ export const Playerinformation = defineStore(
       Head,
       Upper,
       Lower,
+      isnewcharacter,
       updatePlayerData,
       updateCharacterBody,
       logout,
