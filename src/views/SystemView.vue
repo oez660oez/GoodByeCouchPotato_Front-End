@@ -1,9 +1,17 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
 import GoBackComponent from "@/components/GoBackComponent.vue";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
 
-const router = useRouter();
+const router = useRouter()
 const route = useRoute();
+const PiniaPlayer = Playerinformation();
+const logout = () => {
+  PiniaPlayer.logout();
+  PiniaPlayer.logoutBody();
+  router.push('/');
+};
+
 
 const goBack = () => {
   if (route.matched.length > 1) {
@@ -14,6 +22,7 @@ const goBack = () => {
     router.go(-1);
   }
 };
+
 </script>
 
 <template>
@@ -41,6 +50,10 @@ const goBack = () => {
     >
       <button class="sysbtnfeed">聯絡我們</button></RouterLink
     >
+
+    <div>
+        <button class="sysbtnlogout" @click="logout">登出</button>
+    </div>
 
     <div class="Systemgoback">
       <GoBackComponent @goback="goBack"></GoBackComponent>
@@ -83,6 +96,16 @@ const goBack = () => {
   border: 1px solid rgb(12, 61, 70);
   top: 70%;
   left: 45%;
+}
+
+.sysbtnlogout {
+  position: absolute;
+  size: 16px;
+  color: rgb(153, 42, 42);
+  background-color: white;
+  border: 1px solid rgb(12, 61, 70);
+  top: 80%;
+  left: 47%;
 }
 
 #backbtn {

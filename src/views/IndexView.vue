@@ -3,6 +3,8 @@ import ForgetPasswordComponent from "@/components/ForgetPasswordComponent.vue";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
+import { useRouter } from "vue-router"; 
+const router = useRouter()
 //----------------註冊帳號-------------------------------------
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/IndexPlayers`;
@@ -62,7 +64,7 @@ const Login = async () => {
         PiniaPlayer.updateCharacterBody(data.characterAccessorie);
         alert("登入成功");
 
-        window.location.href = "/outdoor";
+        await router.push('/outdoor');
       } else {
         alert(data.message);
         console.log(data);
@@ -71,6 +73,8 @@ const Login = async () => {
           PiniaPlayer.playerAccount = LoginData.value.account;
           PiniaPlayer.isLoggedIn = true;
           window.location.href = "/createcharacter/";
+          await router.push('/createcharacter');
+          
         }
       }
     }
@@ -675,7 +679,7 @@ body {
   text-align: center;
   max-width: 800px;
   width: 100%;
-  margin-top: 8%;
+  margin-top: 5%;
   margin-bottom: 10px;
 }
 
@@ -689,7 +693,7 @@ body {
 }
 
 .modal.fade {
-  margin-top: 8%;
+  margin-top: 5%;
 }
 
 /* 移除按鈕點擊時會出現的藍色框 */

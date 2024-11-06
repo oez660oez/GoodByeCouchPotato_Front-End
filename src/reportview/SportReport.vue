@@ -63,7 +63,7 @@ const geteat = async (startDate, endDate) => {
         extendedProps: {
             imagePath: getEventImage(item.sport, item.cleaning),
             sport: item.sport,
-            cleaning: item.cleaning
+            // cleaning: item.cleaning
           }
   };
       });
@@ -87,9 +87,9 @@ const geteat = async (startDate, endDate) => {
 
 
 function getEventImage(sport, cleaning) {
-  if (sport == true && cleaning == true) return '/images/Good.png, /images/Bad.png';  // 如果都有就返回兩個圖片的路徑
-  if (sport == true) return '/images/Good.png';
-  if (cleaning == true) return '/images/Bad.png';
+  // if (sport == true && cleaning == true) return '/images/Good.png, /images/Bad.png';  // 如果都有就返回兩個圖片的路徑
+  if (sport == true) return '/images/V.png';
+  // if (cleaning == true) return '/images/Bad.png';
   return '';
 }
 
@@ -119,8 +119,8 @@ const calendarOptions = {
     if (sport == true && cleaning == true) {
       html += `
         <div class="event-content">
-          <img src="/images/Good.png" alt="Good" class="event-icon"/>
-          <img src="/images/Bad.png" alt="Bad" class="event-icon"/>
+          <img src="/images/V.png" alt="V" class="event-icon"/>
+          <img src="/images/V.png" alt="V" class="event-icon"/>
         </div>
       `;
     }
@@ -128,7 +128,7 @@ const calendarOptions = {
     else if (sport == true) {
       html += `
         <div class="event-content">
-          <img src="/images/Good.png" alt="Good" class="event-icon"/>
+          <img src="/images/V.png" alt="V" class="event-icon"/>
         </div>
       `;
     }
@@ -136,7 +136,7 @@ const calendarOptions = {
     else if (cleaning == true) {
       html += `
         <div class="event-content">
-          <img src="/images/Bad.png" alt="Bad" class="event-icon"/>
+          <img src="/images/V.png" alt="V" class="event-icon"/>
         </div>
       `;
     }
@@ -160,7 +160,7 @@ onMounted(() => {
 
 <template>
   <div class="calendar-container">
-    <h5 class="calendar-title">運動與環境整理</h5>
+    <h5 class="calendar-title">運動</h5>
     <FullCalendar 
       ref="fullCalendar"
       :options="calendarOptions"
@@ -172,10 +172,11 @@ onMounted(() => {
 .calendar-container {
   width: 100%;
   height: 100%;
-  max-width: 780px;
+  max-width: 720px;
+  max-height: 500px;
   margin: 0 auto;
   padding: 0;
-  overflow: hidden;
+  overflow:auto;
 }
 
 :deep(.fc) {
@@ -200,7 +201,7 @@ onMounted(() => {
 }
 
 :deep(.fc-daygrid-day-frame) {
-  min-height: 75px !important;
+  min-height: 60px !important;
   padding: 2px !important;
   display: flex !important;
   flex-direction: column !important;

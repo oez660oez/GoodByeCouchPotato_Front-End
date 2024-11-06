@@ -96,8 +96,8 @@ const changepassword = async () => {
         <input type="password" class="form-control checkpassword" required />
         <div class="text-danger checknewmatch"></div>
       </div>
-      <button type="submit">確定</button>
       <button @click="goBack" type="reset">取消</button>
+      <button type="submit">確定</button>
     </form>
   </div>
 </template>

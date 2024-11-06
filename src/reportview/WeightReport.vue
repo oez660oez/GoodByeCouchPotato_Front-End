@@ -45,8 +45,8 @@ const formatMonth = (date) => {
 const formatWeightRecords = (weightRecords) => {
   console.log('收到體重記錄:', weightRecords); // 加入除錯用訊息
 
-  const start = new Date(startMonth.value + '-31');
-  const end = new Date(endMonth.value + '-31');
+  const start = new Date(startMonth.value + '-01');
+  const end = new Date(endMonth.value + '-01');
   const monthRange = [];
 
   // 建立月份範圍
@@ -131,6 +131,7 @@ const handleStartMonthChange = (event) => {
   }
   data.value.StartDate = event.target.value + '-01';
   getWeight(data);
+ 
 };
 
 const handleEndMonthChange = (event) => {
@@ -253,6 +254,7 @@ watch([startMonth, endMonth], ([newStart, newEnd]) => {
           name="startMonth" 
           id="startMonth" 
           class="form-control" 
+          @keydown.prevent
         />
         <span class="input-group-text">到</span>
         <input 
@@ -264,6 +266,7 @@ watch([startMonth, endMonth], ([newStart, newEnd]) => {
           name="endMonth" 
           id="endMonth" 
           class="form-control" 
+          @keydown.prevent
         />
       </div>
     </div>
@@ -309,4 +312,5 @@ watch([startMonth, endMonth], ([newStart, newEnd]) => {
   height: 400px;
   margin-top: 30px;
 }
+
 </style>

@@ -217,7 +217,7 @@ const goBack = () => {
 <template>
   <div id="feedbackborder">
     <div>
-      <p id="title">&nbsp;&nbsp;任務區</p>
+      <!-- <p id="title">&nbsp;&nbsp;任務區</p> -->
       <div class="goback">
         <GoBackComponent @goback="goBack"></GoBackComponent>
       </div>
@@ -250,7 +250,7 @@ const goBack = () => {
       </form>
     </div>
 
-    <hr />
+
 
     <!-- 每週任務區塊 -->
     <div id="weeklytaskblock">
@@ -268,6 +268,7 @@ const goBack = () => {
                 id="sport"
                 v-model="todaysport"
                 :disabled="isDisabledSport"
+                
               />
               <label id="sportdonelbl" for="sport">運動 </label>
               <span
@@ -312,6 +313,14 @@ const goBack = () => {
   position: fixed;
   top: 50px;
   left: 350px;
+}
+
+#Dailytaskblock{
+  margin-top: 80px;
+}
+
+#weeklytaskblock{
+  margin-top: 80px;
 }
 
 /* #back {
@@ -378,7 +387,7 @@ const goBack = () => {
 #sportdonelbl,
 #cleandonelbl {
   flex-shrink: 0; /* 防止 label 擠壓 checkbox */
-  width: 180px; /* 設定 label 固定寬度 */
+  width: 150px; /* 設定 label 固定寬度 */
 }
 
 .task-item span {
@@ -391,4 +400,5 @@ const goBack = () => {
   position: relative;
   right: 15%; /* 保證按鈕在 task-group 的右方 */
 }
+
 </style>
