@@ -66,6 +66,12 @@ export const Playerinformation = defineStore(
       characterGetExperience.value = "";
       characterGetCoins.value = "";
     };
+
+    const logoutBody = () => {
+      Head.value = "";
+      Upper.value = "";
+      Lower.value = "";
+    };
     // 返回ref及方法，外部才可以引用
     return {
       playerAccount,
@@ -89,6 +95,7 @@ export const Playerinformation = defineStore(
       updateCharacterBody,
       logout,
       changecoins,
+      logoutBody
     };
   },
   //   {

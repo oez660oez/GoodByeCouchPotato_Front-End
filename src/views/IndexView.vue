@@ -4,6 +4,8 @@ import { ref } from "vue";
 import { onMounted } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
+const router = useRouter();
 //----------------註冊帳號-------------------------------------
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/IndexPlayers`;
@@ -108,7 +110,7 @@ const Login = async () => {
         PiniaPlayer.updateCharacterBody(data.characterAccessorie);
         await showSuccessAlert("登入成功");
 
-        window.location.href = "/outdoor";
+        await router.push("/outdoor");
       } else {
         if (data.respond == "newcharacter") {
           await showSuccessAlert(data.message);
@@ -126,6 +128,7 @@ const Login = async () => {
           window.location.href = "/outdoor";
         } else if (data.respond == "newcharacter") {
           window.location.href = "/createcharacter/";
+          await router.push("/createcharacter");
         }
       }
     }
@@ -744,7 +747,7 @@ body {
   text-align: center;
   max-width: 800px;
   width: 100%;
-  margin-top: 8%;
+  margin-top: 5%;
   margin-bottom: 10px;
 }
 
@@ -758,7 +761,7 @@ body {
 }
 
 .modal.fade {
-  margin-top: 8%;
+  margin-top: 5%;
 }
 
 /* 移除按鈕點擊時會出現的藍色框 */

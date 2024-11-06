@@ -9,7 +9,8 @@ import GoBackComponent from "@/components/GoBackComponent.vue";
 import WaterReport from "@/reportview/WaterReport.vue";
 import WeightReport from "@/reportview/WeightReport.vue";
 import EatingReport from "@/reportview/EatingReport.vue";
-import WeeklyReport from "@/reportview/WeeklyReport.vue";
+import SportReport from "@/reportview/SportReport.vue";
+import CleaningReport from "@/reportview/CleaningReport.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -27,7 +28,8 @@ const viewComponents = {
   bed: SleepReport,
   smile: MoodReport,
   food: EatingReport,
-  weekiy: WeeklyReport,
+  sport: SportReport,
+  clean: CleaningReport
 };
 
 // 設置活動按鈕並切換視圖
@@ -72,7 +74,7 @@ onMounted(() => {
       <!-- </div> -->
       <component :is="currentView" v-if="currentView" />
     </div>
-
+    
     <!-- 選項按鈕 -->
     <div class="button-container">
       <button
@@ -119,34 +121,43 @@ onMounted(() => {
       </button>
       <button
         class="icon-button"
-        :class="{ active: activeButton === 'weekiy' }"
-        @click="setActiveButton('weekiy')"
+        :class="{ active: activeButton === 'sport' }"
+        @click="setActiveButton('sport')"
       >
         <i class="fa-solid fa-bicycle"></i>
       </button>
+      <button
+        class="icon-button"
+        :class="{ active: activeButton === 'clean' }"
+        @click="setActiveButton('clean')"
+      >
+      <i class="fa-solid fa-hand-sparkles"></i>
+      </button>
     </div>
-
     <div class="goback">
       <GoBackComponent @goback="goBack"></GoBackComponent>
     </div>
   </div>
+    
 </template>
 
 <style lang="css" scoped>
 #formborder {
-  border: 1px solid rgb(12, 61, 70);
-  background-color: rgb(227, 224, 222);
+  /* border: 1px solid rgb(12, 61, 70); */
+  /* background-color: rgb(227, 224, 222); */
   width: 912px;
   height: 608px;
   position: fixed;
   top: 50px;
   left: 350px;
+  background-image: url("@/assets/border.png");
+  background-size: cover;
 }
 
 .button-container {
   position: absolute;
   right: 31px;
-  top: 50%;
+  top: 55%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -158,8 +169,9 @@ onMounted(() => {
   border: 1px solid black;
   cursor: pointer;
   padding: 10px;
-  font-size: 30px;
+  font-size: 28px;
   /* transition: all 0.3s ease; */
+  line-height: 30px; /* 加上這一行以確保圖標垂直居中 */
 }
 
 .icon-button.active {
@@ -194,9 +206,9 @@ onMounted(() => {
 
 .view-area {
   padding: 10px;
-  margin-top: 50px;
-  margin-left: 30px;
-  margin-right: 90px; /* 為右側按鈕預留空間 */
+  margin-top: 70px;
+  margin-left: 35px;
+  margin-right: 80px; /* 為右側按鈕預留空間 */
   /* height: calc(100% - 30px); 減去標題的高度 */
   overflow-y: auto; /* 內容過多時可以滾動 */
   /* border: 1px solid black; */
