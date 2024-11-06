@@ -9,6 +9,37 @@ const PiniaPlayer = Playerinformation(); //初始化
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/CreateCharacter`;
 
+//Alert樣式
+const showErrorAlert = async (message) => {
+  await Swal.fire({
+    imageUrl: "/images/SweetAlert2_ERROR.png",
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageHeight: 100,
+    imageWidth: 300,
+    imageAlt: "A Error image",
+    title: message,
+    confirmButtonText: "",
+  });
+};
+
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
+
 //玩家在input填入的資訊儲存在這裡
 const form = ref({
   name: "",
@@ -103,62 +134,26 @@ const handleSubmit = async () => {
   try {
     const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_ERROR.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 380,
-        imageAlt: "A Error image",
-        confirmButtonText: "",
-      });
+      await showErrorAlert();
       return;
     }
     const userAccount = JSON.parse(userAccountJson);
     playerAccount = userAccount.playerAccount;
 
     if (!playerAccount) {
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_ERROR.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 380,
-        imageAlt: "A Error image",
-        confirmButtonText: "",
-      });
+      await showErrorAlert();
       return;
     }
   } catch (error) {
     console.error("解析 UserAccount 失敗:", error);
-    await Swal.fire({
-      imageUrl: "/images/SweetAlert2_ERROR.png",
-      customClass: {
-        popup: "swal-custom-popup", // 更改類別名稱
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      confirmButtonText: "",
-    });
+    await showErrorAlert();
     return;
   }
   try {
     //檢查現有角色狀態
     const livingStatus = await checkExistingCharacter(playerAccount);
     if (livingStatus === "居住") {
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_ERROR.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 380,
-        imageAlt: "A Error image",
-        confirmButtonText: "",
-      });
+      await showErrorAlert();
       return;
     }
     //傳出到後端api
@@ -182,45 +177,18 @@ const handleSubmit = async () => {
       PiniaPlayer.updatePlayerData(data.character);
       PiniaPlayer.updateCharacterBody(data.characterAccessorie);
 
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_SUCCESS.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 390,
-        imageAlt: "A SUCCESS image",
-        confirmButtonText: "",
-      });
+      await showSuccessAlert("創建角色成功！");
       await router.push("/StartStory");
       // 可以在這裡添加導航到其他頁面的邏輯
     } else {
       const errorData = await response.json();
       errors.value.general = errorData.message || "創建失敗，請稍後再試";
-      await Swal.fire({
-        imageUrl: "/images/SweetAlert2_ERROR.png",
-        customClass: {
-          popup: "swal-custom-popup", // 更改類別名稱
-        },
-        imageHeight: 100,
-        imageWidth: 380,
-        imageAlt: "A Error image",
-        confirmButtonText: "",
-      });
+      await showErrorAlert();
     }
   } catch (error) {
     console.error("發生錯誤:", error);
     errors.value.general = "發生錯誤，請稍後再試";
-    await Swal.fire({
-      imageUrl: "/images/SweetAlert2_ERROR.png",
-      customClass: {
-        popup: "swal-custom-popup", // 更改類別名稱
-      },
-      imageHeight: 100,
-      imageWidth: 380,
-      imageAlt: "A Error image",
-      confirmButtonText: "",
-    });
+    await showErrorAlert();
   }
 };
 </script>
@@ -230,13 +198,13 @@ const handleSubmit = async () => {
     <!-- start -->
     <!-- offset控制留白 -->
     <!-- name其實是select最重要的屬性，沒有會無法傳資料 -->
-    <div class="container">
+    <div class="container" id="Frame">
       <div class="row">
         <h2 class="col-12 mt-5 mb-5 text-center">創建角色</h2>
       </div>
       <!-- end -->
       <!-- start -->
-      <div class="row mb-3 d-flex align-items-center">
+      <div class="row mb-5 d-flex align-items-center">
         <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="name" class="form-label">角色名稱</label>
         </div>
@@ -255,11 +223,11 @@ const handleSubmit = async () => {
       </div>
       <!-- end -->
       <!-- start -->
-      <div class="row mb-3 d-flex align-items-center">
+      <div class="row mb-5 d-flex align-items-center">
         <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="height" class="form-label">身高</label>
         </div>
-        <div class="col-4 col-xl-3">
+        <div class="col-4 col-xl-3" id="input-wrapper">
           <!-- <input type="tel" id="tel" class="form-control" pattern="[A-Z]{1}[0-9]{9}" placeholder="請輸入身分證字號" required> -->
           <input
             v-model="form.height"
@@ -284,11 +252,11 @@ const handleSubmit = async () => {
       </div>
       <!-- end -->
       <!-- start -->
-      <div class="row mb-3 d-flex align-items-center">
+      <div class="row mb-5 d-flex align-items-center">
         <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="weight" class="form-label">體重</label>
         </div>
-        <div class="col-4 col-xl-3">
+        <div class="col-4 col-xl-3" id="input-wrapper">
           <input
             v-model="form.weight"
             type="text"
@@ -312,11 +280,11 @@ const handleSubmit = async () => {
       </div>
       <!-- end -->
       <!-- start -->
-      <div class="row mb-3 d-flex align-items-center">
+      <div class="row mb-5 d-flex align-items-center">
         <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
           <label for="exercise" class="form-label">運動強度</label>
         </div>
-        <div class="col-4 col-xl-3">
+        <div class="col-4 col-xl-3" id="input-wrapper">
           <select
             v-model="form.exerciseIntensity"
             class="form-control"
@@ -339,32 +307,57 @@ const handleSubmit = async () => {
       </div>
       <!-- end -->
       <!-- start -->
-      <div class="row mb-5 mt-5">
+      <div class="row mb-5 mt-4">
         <div class="col-12 text-center">
           <!-- input:submit -->
           <button type="submit" class="button-62">創建</button>
+          <div v-if="errors.general" class="row">
+            <div class="col-12 text-center text-danger" id="buttonError">
+              {{ errors.general }}
+            </div>
+          </div>
         </div>
       </div>
       <!-- end -->
-      <!-- 一般錯誤訊息 -->
-      <div v-if="errors.general" class="row">
-        <div class="col-12 text-center text-danger">
-          {{ errors.general }}
-        </div>
-      </div>
     </div>
   </form>
 </template>
 
 <style lang="css" scoped>
 .container {
-  width: 900px;
-  height: 500px;
-  background: linear-gradient(161.98deg, #fff9e6 13.65%, #fdbdbd 87.85%);
-  margin: 100px auto;
+  /* 移除固定寬度 */
+  max-width: 900px; /* 改用最大寬度 */
+  min-width: 320px; /* 設定最小寬度避免過度壓縮 */
+  height: auto; /* 高度自適應 */
+  min-height: 620px; /* 最小高度保持原來的大小 */
+  max-height: 630px;
+  background-image: url("/images/CreateCharacterForm.png");
+  background-size: 100% 100%; /* 確保背景圖片完整顯示 */
+  background-repeat: no-repeat;
+  margin: 30px auto;
   position: relative;
-  border-radius: 20px;
-  box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+  padding: 40px 15px; /* 增加左右內距 */
+}
+
+/* 在小螢幕時調整間距 */
+@media (max-width: 768px) {
+  .container {
+    margin: 15px auto;
+    padding: 20px 10px;
+  }
+}
+#Frame {
+  padding-top: 40px;
+}
+
+#input-wrapper {
+  position: relative;
+}
+.invalid-feedback {
+  position: absolute;
+}
+#buttonError {
+  position: absolute;
 }
 /* 修改後的 SweetAlert2 自訂樣式 */
 .swal2-popup.swal-custom-popup {

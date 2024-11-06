@@ -390,7 +390,6 @@ export const useGameStore = defineStore("game", {
         return null;
       }
     },
-
     async handleEquip(itemImage, fromIndex) {
       try {
         console.log("開始裝備物品:", fromIndex);
@@ -410,14 +409,28 @@ export const useGameStore = defineStore("game", {
 
         const itemType = result.itemData.pClass;
         const slotType = this.typeMapping[itemType] || itemType;
-        const slotIndex = ["accessory", "hairstyle", "outfit"].indexOf(
-          slotType
-        );
+        const slotIndex = ["accessory", "hairstyle", "outfit"].indexOf(slotType);
 
         if (slotIndex !== -1) {
+          // 處理已裝備的物品
+          const existingItem = this.equipmentSlots[slotIndex];
+          if (existingItem) {
+            const existingItemInfo = this.itemsData.get(existingItem);
+            const inventoryIndex = this.inventoryItems.findIndex(
+              (invItem) => invItem &&
+              this.itemsData.get(invItem)?.imageName === existingItemInfo?.imageName
+            );
+            if (inventoryIndex !== -1) {
+              this.equippedItemsMap.delete(this.inventoryItems[inventoryIndex]);
+            }
+          }
+
           // 設置新裝備
           this.equipmentSlots[slotIndex] = actualItem;
           this.equippedItems[slotType] = result.sprite;
+          this.equippedItemsMap.set(actualItem, true);
+
+          console.log(`成功裝備到正確位置: ${slotType}`);
         }
       } catch (error) {
         console.error("Error equipping item:", error);
@@ -703,7 +716,6 @@ export const useGameStore = defineStore("game", {
         y: event.clientY - rect.top,
       };
     },
-
     async endDrag(event) {
       if (!this.dragState.isDragging) return;
 
@@ -715,36 +727,27 @@ export const useGameStore = defineStore("game", {
         const draggedItemInfo = this.itemsData.get(draggedItem);
         if (!draggedItemInfo) return;
 
+        // 取得物品實際類型
         const itemType = draggedItemInfo.type;
-        for (
-          let index = 0;
-          index < this.equipmentSlotsPosition.length;
-          index++
-        ) {
-          const slot = this.equipmentSlotsPosition[index];
-          if (
+        const mappedItemType = this.typeMapping[itemType] || itemType;
+
+        // 檢查是否點擊在任何裝備欄位置
+        const clickedSlotIndex = this.equipmentSlotsPosition.findIndex(
+          (slot) =>
             x >= slot.x &&
             x <= slot.x + this.slotConfig.size &&
             y >= slot.y &&
             y <= slot.y + this.slotConfig.size
-          ) {
-            const slotTypes = ["accessory", "hairstyle", "outfit"];
-            const targetSlotType = slotTypes[index];
+        );
 
-            if (
-              itemType === targetSlotType ||
-              this.typeMapping[itemType] === targetSlotType
-            ) {
-              await this.handleEquip(draggedItem, sourceIndex);
-              break;
-            }
-          }
+        // 只要拖曳到任何裝備欄，就進行裝備
+        if (clickedSlotIndex !== -1) {
+          await this.handleEquip(draggedItem, sourceIndex);
+          console.log(`物品類型: ${itemType} 已裝備到位置: ${mappedItemType}`);
         }
       } else if (sourceType === "equipment") {
-        // 從裝備欄拖回物品欄 - 直接解除裝備
         this.handleUnequip(sourceIndex);
       }
-
       // 重置拖曳狀態
       this.dragState = {
         isDragging: false,
@@ -756,7 +759,6 @@ export const useGameStore = defineStore("game", {
         offsetY: 0,
       };
     },
-
     getMousePosition(event) {
       const canvas = event.target;
       const rect = canvas.getBoundingClientRect();

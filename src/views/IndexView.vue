@@ -3,9 +3,41 @@ import ForgetPasswordComponent from "@/components/ForgetPasswordComponent.vue";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
+import Swal from "sweetalert2";
 //----------------註冊帳號-------------------------------------
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/IndexPlayers`;
+
+//Alert樣式
+const showErrorAlert = async (message) => {
+  await Swal.fire({
+    imageUrl: "/images/SweetAlert2_ERROR.png",
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageHeight: 100,
+    imageWidth: 300,
+    imageAlt: "A Error image",
+    title: message,
+    confirmButtonText: "",
+  });
+};
+
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
 
 const UserData = ref({
   Useraccount: "",
@@ -30,16 +62,25 @@ const APISubmit = async (event) => {
       if (response.ok) {
         const data = await response.json();
         if (data.message == "註冊成功") {
-          alert("註冊成功！");
+          Swal.fire({
+            text: "註冊成功！",
+            icon: "success",
+          });
         } else {
-          alert(data.message);
+          Swal.fire({
+            text: data.message,
+            icon: "error",
+          });
         }
 
         console.log(UserData.value);
       }
     } catch (error) {
       console.error("Fetch error: ", error);
-      alert("註冊失敗");
+      Swal.fire({
+        text: "註冊失敗",
+        icon: "error",
+      });
     }
   }
 };
@@ -65,11 +106,17 @@ const Login = async () => {
       if (data.message == "success") {
         PiniaPlayer.updatePlayerData(data.playerCharacter); //要放入的是物件，playerCharacter是我請求api之後回傳的對象，要指定是對象
         PiniaPlayer.updateCharacterBody(data.characterAccessorie);
-        alert("登入成功");
+        await showSuccessAlert("登入成功");
 
         window.location.href = "/outdoor";
       } else {
-        alert(data.message);
+        if (data.respond == "newcharacter") {
+          await showSuccessAlert(data.message);
+        } else if (data.respond == "gameover") {
+          await showErrorAlert(data.message);
+        } else {
+          await showSuccessAlert(data.message);
+        }
         console.log(data);
         if (data.respond == "gameover") {
           PiniaPlayer.updatePlayerData(data.playerCharacter);
@@ -110,9 +157,15 @@ const Istrueinput = async () => {
       submitok.value = true;
       console.log(submitok.value);
       console.log(FORUemail.value.forgetEmail);
-      alert(response.message);
+      await Swal.fire({
+        text: response.message,
+        icon: "success",
+      });
     } else {
-      alert("此信箱尚未註冊帳號");
+      Swal.fire({
+        text: "此信箱尚未註冊帳號",
+        icon: "error",
+      });
       submitok.value = false;
     }
   }
@@ -143,9 +196,15 @@ const feedbacksub = async (event) => {
     });
     if (response.ok) {
       const feedbackresponseData = await response.json(); // 解析 JSON 回應
-      alert(feedbackresponseData.message);
+      await Swal.fire({
+        text: feedbackresponseData.message,
+        icon: "success",
+      });
     } else {
-      alert("發生錯誤，請重新填寫表單");
+      await Swal.fire({
+        text: "發生錯誤，請重新填寫表單",
+        icon: "error",
+      });
     }
   }
 

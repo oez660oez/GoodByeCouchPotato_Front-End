@@ -3,11 +3,42 @@ import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref, computed } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import GoBackComponent from "@/components/GoBackComponent.vue";
+import Swal from "sweetalert2";
 const PiniaPlayer = Playerinformation();
 const router = useRouter();
 const route = useRoute();
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
+//Alert樣式
+const showErrorAlert = async (message) => {
+  await Swal.fire({
+    imageUrl: "/images/SweetAlert2_ERROR.png",
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageHeight: 100,
+    imageWidth: 300,
+    imageAlt: "A Error image",
+    title: message,
+    confirmButtonText: "",
+  });
+};
+
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
 //-------------獲取每日任務--------------------
 const API_URLgettask = `${Base_URL}/DailyTaskRecords/GetDailyTaskRecords`;
 var temreward = {
@@ -139,6 +170,12 @@ onMounted(() => {
     });
     if (response.ok) {
       const feedbackresponseData = await response.json();
+      // 執行對應的 alert
+      if (feedbackresponseData.done > 0) {
+        await showSuccessAlert(feedbackresponseData.returnword);
+      } else {
+        await showErrorAlert(feedbackresponseData.returnword);
+      }
       alert(feedbackresponseData.returnword);
       if (updatedata.t1completed) {
         document.getElementById("task1").disabled = true;
@@ -187,6 +224,33 @@ const weeklyupdate = async () => {
   });
   if (response.ok) {
     const weeklyupdateresult = await response.json();
+    // 判斷條件
+    const isError =
+      (!weeklyupdateresult.todaysport &&
+        !weeklyupdateresult.todayclean &&
+        !tempCleanStatus.value &&
+        !tempSportStatus.value) ||
+      (weeklyupdateresult.todaysport &&
+        !weeklyupdateresult.todayclean &&
+        tempSportStatus.value &&
+        !tempCleanStatus.value) ||
+      (!weeklyupdateresult.todaysport &&
+        weeklyupdateresult.todayclean &&
+        !tempSportStatus.value &&
+        tempCleanStatus.value);
+
+    // 執行對應的 alert
+    if (isError) {
+      await showErrorAlert(weeklyupdateresult.returnword);
+    } else {
+      await showSuccessAlert(weeklyupdateresult.returnword);
+    }
+    console.log({
+      "weeklyupdateresult.todaysport": weeklyupdateresult.todaysport,
+      "weeklyupdateresult.todayclean": weeklyupdateresult.todayclean,
+      todaysport: tempSportStatus.value,
+      todayclean: tempCleanStatus.value,
+    });
     alert(weeklyupdateresult.returnword);
     sportdone.value = weeklyupdateresult.countsport;
     cleandone.value = weeklyupdateresult.countclean;

@@ -2,12 +2,29 @@
 import { useRouter, useRoute } from "vue-router";
 import { ref } from "vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
+import Swal from "sweetalert2";
 const PiniaPlayer = Playerinformation();
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/IndexPlayers/ChangePassword`;
 
 const router = useRouter();
 const route = useRoute();
+
+//Alert樣式
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
 
 const goBack = () => {
   if (route.matched.length > 1) {
@@ -40,7 +57,7 @@ const changepassword = async () => {
       });
       if (response.ok) {
         var serverrespone = await response.json();
-        alert(serverrespone.message);
+        await showSuccessAlert(serverrespone.message);
         goBack();
       }
     } else {

@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import GoBackComponent from "@/components/GoBackComponent.vue";
+import Swal from "sweetalert2";
 // 使用 Vue 路由
 const router = useRouter();
 const route = useRoute();
@@ -33,6 +34,37 @@ const year = today.getFullYear();
 const month = String(today.getMonth() + 1).padStart(2, "0");
 const day = String(today.getDate()).padStart(2, "0");
 const todayDate = `${year}-${month}-${day}`;
+
+//Alert樣式
+const showErrorAlert = async (message) => {
+  await Swal.fire({
+    imageUrl: "/images/SweetAlert2_ERROR.png",
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageHeight: 100,
+    imageWidth: 300,
+    imageAlt: "A Error image",
+    title: message,
+    confirmButtonText: "",
+  });
+};
+
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
 
 // 表單初始數據
 const dailyHealthData = ref({
@@ -151,7 +183,7 @@ const submitData = async () => {
   validateForm();
 
   if (!isValid.value) {
-    alert("請修正表單中的錯誤後再提交");
+    showErrorAlert("請修正表單中的錯誤後再提交");
     return;
   }
 
@@ -172,11 +204,11 @@ const submitData = async () => {
     if (response.ok) {
       console.log("Data submitted successfully");
       await checkDataExists();
-      alert("資料更新成功");
+      showSuccessAlert("資料更新成功");
     } else {
       const errorMsg = await response.text();
       console.error("Error submitting data:", errorMsg);
-      alert("資料提交失敗");
+      showErrorAlert("資料提交失敗");
     }
   } catch (error) {
     console.error("Error:", error.message);

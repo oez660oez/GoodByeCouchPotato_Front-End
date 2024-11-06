@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, onBeforeMount } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter, useRoute } from 'vue-router';
 import { useGameStore } from "@/Stores/gameStore";
 import { useGameEvents } from "@/composables/useGameEvents";
-import InventoryCanvas from "@/components/game/InventoryCanvas.vue";
+import InventoryCanvas from '@/components/game/InventoryCanvas.vue';
 import GoBackComponent from "@/components/GoBackComponent.vue";
 
 const router = useRouter();
@@ -18,16 +18,14 @@ const playerAccount = userAccount.playerAccount;
 
 // 遊戲事件處理
 const gameEventsRef = ref(null);
-const { setupEventListeners, cleanupEventListeners } = useGameEvents(
-  inventoryCanvasRef,
-  gameStore
-);
+const { setupEventListeners, cleanupEventListeners } = useGameEvents(inventoryCanvasRef, gameStore);
 
 // 初始化背包的函數
 const initializeInventory = async () => {
   try {
     await gameStore.initializeInventory(playerAccount);
     gameStore.inventoryOpen = true; // 確保背包是開啟的
+
 
     console.log("Inventory initialized successfully");
   } catch (error) {
@@ -77,9 +75,13 @@ const goBack = async () => {
   <div id="formborder">
     <div class="canvas-container">
       <div class="dress">
-        <GoBackComponent @goback="goBack"></GoBackComponent>
-      </div>
-      <InventoryCanvas ref="inventoryCanvasRef" :width="802" :height="535" />
+      <GoBackComponent @goback="goBack"></GoBackComponent>
+    </div>
+      <InventoryCanvas
+        ref="inventoryCanvasRef"
+        :width="802"
+        :height="535"
+      />
     </div>
   </div>
 </template>
@@ -113,7 +115,7 @@ const goBack = async () => {
 }
 
 .canvas-container :deep(canvas) {
-  width: 100%;
-  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
 }
 </style>

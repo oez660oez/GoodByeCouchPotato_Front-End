@@ -1,10 +1,42 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import Swal from "sweetalert2";
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const router = useRouter();
 const route = useRoute();
+
+//Alert樣式
+const showErrorAlert = async (message) => {
+  await Swal.fire({
+    imageUrl: "/images/SweetAlert2_ERROR.png",
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageHeight: 100,
+    imageWidth: 300,
+    imageAlt: "A Error image",
+    title: message,
+    confirmButtonText: "",
+  });
+};
+
+const showSuccessAlert = async (message) => {
+  await Swal.fire({
+    customClass: {
+      popup: "swal-custom-popup",
+      confirmButton: "swal-custom-confirm",
+    },
+    imageUrl: "/images/SweetAlert2_SUCCESS.png",
+    imageHeight: 100,
+    imageWidth: 300,
+    title: message,
+    confirmButtonText: "",
+  });
+};
+//Alert樣式結束
 
 const goBack = () => {
   if (route.matched.length > 1) {
@@ -64,9 +96,9 @@ const feedbacksub = async (event) => {
       const feedbackresponseData = await response.json();
       feedbackdata.value.Content = "";
       goBack();
-      alert(feedbackresponseData.message);
+      await showSuccessAlert(feedbackresponseData.message);
     } else {
-      alert("發生錯誤，請重新填寫表單");
+      await showErrorAlert("發生錯誤，請重新填寫表單");
     }
   }
 
@@ -166,7 +198,7 @@ const feedbacksub = async (event) => {
 
 #title {
   font-size: 30px;
-  color: rgb(17, 63, 103);
+  /* color: rgb(17, 63, 103); */
   position: absolute;
   top: 40px;
   left: 45%;
