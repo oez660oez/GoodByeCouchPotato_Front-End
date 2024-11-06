@@ -10,6 +10,7 @@ const API_URL = `${Base_URL}/IndexPlayers`;
 const UserData = ref({
   Useraccount: "",
   UserPassword: "",
+  UserChaeckPassword: "",
   UserEmail: "",
   UserState: false, //他因為預設是bool的false，所以本來沒有送出name就是false，但token是字串，送出沒有name的話，預設值會送不出去，會變成null而發生400錯誤
   Token: "temporary-token",
@@ -27,11 +28,15 @@ const APISubmit = async (event) => {
         body: UserRegisterformData,
       });
       if (response.ok) {
-        alert("註冊成功！");
-      } else {
-        alert(`此帳號已被註冊: ${errorMessage}`);
+        const data = await response.json();
+        if (data.message == "註冊成功") {
+          alert("註冊成功！");
+        } else {
+          alert(data.message);
+        }
+
+        console.log(UserData.value);
       }
-      console.log(UserData.value);
     } catch (error) {
       console.error("Fetch error: ", error);
       alert("註冊失敗");
@@ -453,6 +458,7 @@ onMounted(() => {
                   >
                   <input
                     id="checkPassword"
+                    name="CheckPassword"
                     type="password"
                     class="form-control"
                     style="display: inline-block; margin-left: 5px; width: 80%"
@@ -460,6 +466,7 @@ onMounted(() => {
                     maxlength="30"
                     placeholder="請再次輸入密碼"
                     required
+                    v-model.trim="UserData.UserChaeckPassword"
                   />
                   <div class="invalid-feedback">與密碼不相符</div>
                 </div>
