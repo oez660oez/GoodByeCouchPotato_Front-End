@@ -187,22 +187,22 @@ input[type='month']::-webkit-calendar-picker-indicator {
 #formborder {
   display: flex;
   justify-content: flex-end;
-  border: 1px solid rgb(63, 12, 70);
+  /* border: 1px solid rgb(63, 12, 70); */
   width: 912px;
   height: 608px;
   position: fixed;
   top: 50px;
   left: 350px;
-  background-image: url('@/components/image/form.png');
+  background-image: url('/images/border.png');
 }
 
 #button {
   position: absolute;
-  top: 10px;
+  top: 20px;
   right: -50px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   z-index: -2;
 }
 /* 每個按鈕不同亮色系顏色 */
