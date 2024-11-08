@@ -60,8 +60,8 @@ const getWeight = async (data) => {
 const formatWeightRecords = (weightRecords) => {
   console.log("收到體重記錄:", weightRecords);
 
-  const start = new Date(startMonth.value + "-31");
-  const end = new Date(endMonth.value + "-31");
+  const start = new Date(startMonth.value + "-01");
+  const end = new Date(endMonth.value + "-01");
   const monthRange = [];
 
   // 建立月份範圍
