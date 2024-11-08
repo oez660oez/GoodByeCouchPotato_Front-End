@@ -62,14 +62,13 @@ const gettask = async (CId) => {
     document.getElementById("task3lbl").textContent = dailytaskData.t3name;
     document.getElementById(
       "T1reward"
-    ).innerHTML = `任務獎勵<br> ${dailytaskData.t1Reward}金幣`;
+    ).textContent = `任務獎勵 ${dailytaskData.t1Reward}金幣`;
     document.getElementById(
       "T2reward"
-    ).innerHTML = `任務獎勵<br> ${dailytaskData.t2Reward}金幣`;
+    ).textContent = `任務獎勵 ${dailytaskData.t2Reward}金幣`;
     document.getElementById(
       "T3reward"
-    ).innerHTML = `任務獎勵<br> ${dailytaskData.t3Reward}金幣`;
-
+    ).textContent = `任務獎勵 ${dailytaskData.t3Reward}金幣`;
     document.getElementById("task1").checked = dailytaskData.t1completed;
     document.getElementById("task2").checked = dailytaskData.t2completed;
     document.getElementById("task3").checked = dailytaskData.t3completed;
@@ -291,59 +290,31 @@ const goBack = () => {
     <!-- 每日任務區塊 -->
     <div id="Dailytaskblock">
       <form class="needs-validation" name="feedbackdata">
-        <div>
-          <h4 style="padding-left: 100px">每日任務</h4>
-        </div>
+        <h4 style="padding-left: 100px">每日任務</h4>
         <div class="task-group">
           <div class="task-list">
             <div class="task-item">
-              <div class="card">
-                <div class="card-header">
-                  <input type="checkbox" id="task1" />
-                </div>
-                <div class="card-body">
-                  <blockquote class="blockquote mb-0" for="task1">
-                    <p id="task1lbl"></p>
-                    <footer class="blockquote-footer">
-                      <p id="T1reward"></p>
-                    </footer>
-                  </blockquote>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <input type="checkbox" id="task2" />
-                </div>
-                <div class="card-body">
-                  <blockquote class="blockquote mb-0" for="task2">
-                    <p id="task2lbl"></p>
-                    <footer class="blockquote-footer">
-                      <p id="T2reward"></p>
-                    </footer>
-                  </blockquote>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <input type="checkbox" id="task3" />
-                </div>
-                <div class="card-body">
-                  <blockquote class="blockquote mb-0" for="task3">
-                    <p id="task3lbl"></p>
-                    <div class="footer">
-                      <p id="T3reward"></p>
-                    </div>
-                  </blockquote>
-                </div>
-              </div>
+              <input type="checkbox" id="task1" />
+              <label for="task1" id="task1lbl"></label>
+              <i id="T1reward"></i>
+            </div>
+            <div class="task-item">
+              <input type="checkbox" id="task2" />
+              <label for="task2" id="task2lbl"></label>
+              <i id="T2reward"></i>
+            </div>
+            <div class="task-item">
+              <input type="checkbox" id="task3" />
+              <label for="task3" id="task3lbl"></label>
+              <i id="T3reward"></i>
             </div>
           </div>
-          <button id="btndaily" class="update-btn"></button>
+          <button id="btndaily" class="update-btn">達成</button>
         </div>
       </form>
     </div>
+
+
 
     <!-- 每週任務區塊 -->
     <div id="weeklytaskblock">
@@ -355,54 +326,30 @@ const goBack = () => {
         <h4 style="padding-left: 100px; margin-top: 3%">每週任務</h4>
         <div class="weeklytask-group">
           <div class="task-list">
-            <div class="task-item-week">
-              <div class="card-week">
-                <div class="card-header">
-                  <div class="checkbox-wrapper-23">
-                    <input
-                      type="checkbox"
-                      class="check-23"
-                      id="sport"
-                      v-model="todaysport"
-                      :disabled="isDisabledSport"
-                    />
-                    <label for="sport" style="--size: 25px">
-                      <svg viewBox="0,0,50,50">
-                        <path d="M5 30 L 20 45 L 45 5"></path>
-                      </svg>
-                    </label>
-                  </div>
-                </div>
-                <div class="card-body" for="sport">
-                  <blockquote class="blockquote mb-0" >
-                    <label id="sportdonelbl" for="sport">運動</label>
-                    <p>本週累積：{{ sportdone }}/7 &nbsp;&nbsp;</p>
-                    <div class="footer">
-                      <span>目標：每週三次</span>
-                    </div>
-                  </blockquote>
-                </div>
-              </div>
+            <div class="task-item">
+              <input
+                type="checkbox"
+                id="sport"
+                v-model="todaysport"
+                :disabled="isDisabledSport"
 
-              <div class="card-week">
-                <div class="card-header">
-                  <input
-                    type="checkbox"
-                    id="clean"
-                    v-model="todayclean"
-                    :disabled="isDisabledClean"
-                  />
-                </div>
-                <div class="card-body">
-                  <blockquote class="blockquote mb-0" for="clean">
-                    <p id="cleandonelbl">整理環境</p>
-                    <p>本週累積：{{ cleandone }}/7 &nbsp;&nbsp;</p>
-                    <div class="footer">
-                      <span>目標：每週一次</span>
-                    </div>
-                  </blockquote>
-                </div>
-              </div>
+              />
+              <label id="sportdonelbl" for="sport">運動 </label>
+              <span
+                >本週累積：{{ sportdone }}/7 &nbsp;&nbsp;目標：每週三次</span
+              >
+            </div>
+            <div class="task-item">
+              <input
+                type="checkbox"
+                id="clean"
+                v-model="todayclean"
+                :disabled="isDisabledClean"
+              />
+              <label id="cleandonelbl" for="clean">整理環境 </label>
+              <span
+                >本週累積：{{ cleandone }}/7 &nbsp;&nbsp;目標：每週一次</span
+              >
             </div>
           </div>
           <button
@@ -410,19 +357,13 @@ const goBack = () => {
             id="btnweekly"
             class="update-btn"
             :disabled="isDisabledUpdate"
-          ></button>
+          >
+            達成
+          </button>
         </div>
       </form>
     </div>
   </div>
-  <!-- <div class="checkbox-wrapper-23">
-    <input type="checkbox" id="check-23" />
-    <label for="check-23" style="--size: 30px">
-      <svg viewBox="0,0,50,50">
-        <path d="M5 30 L 20 45 L 45 5"></path>
-      </svg>
-    </label>
-  </div> -->
 </template>
 
 <style lang="css" scoped>
@@ -438,11 +379,11 @@ const goBack = () => {
   left: 350px;
 }
 
-#Dailytaskblock {
+#Dailytaskblock{
   margin-top: 80px;
 }
 
-#weeklytaskblock {
+#weeklytaskblock{
   margin-top: 80px;
 }
 
@@ -485,56 +426,16 @@ const goBack = () => {
   display: flex;
   flex-direction: column;
 }
-.card {
-  margin-right: 10px !important;
-  min-width: 180px !important;
-  min-height: 180px !important;
-  max-height: 180px !important;
-}
-.card-header{
-  margin-left: 20px !important;
-  margin-top: 20px !important;
-}
-.card-body {
-  min-width: 120px !important;
-  padding: 15px !important;
-}
-.footer {
-  color: gray;
-  font-size: 16px;
-}
-
-.card-week {
-  background-color: transparent;
-  background-image: url("/images/DailyTask.png");
-  border: none;
-  margin-right: 25px !important;
-  margin-top: 60px !important;
-  min-width: 192px !important;
-  max-width: 192px !important;
-  min-height: 192px !important;
-  max-height: 192px !important;
-}
-
-.task-item-week {
-  display: flex;
-  align-items: center;
-  font-size: large;
-  margin-bottom: 20px;
-  margin-left: 50%;
-  min-width: 500px; /* 固定寬度，避免因為 label 長度影響排版 */
-  position: relative;
-  padding-top: 10px;
-}
 
 .task-item {
   display: flex;
   align-items: center;
   font-size: large;
   margin-bottom: 20px;
-  margin-left: 30%;
-  min-width: 500px; /* 固定寬度，避免因為 label 長度影響排版 */
+  margin-left: 40%;
+  width: 500px; /* 固定寬度，避免因為 label 長度影響排版 */
   position: relative;
+
   padding-top: 10px;
 }
 
@@ -558,62 +459,9 @@ const goBack = () => {
 }
 
 .update-btn {
-  background-image: url("/images/SweetAlert2_Confirm.png");
-  background-color: transparent !important;
-  border: none !important;
-  position: relative;
-  margin-right: 70px;
-  width: 48px !important;
-  height: 51px !important;
-}
-
-.checkbox-wrapper-23 *,
-.checkbox-wrapper-23 *:after,
-.checkbox-wrapper-23 *:before {
-  box-sizing: border-box;
-}
-
-.checkbox-wrapper-23 input {
-  position: absolute;
-  opacity: 0;
-}
-
-.checkbox-wrapper-23 input:checked + label svg path {
-  stroke-dashoffset: 0;
-}
-
-.checkbox-wrapper-23 input:focus + label {
-  transform: scale(1.03);
-}
-
-.checkbox-wrapper-23 input + label {
-  display: block;
-  border: 2px solid #333;
-  width: var(--size);
-  height: var(--size);
-  border-radius: 6px;
+  padding: 5px 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.checkbox-wrapper-23 input + label:active {
-  transform: scale(1.05);
-  border-radius: 12px;
-}
-
-.checkbox-wrapper-23 input + label svg {
-  pointer-events: none;
-  padding: 5%;
-}
-
-.checkbox-wrapper-23 input + label svg path {
-  fill: none;
-  stroke: #333;
-  stroke-width: 4px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 101;
-  transition: all 250ms cubic-bezier(1, 0, 0.37, 0.91);
+  position: relative;
+  right: 15%; /* 保證按鈕在 task-group 的右方 */
 }
 </style>

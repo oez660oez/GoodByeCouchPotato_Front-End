@@ -742,7 +742,7 @@ body {
 }
 
 .introduce {
-  color: rgb(3, 14, 23);
+  color: rgb(1, 35, 62);
   padding: 10px;
   text-align: center;
   max-width: 800px;
