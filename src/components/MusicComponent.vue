@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 const canvasRef = ref(null);
-const canvasWidth = 32;
-const canvasHeight = 42;
+const canvasWidth = 96;
+const canvasHeight = 96;
 const context = ref(null);
 const CutImage = ref([]);
 const frameIndex = ref(0); // 目前的索引位置
@@ -19,18 +19,18 @@ const LoadImage = (src) => {
 };
 
 onMounted(async () => {
-  const canvas = document.querySelector("#goback");
+  const canvas = document.querySelector("#Music");
   if (!canvas) throw new Error("Canvas not found");
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
   context.value = canvas.getContext("2d");
-  const chachaURL = "http://localhost:5173/src/assets/Xbutton.png";
+  const chachaURL = "http://localhost:5173/src/assets/musicControl.png";
 
   const ChachaImage = await LoadImage(chachaURL);
   for (let i = 0; i < 6; i++) {
     const sprite = {
       draw(ctx) {
-        ctx.drawImage(ChachaImage, i * 32, 0, 32, 42, 0, 0, 32, 42);
+        ctx.drawImage(ChachaImage, i * 96, 0, 96, 96, 0, 0, 96, 96);
       },
     };
     CutImage.value.push(sprite);
@@ -78,7 +78,7 @@ const buttonNoend = () => {
 
 <template>
   <canvas
-    id="goback"
+    id="Music"
     class="canvascss"
     ref="canvasRef"
     :height="canvasHeight"

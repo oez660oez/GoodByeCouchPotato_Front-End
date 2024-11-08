@@ -22,6 +22,7 @@ export const Playerinformation = defineStore(
     const Upper = ref(""); //衣服
     const Lower = ref(""); //配件
     const isnewcharacter = ref(false); //是否是新角色，要不要觸發劇情,true為新角色
+    const music = ref(false); //判斷音樂是否開啟
 
     // 建立一個方法，把資料更新到狀態裡
     const updatePlayerData = (data) => {
@@ -91,11 +92,12 @@ export const Playerinformation = defineStore(
       Upper,
       Lower,
       isnewcharacter,
+      music,
       updatePlayerData,
       updateCharacterBody,
       logout,
       changecoins,
-      logoutBody
+      logoutBody,
     };
   },
   //   {

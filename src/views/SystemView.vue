@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
 import GoBackComponent from "@/components/GoBackComponent.vue";
+import MusicComponent from "@/components/MusicComponent.vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 
 const router = useRouter();
@@ -26,6 +27,9 @@ const goBack = () => {
 <template>
   <div id="formborder">
     <h3>系統</h3>
+    <div class="musiccontroller">
+      <MusicComponent></MusicComponent>
+    </div>
     <div class="inside">
       <div>
         <RouterLink
@@ -139,5 +143,11 @@ h3 {
   position: absolute;
   top: 50px;
   left: 46%;
+}
+
+.musiccontroller {
+  position: absolute;
+  top: 150px;
+  left: 60px;
 }
 </style>
