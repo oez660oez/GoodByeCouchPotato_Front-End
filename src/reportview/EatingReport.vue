@@ -177,7 +177,7 @@ onMounted(() => {
 
 <template>
   <div class="calendar-container">
-    <h5 class="calendar-title">飲食習慣</h5>
+    <h5 class="calendar-title">飲食習慣 &nbsp; <img src="/images/Good.png" alt="">：蔬果 &nbsp;<img src="/images/Bad.png" alt="">：宵夜、甜點</h5>
     <FullCalendar ref="fullCalendar" :options="calendarOptions" />
   </div>
 </template>
