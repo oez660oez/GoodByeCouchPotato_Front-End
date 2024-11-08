@@ -248,17 +248,17 @@ onMounted(() => {
 
 /* 設定整體日曆背景色 */
 :deep(.fc-theme-standard) {
-  background-color: #abd1c5; 
+  background-color: #cbc3ab; 
 }
 
 /* 設定日期數字的顏色 */
 :deep(.fc-daygrid-day-number) {
-  color: #212f3c;
+  color: #3f2f18;
 }
 
 /* 設定星期幾的顏色 */
 :deep(.fc-col-header-cell) {
-  background-color: #082113;
+  background-color: #1c2108;
 }
 
 :deep(a.fc-col-header-cell-cushion) {

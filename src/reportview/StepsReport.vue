@@ -179,10 +179,10 @@ const updateChart = (formattedData) => {
       smooth: true,
       lineStyle: {
         width: 3,
-        color: '#d1a5d4'
+        color: '#003D79'
       },
       itemStyle: {
-        color: '#744278',
+        color: '#003060',
         borderWidth: 0,
       },
       symbol: 'circle',

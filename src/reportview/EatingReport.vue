@@ -177,7 +177,7 @@ onMounted(() => {
 
 <template>
   <div class="calendar-container">
-    <h5 class="calendar-title">飲食習慣</h5>
+    <h5 class="calendar-title">飲食習慣 &nbsp; <img src="/images/Good.png" alt="">：蔬果 &nbsp;<img src="/images/Bad.png" alt="">：宵夜、甜點</h5>
     <FullCalendar ref="fullCalendar" :options="calendarOptions" />
   </div>
 </template>
@@ -262,17 +262,17 @@ onMounted(() => {
 
 /* 設定整體日曆背景色 */
 :deep(.fc-theme-standard) {
-  background-color: #abd1c5;
+  background-color: #cbc3ab;
 }
 
 /* 設定日期數字的顏色 */
 :deep(.fc-daygrid-day-number) {
-  color: #212f3c;
+  color: #3f2f18;
 }
 
 /* 設定星期幾的顏色 */
 :deep(.fc-col-header-cell) {
-  background-color: #082113;
+  background-color: #1c2108;
 }
 
 :deep(a.fc-col-header-cell-cushion) {

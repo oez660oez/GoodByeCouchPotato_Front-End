@@ -176,6 +176,7 @@ onMounted(() => {
       } else {
         await showErrorAlert(feedbackresponseData.returnword);
       }
+
       if (updatedata.t1completed) {
         document.getElementById("task1").disabled = true;
       }
@@ -250,6 +251,7 @@ const weeklyupdate = async () => {
       todaysport: tempSportStatus.value,
       todayclean: tempCleanStatus.value,
     });
+
     sportdone.value = weeklyupdateresult.countsport;
     cleandone.value = weeklyupdateresult.countclean;
     todaysport.value = weeklyupdateresult.todaysport;
