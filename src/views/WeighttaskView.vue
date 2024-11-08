@@ -5,7 +5,6 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/WeightRecord`;
-const router = useRouter();
 //Alert樣式
 const showErrorAlert = async (message) => {
   await Swal.fire({
