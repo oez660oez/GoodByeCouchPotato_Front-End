@@ -115,6 +115,7 @@ const Login = async () => {
         updatePlayer(data); // 更新至pinina
         await showSuccessAlert("登入成功");
         transition.value = true;
+        PiniaPlayer.isnewcharacter = false;
         await new Promise((resolve) => setTimeout(resolve, 500)); //等候一秒才跳轉
         await router.push("/outdoor");
       } else {
@@ -338,24 +339,6 @@ onMounted(() => {
     >
       <h3 style="text-align: center">登入</h3>
       <hr />
-      <!-- 用來確認有抓到資料 -->
-      <!-- <h1>**{{ PiniaPlayer.playerAccount }}**</h1>
-      <h1>**{{ PiniaPlayer.isLoggedIn }}**</h1>
-      <h1>**{{ PiniaPlayer.characterID }}**</h1>
-      <h1>**{{ PiniaPlayer.characterName }}**</h1>
-      <h1>**{{ PiniaPlayer.characterLevel }}**</h1>
-      <h1>**{{ PiniaPlayer.characterExperience }}**</h1>
-      <h1>**{{ PiniaPlayer.characterEnvironment }}**</h1>
-      <h1>**{{ PiniaPlayer.characterCoins }}**</h1>
-      <h1>**{{ PiniaPlayer.characterTargetWater }}**</h1>
-      <h1>**{{ PiniaPlayer.characterTargetStep }}**</h1>
-      <h1>**{{ PiniaPlayer.characterGetEnvironment }}**</h1>
-      <h1>**{{ PiniaPlayer.characterGetExperience }}**</h1>
-      <h1>**{{ PiniaPlayer.characterGetCoins }}**</h1> -->
-      <!-- <h1>**{{ PiniaPlayer.Head }}**</h1>
-      <h1>**{{ PiniaPlayer.Upper }}**</h1>
-      <h1>**{{ PiniaPlayer.Lower }}**</h1> -->
-
       <form style="font: size 12px" name="LoginData" @submit.prevent="Login">
         <div>
           <label for="account">帳號</label>

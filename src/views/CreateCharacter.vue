@@ -136,7 +136,7 @@ const handleSubmit = async () => {
   try {
     const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
-      console.log("取不到用戶json")
+      console.log("取不到用戶json");
       await showErrorAlert();
       return;
     }
@@ -144,7 +144,7 @@ const handleSubmit = async () => {
     playerAccount = userAccount.playerAccount;
 
     if (!playerAccount) {
-      console.log("取不到用戶帳號")
+      console.log("取不到用戶帳號");
       await showErrorAlert();
       return;
     }
@@ -207,6 +207,7 @@ const handleSubmit = async () => {
     <!-- start -->
     <!-- offset控制留白 -->
     <!-- name其實是select最重要的屬性，沒有會無法傳資料 -->
+    <div class="block"></div>
     <div class="container" id="Frame">
       <div class="row">
         <h2 class="col-12 mt-5 mb-5 text-center">創建角色</h2>
@@ -337,13 +338,13 @@ const handleSubmit = async () => {
   /* 移除固定寬度 */
   max-width: 900px; /* 改用最大寬度 */
   min-width: 320px; /* 設定最小寬度避免過度壓縮 */
-  height: auto; /* 高度自適應 */
-  min-height: 620px; /* 最小高度保持原來的大小 */
+  height: auto;
+  min-height: 630px; /* 最小高度保持原來的大小 */
   max-height: 630px;
   background-image: url("/images/CreateCharacterForm.png");
   background-size: 100% 100%; /* 確保背景圖片完整顯示 */
   background-repeat: no-repeat;
-  margin: 30px auto;
+  /* margin: 30px auto; */
   position: relative;
   padding: 40px 15px; /* 增加左右內距 */
 }
@@ -428,5 +429,9 @@ const handleSubmit = async () => {
 }
 .CreateCharacterData {
   position: relative;
+}
+
+.block {
+  height: 30px;
 }
 </style>
