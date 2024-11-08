@@ -3,8 +3,10 @@ import { ref } from "vue";
 import Swal from "sweetalert2";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 const PiniaPlayer = Playerinformation(); //初始化
+const transition = ref(false); //是否開啟遮罩
 
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/CreateCharacter`;
@@ -178,6 +180,8 @@ const handleSubmit = async () => {
       PiniaPlayer.updateCharacterBody(data.characterAccessorie);
 
       await showSuccessAlert("創建角色成功！");
+      transition.value = true;
+      await new Promise((resolve) => setTimeout(resolve, 500)); //等候一秒才跳轉
       await router.push("/StartStory");
       // 可以在這裡添加導航到其他頁面的邏輯
     } else {
@@ -194,6 +198,9 @@ const handleSubmit = async () => {
 </script>
 
 <template>
+  <transition name="fade" v-show="transition" class="blacktransition">
+    <div class="black"></div>
+  </transition>
   <form @submit.prevent="handleSubmit" class="CreateCharacterData">
     <!-- start -->
     <!-- offset控制留白 -->
@@ -416,5 +423,8 @@ const handleSubmit = async () => {
   box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5),
     -0.125rem -0.125rem 1rem rgba(239, 71, 101, 0.5),
     0.125rem 0.125rem 1rem rgba(255, 154, 90, 0.5);
+}
+.CreateCharacterData {
+  position: relative;
 }
 </style>

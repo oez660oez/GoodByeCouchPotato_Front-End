@@ -176,7 +176,6 @@ onMounted(() => {
       } else {
         await showErrorAlert(feedbackresponseData.returnword);
       }
-      alert(feedbackresponseData.returnword);
       if (updatedata.t1completed) {
         document.getElementById("task1").disabled = true;
       }
@@ -251,7 +250,6 @@ const weeklyupdate = async () => {
       todaysport: tempSportStatus.value,
       todayclean: tempCleanStatus.value,
     });
-    alert(weeklyupdateresult.returnword);
     sportdone.value = weeklyupdateresult.countsport;
     cleandone.value = weeklyupdateresult.countclean;
     todaysport.value = weeklyupdateresult.todaysport;
@@ -314,8 +312,6 @@ const goBack = () => {
       </form>
     </div>
 
-
-
     <!-- 每週任務區塊 -->
     <div id="weeklytaskblock">
       <form
@@ -332,7 +328,6 @@ const goBack = () => {
                 id="sport"
                 v-model="todaysport"
                 :disabled="isDisabledSport"
-                
               />
               <label id="sportdonelbl" for="sport">運動 </label>
               <span
@@ -379,11 +374,11 @@ const goBack = () => {
   left: 350px;
 }
 
-#Dailytaskblock{
+#Dailytaskblock {
   margin-top: 80px;
 }
 
-#weeklytaskblock{
+#weeklytaskblock {
   margin-top: 80px;
 }
 
@@ -464,5 +459,4 @@ const goBack = () => {
   position: relative;
   right: 15%; /* 保證按鈕在 task-group 的右方 */
 }
-
 </style>

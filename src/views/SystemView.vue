@@ -3,15 +3,14 @@ import { useRouter, useRoute } from "vue-router";
 import GoBackComponent from "@/components/GoBackComponent.vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 
-const router = useRouter()
+const router = useRouter();
 const route = useRoute();
 const PiniaPlayer = Playerinformation();
 const logout = () => {
   PiniaPlayer.logout();
   PiniaPlayer.logoutBody();
-  router.push('/');
+  router.push("/");
 };
-
 
 const goBack = () => {
   if (route.matched.length > 1) {
@@ -22,37 +21,39 @@ const goBack = () => {
     router.go(-1);
   }
 };
-
 </script>
 
 <template>
   <div id="formborder">
-    <div>
+    <h3>系統</h3>
+    <div class="inside">
+      <div>
+        <RouterLink
+          :to="{
+            name: $route.name.startsWith('in-')
+              ? 'in-changepassword'
+              : 'out-changepassword',
+            params: { ...$route.params },
+          }"
+        >
+          <button class="sysbtnchange">更改密碼</button></RouterLink
+        >
+      </div>
+
       <RouterLink
         :to="{
           name: $route.name.startsWith('in-')
-            ? 'in-changepassword'
-            : 'out-changepassword',
+            ? 'in-systemfeedback'
+            : 'out-systemfeedback',
           params: { ...$route.params },
         }"
       >
-        <button class="sysbtnchange">更改密碼</button></RouterLink
+        <button class="sysbtnfeed">聯絡我們</button></RouterLink
       >
-    </div>
 
-    <RouterLink
-      :to="{
-        name: $route.name.startsWith('in-')
-          ? 'in-systemfeedback'
-          : 'out-systemfeedback',
-        params: { ...$route.params },
-      }"
-    >
-      <button class="sysbtnfeed">聯絡我們</button></RouterLink
-    >
-
-    <div>
+      <div>
         <button class="sysbtnlogout" @click="logout">登出</button>
+      </div>
     </div>
 
     <div class="Systemgoback">
@@ -78,7 +79,7 @@ const goBack = () => {
   background-image: url("@/assets/system.png");
   background-size: cover;
 }
-.sysbtnchange {
+/* .sysbtnchange {
   position: absolute;
   size: 16px;
   color: rgb(153, 42, 42);
@@ -106,7 +107,7 @@ const goBack = () => {
   border: 1px solid rgb(12, 61, 70);
   top: 80%;
   left: 47%;
-}
+} */
 
 #backbtn {
   position: absolute;
@@ -114,5 +115,29 @@ const goBack = () => {
   top: 0px;
   right: 5px;
   z-index: 1;
+}
+
+.inside {
+  /* border: 2px solid red; */
+  top: 350px;
+  height: 150px;
+  width: 440px;
+  left: 50px;
+  position: absolute;
+}
+.inside button {
+  width: 430px;
+  height: 60px;
+  margin-top: 10px;
+  color: rgb(153, 42, 42);
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(12, 61, 70);
+  border-radius: 10px;
+  border: none;
+}
+h3 {
+  position: absolute;
+  top: 50px;
+  left: 46%;
 }
 </style>

@@ -1,9 +1,9 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import * as echarts from 'echarts';
+import { ref, computed, onMounted, watch } from "vue";
+import * as echarts from "echarts";
 
-const startMonth = ref('');
-const endMonth = ref('');
+const startMonth = ref("");
+const endMonth = ref("");
 const today = new Date();
 
 //------呼叫API-----------------------------
@@ -15,11 +15,11 @@ const userAccount = JSON.parse(userAccountString);
 const data = ref({
   CId: userAccount.characterID,
   StartDate: startMonth.value,
-  EndDate: endMonth.value
+  EndDate: endMonth.value,
 });
 
 const getWeight = async (data) => {
-  console.log('Sending data:', data.value);
+  console.log("Sending data:", data.value);
   var response = await fetch(API_URLgetweight, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,16 +37,15 @@ const getWeight = async (data) => {
 // 格式化月份
 const formatMonth = (date) => {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   return `${year}-${month}`;
 };
 
-
 const formatWeightRecords = (weightRecords) => {
-  console.log('收到體重記錄:', weightRecords); // 加入除錯用訊息
+  console.log("收到體重記錄:", weightRecords); // 加入除錯用訊息
 
-  const start = new Date(startMonth.value + '-01');
-  const end = new Date(endMonth.value + '-01');
+  const start = new Date(startMonth.value + "-31");
+  const end = new Date(endMonth.value + "-31");
   const monthRange = [];
 
   // 建立月份範圍
@@ -56,13 +55,13 @@ const formatWeightRecords = (weightRecords) => {
 
   // 先將所有體重記錄轉換成月份對應的格式
   const monthlyRecords = {};
-  weightRecords.forEach(record => {
+  weightRecords.forEach((record) => {
     const date = new Date(record.hrecordDate);
     const monthKey = formatMonth(date);
     monthlyRecords[monthKey] = record.weight;
   });
 
-  console.log('月份對應體重:', monthlyRecords); // 除錯用
+  console.log("月份對應體重:", monthlyRecords); // 除錯用
 
   // 填補缺失的月份
   let lastWeight = null; // 記錄上一個有效的體重值
@@ -70,7 +69,7 @@ const formatWeightRecords = (weightRecords) => {
   return monthRange.map((date, index) => {
     const monthString = formatMonth(date);
     console.log(`處理月份 ${monthString}`); // 除錯用
-    
+
     let weightValue = null;
 
     // 如果當月有記錄，使用當月記錄
@@ -78,23 +77,23 @@ const formatWeightRecords = (weightRecords) => {
       weightValue = monthlyRecords[monthString];
       lastWeight = weightValue; // 更新最後的有效體重
       console.log(`找到當月體重: ${weightValue}`);
-    } 
+    }
     // 如果當月沒有記錄但有上個月的體重，使用上個月的體重
     else if (lastWeight !== null) {
       weightValue = lastWeight;
       console.log(`使用上個月體重: ${weightValue}`);
     }
-    
+
     return {
       month: monthString,
-      weight: weightValue
+      weight: weightValue,
     };
   });
 };
 
 //------日期----------------------------------
 // 計算絕對最小日期和最大日期
-const absoluteMinMonth = computed(() => '2024-01');
+const absoluteMinMonth = computed(() => "2024-01");
 const maxEndMonth = computed(() => formatMonth(today));
 
 //初始化日期
@@ -103,15 +102,15 @@ onMounted(() => {
   const endDate = new Date();
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 11);
- 
-  const minDate = new Date('2024-01-01');
+
+  const minDate = new Date("2024-01-01");
   if (startDate < minDate) {
     startDate.setTime(minDate.getTime());
   }
-  
+
   startMonth.value = formatMonth(startDate);
   endMonth.value = formatMonth(endDate);
-  
+
   data.value.StartDate = `${startMonth.value}-01`;
   data.value.EndDate = `${endMonth.value}-01`;
 
@@ -120,8 +119,8 @@ onMounted(() => {
 });
 
 const handleStartMonthChange = (event) => {
-  const selectedStart = new Date(event.target.value + '-01');
-  const currentEnd = new Date(endMonth.value + '-01');
+  const selectedStart = new Date(event.target.value + "-01");
+  const currentEnd = new Date(endMonth.value + "-01");
 
   // 確保不超過12個月
   if ((currentEnd - selectedStart) / (1000 * 60 * 60 * 24 * 30) > 12) {
@@ -129,14 +128,13 @@ const handleStartMonthChange = (event) => {
     maxEnd.setMonth(maxEnd.getMonth() + 11);
     endMonth.value = formatMonth(maxEnd);
   }
-  data.value.StartDate = event.target.value + '-01';
+  data.value.StartDate = event.target.value + "-01";
   getWeight(data);
- 
 };
 
 const handleEndMonthChange = (event) => {
-  const selectedEnd = new Date(event.target.value + '-01');
-  const currentStart = new Date(startMonth.value + '-01');
+  const selectedEnd = new Date(event.target.value + "-01");
+  const currentStart = new Date(startMonth.value + "-01");
 
   if (selectedEnd < currentStart) {
     startMonth.value = event.target.value;
@@ -148,7 +146,7 @@ const handleEndMonthChange = (event) => {
     minStart.setMonth(minStart.getMonth() - 11);
     startMonth.value = formatMonth(minStart);
   }
-  data.value.EndDate = event.target.value + '-01';
+  data.value.EndDate = event.target.value + "-01";
   getWeight(data);
 };
 
@@ -166,73 +164,77 @@ const initChart = () => {
 
 // 更新圖表數據
 const updateChart = (formattedData) => {
-  if (!myChart || !startMonth.value || !endMonth.value || !formattedData) return;
+  if (!myChart || !startMonth.value || !endMonth.value || !formattedData)
+    return;
 
   const option = {
     title: {
-      text: '體重變化統計',
-      left: 'center'
+      text: "體重變化統計",
+      left: "center",
     },
     tooltip: {
-      trigger: 'axis',
-      formatter: function(params) {
-        if (!params[0].value && params[0].value !== 0) return `${params[0].name} 無記錄`;
+      trigger: "axis",
+      formatter: function (params) {
+        if (!params[0].value && params[0].value !== 0)
+          return `${params[0].name} 無記錄`;
         return `${params[0].name} 體重: ${params[0].value}kg`;
-      }
+      },
     },
     xAxis: {
-      type: 'category',
-      data: formattedData.map(item => item.month),
+      type: "category",
+      data: formattedData.map((item) => item.month),
       axisLabel: {
         rotate: 45,
         interval: 0,
-        margin: 15
+        margin: 15,
       },
       axisTick: {
-        alignWithLabel: true
-      }
+        alignWithLabel: true,
+      },
     },
     yAxis: {
-      type: 'value',
-      name: '體重(kg)',
-      scale: true
+      type: "value",
+      name: "體重(kg)",
+      scale: true,
     },
-    series: [{
-      data: formattedData.map(item => item.weight),
-      type: 'line',
-      smooth: true,
-      lineStyle: {
-        width: 3,
-        color: '#d1a5d4'
+    series: [
+      {
+        data: formattedData.map((item) => item.weight),
+        type: "line",
+        smooth: true,
+        lineStyle: {
+          width: 3,
+          color: "#d1a5d4",
+        },
+        itemStyle: {
+          color: "#744278",
+          borderWidth: 0,
+        },
+        symbol: "circle",
+        symbolSize: 8,
+        connectNulls: true,
       },
-      itemStyle: {
-        color: '#744278',
-        borderWidth: 0,
-      },
-      symbol: 'circle',
-      symbolSize: 8,
-      connectNulls: true
-    }],
+    ],
     grid: {
-      left: '3%',
-      right: '3%',
-      bottom: '15%',
-      containLabel: true
+      left: "3%",
+      right: "3%",
+      bottom: "15%",
+      containLabel: true,
     },
   };
 
   // myChart.showLoading();
   // setTimeout(() => {
   //   myChart.hideLoading();
-    myChart.setOption(option);
+  myChart.setOption(option);
   // }, 300);
 };
 
 // 監聽器
 watch([startMonth, endMonth], ([newStart, newEnd]) => {
   if (newStart && newEnd) {
-    data.value.StartDate = newStart + '-01';
-    data.value.EndDate = newEnd + '-01';
+    data.value.StartDate = newStart + "-01";
+    data.value.EndDate = newEnd + "-01";
     getWeight(data);
   }
 });
@@ -245,27 +247,27 @@ watch([startMonth, endMonth], ([newStart, newEnd]) => {
         <i class="fa-regular fa-calendar"></i> 選擇月份範圍(最多12個月)
       </h6>
       <div class="input-group">
-        <input 
-          type="month" 
-          v-model="startMonth" 
+        <input
+          type="month"
+          v-model="startMonth"
           :max="endMonth"
           :min="absoluteMinMonth"
           @change="handleStartMonthChange"
-          name="startMonth" 
-          id="startMonth" 
-          class="form-control" 
+          name="startMonth"
+          id="startMonth"
+          class="form-control"
           @keydown.prevent
         />
         <span class="input-group-text">到</span>
-        <input 
-          type="month" 
-          v-model="endMonth" 
+        <input
+          type="month"
+          v-model="endMonth"
           :min="startMonth"
           :max="maxEndMonth"
           @change="handleEndMonthChange"
-          name="endMonth" 
-          id="endMonth" 
-          class="form-control" 
+          name="endMonth"
+          id="endMonth"
+          class="form-control"
           @keydown.prevent
         />
       </div>
@@ -312,5 +314,4 @@ watch([startMonth, endMonth], ([newStart, newEnd]) => {
   height: 400px;
   margin-top: 30px;
 }
-
 </style>

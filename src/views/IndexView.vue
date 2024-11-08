@@ -6,6 +6,7 @@ import { Playerinformation } from "@/Stores/PlayerCharacter";
 import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
 const router = useRouter();
+const transition = ref(false); //控制轉場遮罩
 //----------------註冊帳號-------------------------------------
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/IndexPlayers`;
@@ -65,7 +66,7 @@ const APISubmit = async (event) => {
         const data = await response.json();
         if (data.message == "註冊成功") {
           Swal.fire({
-            text: "註冊成功！",
+            text: "註冊成功，請至信箱收取驗證信",
             icon: "success",
           });
         } else {
@@ -95,6 +96,11 @@ const LoginData = ref({
   password: "",
 });
 
+const updatePlayer = (data) => {
+  PiniaPlayer.updatePlayerData(data.playerCharacter);
+  PiniaPlayer.updateCharacterBody(data.characterAccessorie);
+};
+
 const API_URLlogin = `${Base_URL}/IndexPlayers/Login`;
 const Login = async () => {
   try {
@@ -105,30 +111,28 @@ const Login = async () => {
     });
     if (POSTLogin.ok) {
       const data = await POSTLogin.json();
-      if (data.message == "success") {
-        PiniaPlayer.updatePlayerData(data.playerCharacter); //要放入的是物件，playerCharacter是我請求api之後回傳的對象，要指定是對象
-        PiniaPlayer.updateCharacterBody(data.characterAccessorie);
+      if (data.message === "success") {
+        updatePlayer(data); // 更新至pinina
         await showSuccessAlert("登入成功");
-
+        transition.value = true;
+        await new Promise((resolve) => setTimeout(resolve, 500)); //等候一秒才跳轉
         await router.push("/outdoor");
       } else {
-        if (data.respond == "newcharacter") {
+        if (data.respond === "newcharacter") {
+          console.log(data);
           await showSuccessAlert(data.message);
-        } else if (data.respond == "gameover") {
-          await showErrorAlert(data.message);
-        } else {
-          await showSuccessAlert(data.message);
-        }
-        console.log(data);
-        if (data.respond == "gameover") {
-          PiniaPlayer.updatePlayerData(data.playerCharacter);
-          PiniaPlayer.updateCharacterBody(data.characterAccessorie);
-          // PiniaPlayer.playerAccount = LoginData.value.account;
-          // PiniaPlayer.isLoggedIn = true;
-          window.location.href = "/outdoor";
-        } else if (data.respond == "newcharacter") {
-          window.location.href = "/createcharacter/";
+          PiniaPlayer.playerAccount = data.player;
+          transition.value = true;
+          await new Promise((resolve) => setTimeout(resolve, 500)); //等候一秒才跳轉
           await router.push("/createcharacter");
+        } else if (data.respond === "gameover") {
+          await showErrorAlert(data.message);
+          updatePlayer(data);
+          transition.value = true;
+          await new Promise((resolve) => setTimeout(resolve, 500)); //等候一秒才跳轉
+          await router.push("/outdoor");
+        } else {
+          await showErrorAlert(data.message);
         }
       }
     }
@@ -310,6 +314,9 @@ onMounted(() => {
 
 <template>
   <body>
+    <transition name="fade" v-show="transition" class="blacktransition">
+      <div class="black"></div>
+    </transition>
     <div class="introduce">
       <h1>再見！沙發Potato</h1>
       <p>想要擺脫如同couch potato一般的生活，卻不知如何下手嗎？</p>

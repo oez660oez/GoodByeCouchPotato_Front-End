@@ -2,8 +2,14 @@
 import GameView from "./GameView.vue";
 import SidebarView from "./SidebarView.vue";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
+import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
 
+const router = useRouter();
 const PiniaPlayer = Playerinformation();
+const transition = ref(true);
+
+//判斷是否要跳結束劇情
 let GameOver = false;
 if (PiniaPlayer.characterEnvironment <= 0) {
   GameOver = true;
@@ -15,15 +21,29 @@ if (PiniaPlayer.isnewcharacter) {
   //當環境值大於0並且isnewcharacter是false的時候，就會觸發上面的else再次改回false，導覽列就會出現
   GameOver = true;
 }
+
+onMounted(() => {
+  transition.value = false;
+});
+
+const goToWeightTask = () => {
+  router.push({ name: "weighttask" });
+};
 </script>
 
 <template>
+  <transition name="fade" v-show="transition" class="blacktransition">
+    <div class="black"></div>
+  </transition>
   <RouterLink class="nav-link" :to="{ name: 'roommap' }">
     <i class="fa-regular fa-map"></i>
   </RouterLink>
 
   <div class="sidebarview" v-if="!GameOver || !PiniaPlayer.isnewcharacter">
     <SidebarView></SidebarView>
+  </div>
+  <div class="weight-button" @click="goToWeightTask">
+    <img src="/images/WeightButton.png" alt="Weight Button" />
   </div>
   <div class="game-view">
     <GameView />
@@ -49,5 +69,22 @@ if (PiniaPlayer.isnewcharacter) {
 .sidebarview {
   z-index: 10;
   position: absolute;
+}
+.weight-button {
+  position: absolute;
+  z-index: 10;
+  cursor: pointer;
+  left: 80px; /* 調整按鈕位置 */
+  top: 32px; /* 調整按鈕位置 */
+  transition: transform 0.2s;
+}
+
+.weight-button:hover {
+  transform: scale(1.1);
+}
+
+.weight-button img {
+  width: 35px; /* 調整按鈕大小 */
+  height: auto;
 }
 </style>

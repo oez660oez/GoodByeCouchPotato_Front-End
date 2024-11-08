@@ -74,7 +74,7 @@ const Endnexttext = async () => {
   if (currenttext.value < EndStory.length - 1) {
     currenttext.value += 1;
     Endgame();
-    if (currenttext.value > EndStory.length - 2) {
+    if (currenttext.value > EndStory.length - 3) {
       $(".charactername").text("　");
     }
   } else {
@@ -99,7 +99,7 @@ const Starttypewriter = () => {
       addtext += alltext[i];
       $(".story").text(addtext);
       i++;
-      setTimeout(Starttypewriter, 100);
+      setTimeout(Starttypewriter, 50);
       $(".nexttext").css("display", "none");
     } else {
       i = 0;
@@ -120,7 +120,7 @@ const Startingame = () => {
       addtext += alltext[i];
       $(".story").text(addtext);
       i++;
-      setTimeout(Startingame, 100);
+      setTimeout(Startingame, 50);
       $(".nexttext").css("display", "none");
     } else {
       i = 0;
@@ -141,7 +141,7 @@ const Endgame = () => {
       addtext += alltext[i];
       $(".story").text(addtext);
       i++;
-      setTimeout(Endgame, 100);
+      setTimeout(Endgame, 50);
       $(".nexttext").css("display", "none");
     } else {
       i = 0;
@@ -217,8 +217,5 @@ button {
   padding: 0;
   outline: none;
   cursor: pointer;
-}
-
-.story {
 }
 </style>

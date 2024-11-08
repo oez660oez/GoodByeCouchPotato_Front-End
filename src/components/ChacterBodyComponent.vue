@@ -68,8 +68,8 @@ const GetImage = async (equippedItems, play) => {
 
 //用來取身上穿著的裝備的資料庫圖片，只有取名稱
 const GetImageAllID = ref({
-  body: 0,
   head: 0,
+  body: 0,
   accessory: 0,
 });
 //存放回傳的圖片名稱並且串上路由
@@ -88,17 +88,22 @@ const GameLoop = async () => {
   if (PiniaMerchandise.First) {
     //抓取已經穿著的衣服，如果在onMounted做，會因為加載未完成而抓不到，在這個方法內就一定能取到了
     //取得目前穿的編號，並且存入pinia，其實可以不存了但做個備用，設定沒值默認值為0
-    GetImageAllID.value.body = PiniaPlayer.Lower || "0";
-    GetImageAllID.value.head = PiniaPlayer.Upper || "0";
-    GetImageAllID.value.accessory = PiniaPlayer.Head || "0";
+    const sessionplayer = JSON.parse(
+      sessionStorage.getItem("UserAccount") || "{}"
+    );
+    GetImageAllID.value.body = sessionplayer.Lower || "0";
+    GetImageAllID.value.head = sessionplayer.Upper || "0";
+    GetImageAllID.value.accessory = sessionplayer.Head || "0";
     PiniaMerchandise.Getplaterclothes(GetImageAllID.value);
     //取裝備的圖片名稱
+    console.log(typeof GetImageAllID.value.head);
     console.log(GetImageAllID.value);
     const GetNewbody = await fetch(API_URL_GetBody, {
       method: "POST",
       body: JSON.stringify(GetImageAllID.value),
       headers: { "Content-Type": "application/json" },
     });
+    console.log(GetImageAllID.value);
     if (GetNewbody.ok) {
       const data = await GetNewbody.json();
       console.log(data);

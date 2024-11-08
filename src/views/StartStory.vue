@@ -8,6 +8,7 @@ import { useRouter } from "vue-router";
 import { Playerinformation } from "@/Stores/PlayerCharacter";
 const PiniaPlayer = Playerinformation();
 const router = useRouter();
+const transition = ref(true); //是否開啟遮罩
 
 const backgroundImage_URL =
   "http://localhost:5173/src/components/image/index.png";
@@ -175,6 +176,8 @@ const InGame = async (moveOffset) => {
     NextplayerPosition.y + NextplayerPosition.height > ingame.y
   ) {
     console.log("進入遊戲");
+    transition.value = true;
+    await new Promise((resolve) => setTimeout(resolve, 1000)); //等候一秒才跳轉
     await router.push("/outdoor");
   } else {
     return true; // 沒有碰撞
@@ -328,6 +331,8 @@ onMounted(async () => {
   } else {
     alert("no");
   }
+  transition.value = false;
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 });
 
 //結束遊戲循環
@@ -348,6 +353,9 @@ onUnmounted(() => {
   <!-- <RouterLink class="nav-link" :to="{ name: 'roommap' }">
     <i class="fa-regular fa-map"></i>
   </RouterLink> -->
+  <transition name="fade" v-show="transition" class="blacktransition">
+    <div class="black"></div>
+  </transition>
   <div class="storyborder">
     <StoryComponent :type="typename"></StoryComponent>
   </div>

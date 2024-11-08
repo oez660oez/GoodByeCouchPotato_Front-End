@@ -198,7 +198,7 @@ const purchase = async (pcode) => {
     });
     if (Getpurchase.ok) {
       const response = await Getpurchase.json();
-      await showSuccessAlert(response.message)
+      await showSuccessAlert(response.message);
       PiniaPlayer.characterCoins = response.newcoins;
       RenewtheList();
     }
