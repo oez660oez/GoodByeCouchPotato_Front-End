@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, onBeforeMount } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from 'vue-router';
 import { useGameStore } from "@/Stores/gameStore";
 import { useGameEvents } from "@/composables/useGameEvents";

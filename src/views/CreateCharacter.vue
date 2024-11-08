@@ -136,6 +136,7 @@ const handleSubmit = async () => {
   try {
     const userAccountJson = sessionStorage.getItem("UserAccount");
     if (!userAccountJson) {
+      console.log("取不到用戶json")
       await showErrorAlert();
       return;
     }
@@ -143,6 +144,7 @@ const handleSubmit = async () => {
     playerAccount = userAccount.playerAccount;
 
     if (!playerAccount) {
+      console.log("取不到用戶帳號")
       await showErrorAlert();
       return;
     }
@@ -221,7 +223,7 @@ const handleSubmit = async () => {
             type="text"
             id="name"
             class="form-control"
-            minlength="3"
+            minlength="2"
             maxlength="16"
             placeholder="請輸入角色名稱"
             required

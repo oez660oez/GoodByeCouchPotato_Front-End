@@ -10,8 +10,10 @@ const PiniaPlayer = Playerinformation();
 const router = useRouter();
 const transition = ref(true); //是否開啟遮罩
 
+//New-Start(因index圖片名稱改變更換)
 const backgroundImage_URL =
-  "http://localhost:5173/src/components/image/index.png";
+  "http://localhost:5173/src/components/image/index_origin.png";
+//New-End
 
 const playerImage_URL =
   "http://localhost:5173/src/assets/images/person_Modify.png";
@@ -30,6 +32,17 @@ const Currentoffset = {
   x: 0,
   y: 0,
 };
+
+//New-Start
+let lastFrameTime = 0;
+const FRAME_INTERVAL = 100;
+const keyState = {
+  w: false,
+  s: false,
+  a: false,
+  d: false,
+};
+//New-End
 
 //設定圖片的碰撞區域，xy以左上角的為準，長寬決定碰撞區域大小
 const collisionAreas = [
@@ -186,6 +199,10 @@ const InGame = async (moveOffset) => {
 
 //角色移動
 const handleMove = (direction) => {
+  //New-Start(把移動被阻止移到前面)
+  if (!player.value) return;
+  //New-End
+
   player.value.moving = true;
   const directionMap = {
     up: { direction: 1, offset: { x: 0, y: 3 } }, //如果按上就往上位移3px的距離
@@ -193,7 +210,6 @@ const handleMove = (direction) => {
     down: { direction: 3, offset: { x: 0, y: -3 } },
     right: { direction: 0, offset: { x: -3, y: 0 } },
   };
-
   //directionMap[direction]取出來的內容是物件，這個寫法是分別將欄位內容取出來，並且重新賦予一個名字(dir及moveoffset)
   const { direction: dir, offset: moveOffset } = directionMap[direction];
   player.value.setDirection(dir);
@@ -216,39 +232,53 @@ const handleMove = (direction) => {
       Currentoffset.y += moveOffset.y;
       moveObjects(moveOffset);
       InGame(moveOffset);
-    } else {
-      console.log("移動被阻止");
-      player.value.moving = false;
-
-      //玩家始終在中間，座標也沒有改變，實際移動的是地圖
     }
+    //玩家始終在中間，座標也沒有改變，實際移動的是地圖
   }
 };
 
-//移動監控
-window.addEventListener("keydown", (event) => {
-  switch (event.key) {
-    case "w" || "W":
-      handleMove("up");
-      break;
-    case "s" || "S":
-      handleMove("down");
-      break;
-    case "a" || "A":
-      handleMove("left");
-      break;
-    case "d" || "D":
-      handleMove("right");
-      break;
+//New-Start(修改監聽器邏輯)
+const checkMovement = () => {
+  // 檢查當前按下的按鍵並執行相應移動
+  if (keyState.w) handleMove("up");
+  if (keyState.s) handleMove("down");
+  if (keyState.a) handleMove("left");
+  if (keyState.d) handleMove("right");
+
+  // 如果沒有按鍵被按下，停止移動
+  if (!keyState.w && !keyState.s && !keyState.a && !keyState.d) {
+    player.value.moving = false;
   }
-});
-window.addEventListener("keyup", () => {
-  player.value.moving = false;
-});
+};
+const handleKeyDown = (event) => {
+  const key = event.key.toLowerCase();
+  if (keyState.hasOwnProperty(key)) {
+    event.preventDefault();
+    keyState[key] = true;
+  }
+};
+
+const handleKeyUp = (event) => {
+  const key = event.key.toLowerCase();
+  if (keyState.hasOwnProperty(key)) {
+    keyState[key] = false;
+  }
+};
+//New-End
 
 //遊戲循環
-const GameLoop = async () => {
+const GameLoop = () => {
   //偵測使用者按下的按鍵，控制玩家的移動
+
+  //New-Start
+  const timestamp = performance.now();
+  if (!lastFrameTime) {
+    lastFrameTime = timestamp;
+  }
+
+  const elapsed = timestamp - lastFrameTime;
+  //New-End
+
   const ctx = context.value;
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   ctx.fillStyle = "#3a3a50"; // 畫布顏色填滿
@@ -256,8 +286,20 @@ const GameLoop = async () => {
   //繪製地圖
   background.value.draw(ctx);
 
-  //繪製進入遊戲的踩點
-  ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // 半透明紅色
+  //New-Start
+  // 檢查移動
+  checkMovement();
+
+  // 更新動畫幀
+  if (player.value.moving && elapsed >= FRAME_INTERVAL) {
+    player.value.frames.val =
+      (player.value.frames.val + 1) % player.value.frames.max;
+    lastFrameTime = timestamp;
+  }
+  //New-End
+
+  // 繪製進入遊戲的踩點
+  ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
   ctx.fillRect(
     GoInGame[0].offsetx + Currentoffset.x,
     GoInGame[0].offsety + Currentoffset.y,
@@ -266,32 +308,6 @@ const GameLoop = async () => {
   );
   //繪製人物
   player.value.draw(ctx);
-
-  //這個用來視覺化地看碰撞位置
-  //fillrect用來繪製實心的矩形
-  //ctx.fillRect(x, y, width, height); 設定矩形的左上角xy座標，然後高度與寬度，向右及下延伸
-  // for (const area of collisionAreas) {
-  //   const adjustedArea = {
-  //     x: area.offsetx + Currentoffset.x,
-  //     y: area.offsety + Currentoffset.y,
-  //     width: area.width,
-  //     height: area.height,
-  //   };
-  //   ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // 半透明紅色
-  //   ctx.fillRect(
-  //     adjustedArea.x,
-  //     adjustedArea.y,
-  //     adjustedArea.width,
-  //     adjustedArea.height
-  //   );
-  // }
-  // ctx.fillStyle = "rgba(0, 0, 255, 0.5)"; // 藍色半透明
-  // ctx.fillRect(
-  //   player.value.position.x,
-  //   player.value.position.y,
-  //   player.value.width,
-  //   player.value.height
-  // );
 };
 
 //=============方法end=================
@@ -325,6 +341,12 @@ onMounted(async () => {
 
     movables.value = [background.value].filter(Boolean); // 過濾掉任何無效的值。將要跟隨著玩家移動的資料存入
 
+    //New-Start
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    lastFrameTime = 0;
+    //New-End
+
     console.log("圖片是否已加載:", background.value.image.complete);
     console.log("圖片是否已加載:", player.value.image.complete);
     startGameLoop(GameLoop);
@@ -337,6 +359,11 @@ onMounted(async () => {
 
 //結束遊戲循環
 onUnmounted(() => {
+  //New-Start
+  window.removeEventListener("keydown", handleKeyDown);
+  window.removeEventListener("keyup", handleKeyUp);
+  //New-End
+
   stopGameLoop();
 });
 

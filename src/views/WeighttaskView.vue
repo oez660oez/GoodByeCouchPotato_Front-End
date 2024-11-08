@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/WeightRecord`;
-
+const router = useRouter();
 //Alert樣式
 const showErrorAlert = async (message) => {
   await Swal.fire({
@@ -130,7 +130,8 @@ const handleSubmit = async () => {
         await loadLastMonthRecord();
         //清空表單
         form.value.weight = "";
-        // 可以在這裡添加導航到其他頁面的邏輯
+        // 添加導航到其他頁面的邏輯
+        router.push({ name: "outdoor" });
         router.push({ name: "outdoor" });
       } else {
         const errorData = await response.json();
