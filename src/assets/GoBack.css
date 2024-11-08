@@ -18,3 +18,17 @@
   position: absolute;
   z-index: 1;
 }
+
+.reportGoback {
+  top: 3.5%;
+  right: 7%;
+  position: absolute;
+  z-index: 10;
+}
+
+.reportGoback2 {
+  top: 3.5%;
+  right: 7%;
+  position: absolute;
+  z-index: 13;
+}

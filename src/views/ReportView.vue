@@ -3,6 +3,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { onMounted, ref, watch } from 'vue';
 import { Playerinformation } from '@/Stores/PlayerCharacter';
 import { useReportDataStore } from '@/Stores/reportDataStore';
+import GoBackComponent from '@/components/GoBackComponent.vue';
 const router = useRouter();
 const route = useRoute();
 
@@ -81,8 +82,11 @@ const fetchPreviousCharacters = async () => {
     );
     if (response.ok) {
       const data = await response.json();
-      charactersAllData.value = data;
-      // console.log('抓取到的資料:', charactersAllData.value);
+      const charactersAll = data;
+      charactersAllData.value = charactersAll.filter(
+        (character) => character.livingStatus === '搬離'
+      );
+      console.log('抓取到的資料123:', charactersAllData.value);
     }
   } catch (error) {
     console.error('Error fetching data:', error.message);
@@ -92,6 +96,9 @@ const fetchPreviousCharacters = async () => {
 
 <template>
   <div class="container">
+    <div class="reportGoback">
+      <GoBackComponent @goback="goBack"></GoBackComponent>
+    </div>
     <div class="accordion">
       <!-- 使用 v-for 生成每個角色的 Accordion 項目 -->
       <div
@@ -108,7 +115,12 @@ const fetchPreviousCharacters = async () => {
             aria-expanded="false"
             :aria-controls="'collapse' + index"
           >
-            {{ character.name }} - 等級 {{ character.level }}
+            <p>
+              {{ character.name }} - LV.{{ character.level }} 居住時間:{{
+                character.moveInDate
+              }}
+              ~ {{ character.moveOutDate }}
+            </p>
           </button>
         </h2>
         <div
@@ -118,10 +130,20 @@ const fetchPreviousCharacters = async () => {
           data-bs-parent="#accordionFlushExample"
         >
           <div class="accordion-body">
-            <strong>取得環境值:</strong> {{ character.getEnvironment }}<br />
-            <strong>取得經驗值:</strong> {{ character.getExperience }}<br />
-            <strong>取得金幣:</strong> {{ character.getCoins }}
-            <!-- <p>{{ character.cId }}</p> -->
+            <div>
+              <p>
+                <img src="/images/coins.png" /> 金幣 :
+                {{ character.coins }}
+              </p>
+              <p>
+                <img src="/images/Ex.png" alt="" /> 經驗 :
+                {{ character.experience }}
+              </p>
+              <p>
+                <img src="/images/body.png" /> 身高: {{ character.height }}cm,
+                體重: {{ character.weight }}kg
+              </p>
+            </div>
             <RouterLink
               :to="{
                 name: $route.name.startsWith('in-')
@@ -159,12 +181,12 @@ const fetchPreviousCharacters = async () => {
 
 /* Accordion 主體樣式 */
 .accordion {
-  margin: 30px 0 auto;
+  margin-top: auto;
+  margin-bottom: 40px;
   width: 100%;
-  max-width: 850px;
+  max-width: 820px;
   height: 100%;
-  max-height: 550px;
-  flex-grow: 1;
+  max-height: 500px;
   overflow-y: scroll; /* 始終顯示垂直滾動軸 */
   overflow-x: hidden; /* 隱藏水平滾動軸 */
 }
@@ -243,4 +265,8 @@ const fetchPreviousCharacters = async () => {
   background-size: 100% 100%; /* 確保圖片填滿滑道 */
   border-radius: 10px;
 }
+
+/* .movein {
+  margin-left: auto;
+} */
 </style>

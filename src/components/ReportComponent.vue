@@ -139,6 +139,8 @@ const initializeChart = () => {
   if (props.currentChart === 'steps') {
     chartOptions.title.text = '步數';
     chartOptions.yAxis.max = 10000;
+    chartOptions.yAxis.axisLabel.formatter = '{value} 步';
+
     chartOptions.series[0].data = stepsData.value;
     chartOptions.series[0].itemStyle.color = '#ffae42';
     chartOptions.tooltip.formatter = function (params) {
