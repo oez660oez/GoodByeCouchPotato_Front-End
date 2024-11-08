@@ -3,9 +3,17 @@ import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import FullCalenderComponent from './FullCalenderComponent.vue';
 import ReportComponent from './ReportComponent.vue';
+import GoBackComponent from './GoBackComponent.vue';
+import { useReportDataStore } from '@/Stores/reportDataStore';
 
 const router = useRouter();
 const route = useRoute();
+
+const reportData = useReportDataStore();
+
+const test = ref([]);
+const maxDate = ref('');
+const minDate = ref('');
 
 const isCalendarVisible = ref(true);
 
@@ -19,9 +27,21 @@ const selectedMonth = ref(''); // 選擇年月初始為空
 
 // 設定為資料中的最新月份
 const setDefaultMonth = () => {
+  test.value = reportData.Data.map((item) => item.hrecordDate);
+  maxDate.value = test.value.slice(-1)[0].slice(0, 7);
+  minDate.value = test.value.slice(0)[0].slice(0, 7);
+
+  console.log('test', minDate.value);
+
   // 模擬的最新月份，可以根據實際數據設置
-  const latestDate = '2024-10';
-  selectedMonth.value = latestDate;
+  selectedMonth.value = maxDate.value;
+};
+
+const validateMonth = () => {
+  // 比較輸入值與最小日期
+  if (selectedMonth.value === '') {
+    selectedMonth.value = minDate.value; // 如果小於最小值，自動調整為最小值
+  }
 };
 
 // 初始化並設定預設月份
@@ -75,30 +95,46 @@ const moveBack = (event) => {
   event.target.style.transition = 'transform 0.3s ease';
 
   image.style.opacity = '1';
+  image.style.transform = 'translateX(0px)';
+  image.style.transition = 'transform 0.3s ease';
 
   text.style.display = 'none';
   text.style.transform = 'translateX(0px)';
   text.style.transition = 'transform 0.3s ease';
 };
+
 // 監聽 selectedMonth 的變更
 watch(selectedMonth, (newMonth) => {
   console.log('選擇的月份已更新:', newMonth);
-  // 可在此處添加更新圖表或日曆的邏輯
 });
 </script>
 
 <template>
   <div id="formborder">
     <!-- 左側內容區域 -->
+    <div class="reportGoback2">
+      <RouterLink
+        :to="{
+          name: $route.name.startsWith('in-') ? 'in-report' : 'out-report'
+        }"
+      >
+        <GoBackComponent></GoBackComponent>
+      </RouterLink>
+    </div>
+
     <div class="search" v-show="!isCalendarVisible">
       <label for="monthPicker" class="month-picker-label">搜尋月份：</label>
-      <input type="month" v-model="selectedMonth" value="selectedMonth.value" />
+      <input
+        type="month"
+        v-model="selectedMonth"
+        :min="minDate"
+        @input="validateMonth"
+      />
     </div>
 
     <div class="row" id="component">
       <FullCalenderComponent
         :currentFullcalendar="currentFullcalendar"
-        :selectedMonth="selectedMonth"
         v-if="isCalendarVisible"
       />
       <ReportComponent
@@ -184,6 +220,13 @@ input[type='month']::-webkit-calendar-picker-indicator {
 }
 /* 禁止亂按 :) --end*/
 
+/* 更改 input[type="month"] 背景顏色 */
+input[type='month'] {
+  width: 100px;
+  height: 30px;
+  border-radius: 4px; /* 可選 - 圓角 */
+}
+
 #formborder {
   display: flex;
   justify-content: flex-end;
@@ -211,14 +254,26 @@ input[type='month']::-webkit-calendar-picker-indicator {
   color: #333;
 }
 
+.habit:active {
+  background-color: #ff8585; /* 點擊時的背景色 */
+}
+
 .sport {
-  background-color: #fffacd; /* 粉色 */
+  background-color: #fffacd;
   color: #333;
 }
 
+.sport:active {
+  background-color: #ffe799; /* 點擊時的背景色 */
+}
+
 .clean {
-  background-color: #ffff99; /* 粉色 */
+  background-color: #ffff99;
   color: #333;
+}
+
+.clean:active {
+  background-color: #ffeb66; /* 點擊時的背景色 */
 }
 
 .water {
@@ -226,9 +281,17 @@ input[type='month']::-webkit-calendar-picker-indicator {
   color: #333;
 }
 
+.water:active {
+  background-color: #a1c9f1; /* 點擊時的背景色 */
+}
+
 .steps {
   background-color: #caffbf; /* 淺綠色 */
   color: #333;
+}
+
+.steps:active {
+  background-color: #b8e8a3; /* 點擊時的背景色 */
 }
 
 .sleep {
@@ -236,13 +299,20 @@ input[type='month']::-webkit-calendar-picker-indicator {
   color: #333;
 }
 
+.sleep:active {
+  background-color: #ffb77d; /* 點擊時的背景色 */
+}
+
 .mood {
   background-color: #ffc6ff; /* 淺紫色 */
   color: #333;
 }
+.mood:active {
+  background-color: #ffb3ff; /* 點擊時的背景色 */
+}
 
 .btn-primary {
-  transition: transform 0.3s ease; /* 平滑過渡 */
+  transition: transform 0.1s ease; /* 平滑過渡 */
   padding: 10px 20px; /* 設定按鈕的內邊距 */
   border: none; /* 移除按鈕的邊框 */
   border-radius: 5px; /* 圓角按鈕 */
@@ -250,22 +320,22 @@ input[type='month']::-webkit-calendar-picker-indicator {
   display: flex; /* 使用 flex 排版 */
   align-items: center;
   justify-content: right;
-  width: 180px;
+  width: 250px;
   height: 50px;
 }
 
 .search {
   position: absolute; /* 或 absolute/fixed，取決於需求 */
-  top: 25px;
-  left: 25px;
+  top: 35px;
+  left: 35px;
   z-index: 10; /* 設置所需的 z-index 層級 */
 }
 .button-text {
-  margin-right: 55px;
+  margin-right: 60px;
   display: none;
 }
 .button-icon {
   /* margin-left: 60px; */
-  margin-left: auto; /* 將圖片自動對齊到右側 */
+  margin-left: 20px; /* 將圖片自動對齊到右側 */
 }
 </style>

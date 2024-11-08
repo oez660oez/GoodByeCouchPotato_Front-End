@@ -5,8 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { useReportDataStore } from '@/Stores/reportDataStore';
 
 const props = defineProps({
-  currentFullcalendar: String,
-  selectedMonth: String
+  currentFullcalendar: String
 });
 
 const getreportData = useReportDataStore();
@@ -21,6 +20,10 @@ const datesWithVegetables = ref([]);
 const datesWithSnacks = ref([]);
 const datesWithExercise = ref([]);
 const datesWithCleaning = ref([]);
+
+const lastMonth = ref();
+
+const calendarContainer = ref(null);
 
 const imageUrl1 = '/images/Good.png';
 const imageUrl2 = '/images/Bad.png';
@@ -47,6 +50,9 @@ const getData = () => {
   datesWithCleaning.value = specialDates.value.filter(
     (date, index) => cleaning.value[index] === true
   );
+
+  lastMonth.value = specialDates.value.slice(-1)[0];
+  // console.log(lastMonth.value);
 };
 
 // 清除指定日曆格子中的所有圖片
@@ -115,6 +121,12 @@ const handleCalendarImages = () => {
   });
 };
 
+const goDate = () => {
+  if (calendarContainer.value) {
+    calendarContainer.value.getApi().gotoDate(lastMonth.value); // 使用 lastMonth 或其他指定日期
+  }
+};
+
 const calendarOptions = {
   plugins: [dayGridPlugin],
   initialView: 'dayGridMonth',
@@ -138,6 +150,8 @@ const calendarOptions = {
 // 初始化日曆
 onMounted(() => {
   getData();
+  handleCalendarImages();
+  goDate();
 });
 
 // 監聽 `currentFullcalendar` 變化並重新渲染日曆
@@ -145,7 +159,7 @@ watch(
   () => props.currentFullcalendar,
   () => {
     handleCalendarImages();
-    console.log('props.currentFullcalendar', props.currentFullcalendar);
+    // console.log('props.currentFullcalendar', props.currentFullcalendar);
   }
 );
 
@@ -155,14 +169,15 @@ watch(
   () => {
     getData();
     handleCalendarImages();
+    goDate();
   }
 );
 </script>
 
 <template>
   <div id="formborder">
-    <div ref="calendarContainer" id="form" class="calendar-container">
-      <FullCalendar :options="calendarOptions" />
+    <div id="form" class="calendar-container">
+      <FullCalendar ref="calendarContainer" :options="calendarOptions" />
     </div>
   </div>
 </template>
