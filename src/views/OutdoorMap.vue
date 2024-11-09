@@ -1,9 +1,9 @@
 <script setup>
-import GameView from "./GameView.vue";
-import SidebarView from "./SidebarView.vue";
-import { Playerinformation } from "@/Stores/PlayerCharacter";
-import { useRouter } from "vue-router";
-import { ref, onMounted } from "vue";
+import GameView from './GameView.vue';
+import SidebarView from './SidebarView.vue';
+import { Playerinformation } from '@/Stores/PlayerCharacter';
+import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
 
 const router = useRouter();
 const PiniaPlayer = Playerinformation();
@@ -27,7 +27,7 @@ onMounted(() => {
 });
 
 const goToWeightTask = () => {
-  router.push({ name: "weighttask" });
+  router.push({ name: 'weighttask' });
 };
 </script>
 
@@ -43,7 +43,7 @@ const goToWeightTask = () => {
     <SidebarView></SidebarView>
   </div>
   <div class="weight-button" @click="goToWeightTask">
-    <img src="/images/WeightButton.png" alt="Weight Button" />
+    <img src="/images/WeightButton.png" alt="Weight Button" hidden />
   </div>
   <div class="game-view">
     <GameView />

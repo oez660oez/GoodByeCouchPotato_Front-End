@@ -1,29 +1,30 @@
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Playerinformation } from '@/Stores/PlayerCharacter';
 import { storeToRefs } from 'pinia';
 
-// 將玩家資訊從 Pinia 的 store 中引入
+// 從 Pinia store 中引入玩家資訊
 const playerStore = Playerinformation();
 const {
-  characterCoins, //持有金幣
-  characterName, //角色名稱
-  characterLevel, //角色等級
-  characterExperience, // 角色經驗值
-  characterEnvironment, // 角色環境值
-  characterGetEnvironment, // 角色前一日結算取得的環境值
-  characterGetExperience, // 角色前一日結算取得的經驗值
-  characterGetCoins // 角色前一日結算取得的金幣
+  characterCoins,
+  characterName,
+  characterLevel,
+  characterExperience,
+  characterEnvironment,
+  characterGetEnvironment,
+  characterGetExperience,
+  characterGetCoins
 } = storeToRefs(playerStore);
 
-// 設置導航連結的點擊效果
+// 控制按鈕群組顯示/隱藏的狀態
+const isCollapsed = ref(false);
+
+// 初始化導航按鈕
 onMounted(() => {
   const links = document.querySelectorAll('.nav-link');
   links.forEach((link) => {
     link.addEventListener('click', function () {
-      // 移除當前的 active 狀態
       document.querySelector('.nav-link.active')?.classList.remove('active');
-      // 為點擊的連結加上 active 類別
       if (!this.classList.contains('disabled')) {
         this.classList.add('active');
       }
@@ -33,51 +34,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- 控制顯示/隱藏按鈕群組的按鈕 -->
-  <button
-    class="btn btn-image-8"
-    type="button"
-    data-bs-toggle="collapse"
-    data-bs-target="#collapseWidthExample"
-    aria-expanded="false"
-    aria-controls="collapseWidthExample"
-  ></button>
-
-  <!-- 折疊的按鈕群組 -->
-  <div class="collapse collapse-horizontal" id="collapseWidthExample">
-    <div class="d-flex flex-column mt-3">
-      <RouterLink class="nav-link" :to="{ name: 'out-daily' }">
-        <button type="button" class="btn mb-2 btn-image-1"></button>
-        健康紀錄
-      </RouterLink>
-
-      <RouterLink class="nav-link" :to="{ name: 'out-task' }">
-        <button type="button" class="btn mb-2 btn-image-2"></button>
-      </RouterLink>
-      <RouterLink class="nav-link" :to="{ name: 'out-shop' }">
-        <button type="button" class="btn mb-2 btn-image-3"></button>
-      </RouterLink>
-
-      <RouterLink class="nav-link" :to="{ name: 'out-dress' }">
-        <button type="button" class="btn mb-2 btn-image-4"></button>
-      </RouterLink>
-
-      <RouterLink class="nav-link" :to="{ name: 'out-nowreport' }">
-        <button type="button" class="btn mb-2 btn-image-5"></button>
-      </RouterLink>
-
-      <RouterLink class="nav-link" :to="{ name: 'out-report' }">
-        <button type="button" class="btn mb-2 btn-image-6"></button>
-      </RouterLink>
-
-      <RouterLink class="nav-link" :to="{ name: 'out-system' }">
-        <button type="button" class="btn mb-2 btn-image-7"></button>
-      </RouterLink>
-    </div>
-  </div>
-
   <!-- 玩家資訊顯示區 -->
-  <!-- <div id="player">
+  <div id="player" class="player-info">
     <p>角色名稱: {{ characterName }}</p>
     <p>等級: {{ characterLevel }} &nbsp;&nbsp; 金幣: {{ characterCoins }}</p>
     <p>當前經驗值: {{ characterExperience }}</p>
@@ -85,116 +43,159 @@ onMounted(() => {
     <p>昨日取得環境值: {{ characterGetEnvironment }}</p>
     <p>昨日取得經驗值: {{ characterGetExperience }}</p>
     <p>昨日取得金幣: {{ characterGetCoins }}</p>
-  </div> -->
+  </div>
+
+  <!-- 進度條顯示 -->
+  <div class="progress custom-progress">
+    <div
+      class="progress-bar custom-progress-bar"
+      role="progressbar"
+      :style="{ width: characterExperience + '%' }"
+      :aria-valuenow="characterExperience"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    >
+      {{ characterExperience }}%
+    </div>
+  </div>
+
+  <!-- 控制顯示/隱藏按鈕群組的按鈕 -->
+  <button
+    class="btn-image-8"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#collapseExample"
+    aria-expanded="true"
+    aria-controls="collapseExample"
+  ></button>
+
+  <!-- 垂直展開的按鈕群組 -->
+  <div class="collapse show" id="collapseExample">
+    <div class="d-flex flex-column mt-3">
+      <RouterLink class="nav-link" :to="{ name: 'out-daily' }">
+        <button type="button" class="btn btn-image-1">
+          <span class="button-text">健康紀錄</span>
+        </button>
+      </RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'out-task' }">
+        <button type="button" class="btn btn-image-2">
+          <span class="button-text">任務</span>
+        </button>
+      </RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'out-shop' }">
+        <button type="button" class="btn btn-image-3">
+          <span class="button-text">商店</span>
+        </button>
+      </RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'out-dress' }">
+        <button type="button" class="btn btn-image-4">
+          <span class="button-text">裝扮</span>
+        </button>
+      </RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'out-nowreport' }">
+        <button type="button" class="btn btn-image-5">
+          <span class="button-text">生活紀錄報表</span>
+        </button>
+      </RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'out-report' }">
+        <button type="button" class="btn btn-image-6">
+          <span class="button-text">過往住客</span>
+        </button>
+      </RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'out-system' }">
+        <button type="button" class="btn btn-image-7">
+          <span class="button-text">系統</span>
+        </button>
+      </RouterLink>
+    </div>
+  </div>
 
   <router-view></router-view>
 </template>
 
 <style lang="css" scoped>
-/* @import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/earlyaccess/cwtexyen.css'); */
+/* .player-info {
+  margin-bottom: 20px;
+} */
 
-/* 設置按鈕尺寸 */
 .nav-link {
-  width: 200px;
-  font-size: 25px;
+  margin-left: 10px;
+  width: 170px;
 }
 
 .btn {
+  width: 170px;
+  height: 48px;
+  padding-left: 40px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.button-text {
+  text-align: left;
+  margin-top: 7px;
+  margin-left: 10px;
+  flex: 1;
+}
+
+.btn-image-1 {
+  background-image: url('/images/navBar/formBtn.png');
+}
+.btn-image-2 {
+  background-image: url('/images/navBar/missoinBtn.png');
+}
+.btn-image-3 {
+  background-image: url('/images/navBar/storeBtn.png');
+}
+.btn-image-4 {
+  background-image: url('/images/navBar/bagBtn.png');
+}
+.btn-image-5 {
+  background-image: url('/images/navBar/peopleBtn.png');
+}
+.btn-image-6 {
+  background-image: url('/images/navBar/reportBtn.png');
+}
+.btn-image-7 {
+  background-image: url('/images/navBar/settingBtn.png');
+}
+.btn-image-8 {
+  background-image: url('/images/navBar/navbarBtn.png');
+  background-size: 100% 100%;
+  background-color: transparent;
+  border: none;
   width: 48px;
   height: 48px;
 }
 
-/* 自訂背景圖片的按鈕樣式 */
-.btn-image-1 {
-  background-image: url('/images/navBar/formBtn.png');
-  background-size: contain;
-  background-position: center;
-  color: white;
-}
-
-.btn-image-2 {
-  background-image: url('/images/navBar/missoinBtn.png');
-  background-size: contain;
-  background-position: center;
-  color: white;
-}
-
-.btn-image-3 {
-  background-image: url('/images/navBar/storeBtn.png');
-  background-size: contain;
-  background-position: center;
-  color: white;
-}
-
-.btn-image-4 {
-  background-image: url('/images/navBar/bagBtn.png');
-  background-size: contain;
-  background-position: center;
-  color: white;
-}
-
-.btn-image-5 {
-  background-image: url('/images/navBar/peopleBtn.png');
-  background-size: contain;
-  background-position: center;
-  color: white;
-}
-
-.btn-image-6 {
-  background-image: url('/images/navBar/reportBtn.png');
-  background-size: contain;
-  background-position: center;
-  color: white;
-}
-
-.btn-image-7 {
-  background-image: url('/images/navBar/settingBtn.png');
-  background-size: contain;
-  background-position: center;
-  color: white;
-}
-
-.btn-image-8 {
-  background-image: url('/images/navBar/navbarBtn.png');
-  /* background-size: contain; */
-  color: white;
-  margin-bottom: 5px;
-}
-
-/* 角色資訊區域的樣式 */
-/* #player {
-  height: 200px;
-}
-
-#player p {
-  margin: 2px;
-  font-family: 'cwTeXYen', 'Balsamiq Sans', sans-serif;
-} */
-
-/* 自訂 nav-link 的樣式 */
-/* .nav-link {
-  border: 1px double black;
-  color: black;
-  margin-bottom: 5px;
-} */
-
-.collapse-horizontal {
-  height: auto; /* color: rgb(255, 255, 255); */
+/* .collapse {
+  gap: 2px;
+  padding: 10px 0;
   background-image: url('/images/navbar background.png');
+  width: 200px;
+} */
+
+.d-flex.flex-column {
+  gap: 2px;
+  width: 200px;
+  padding: 10px 0 10px 0;
+  background-image: url('/images/navbar background.png');
+}
+
+.progress {
+  width: 228px;
+  height: 24px;
+}
+
+.custom-progress {
+  background-image: url('/images/navBar/Battery.png');
   background-size: cover;
-  background-position: center;
-  /* background-color: rgba(0, 0, 0, 0.7); */
-  /* border-top-right-radius: 8px; */
 }
 
-/* 初始設置折疊區塊高度 */
-.collapse {
-  height: 0;
-  overflow: hidden;
-}
-
-.collapse.show {
-  height: auto; /* 展開後恢復高度 */
+.custom-progress-bar {
+  background-image: url('/images/navBar/Battery light.png');
+  background-size: cover;
+  transition: width 0.9s ease;
 }
 </style>
