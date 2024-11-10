@@ -37,26 +37,95 @@ onMounted(() => {
   <!-- 玩家資訊顯示區 -->
   <div id="player" class="player-info">
     <p>角色名稱: {{ characterName }}</p>
-    <p>等級: {{ characterLevel }} &nbsp;&nbsp; 金幣: {{ characterCoins }}</p>
-    <p>當前經驗值: {{ characterExperience }}</p>
-    <p>當前環境值: {{ characterEnvironment }}</p>
-    <p>昨日取得環境值: {{ characterGetEnvironment }}</p>
+
+    <span class="level-display">
+      <img
+        v-if="characterLevel >= 1 && characterLevel <= 4"
+        src="/images/navBar/Bronze Lv.png"
+        alt="Bronze"
+        title="等級"
+      />
+      <img
+        v-else-if="characterLevel >= 5 && characterLevel <= 11"
+        src="/images/navBar/Sliver Lv.png"
+        alt="Silver"
+        title="等級"
+      />
+      <img
+        v-else-if="characterLevel >= 12 && characterLevel <= 24"
+        src="/images/navBar/Gold Lv.png"
+        alt="Gold"
+        title="等級"
+      />
+      <img
+        v-else-if="characterLevel >= 25"
+        src="/images/navBar/Diamond.png"
+        alt="Diamond"
+        title="等級"
+      />
+      <span>{{ characterLevel }}</span>
+    </span>
+
+    <span class="getGift">
+      <img
+        src="/images/navBar/getENV.png"
+        alt="getENV"
+        title="昨日取得環境值"
+      />
+      <span>
+        {{ characterGetEnvironment }}
+      </span>
+      <img
+        src="/images/navBar/getEXP.png"
+        alt="getEXP"
+        title="昨日取得經驗值"
+      />
+      <span>
+        {{ characterGetExperience }}
+      </span>
+      <img
+        src="/images/navBar/getCoins.png"
+        alt="getEXP"
+        title="昨日取得金幣"
+      />
+      <span>
+        {{ characterGetCoins }}
+      </span>
+    </span>
+
+    <!-- <p>角色名稱: {{ characterName }}</p> -->
+    <!-- <p>等級: {{ characterLevel }} &nbsp;&nbsp; 金幣: {{ characterCoins }}</p> -->
+    <!-- <p>當前經驗值: {{ characterExperience }}</p> -->
+    <!-- <p>當前環境值: {{ characterEnvironment }}</p> -->
+    <!-- <p>昨日取得環境值: {{ characterGetEnvironment }}</p>
     <p>昨日取得經驗值: {{ characterGetExperience }}</p>
-    <p>昨日取得金幣: {{ characterGetCoins }}</p>
+    <p>昨日取得金幣: {{ characterGetCoins }}</p> -->
   </div>
 
-  <!-- 進度條顯示 -->
+  <!-- 第一個進度條 - 經驗值 -->
   <div class="progress custom-progress">
     <div
-      class="progress-bar custom-progress-bar"
+      class="progress-bar custom-progress-bar experience-bar"
       role="progressbar"
-      :style="{ width: characterExperience + '%' }"
-      :aria-valuenow="characterExperience"
+      :style="{ width: Math.min(characterExperience, 100) + '%' }"
+      :aria-valuenow="Math.min(characterExperience, 100)"
       aria-valuemin="0"
       aria-valuemax="100"
-    >
-      {{ characterExperience }}%
-    </div>
+      :title="'當前經驗值: ' + characterExperience"
+    ></div>
+  </div>
+
+  <!-- 第二個進度條 - 環境值 -->
+  <div class="progress custom-progress">
+    <div
+      class="progress-bar custom-progress-bar environment-bar"
+      role="progressbar"
+      :style="{ width: Math.min(characterEnvironment + 20.52, 100) + '%' }"
+      :aria-valuenow="Math.min(characterEnvironment, 100)"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      :title="'當前環境值: ' + characterEnvironment"
+    ></div>
   </div>
 
   <!-- 控制顯示/隱藏按鈕群組的按鈕 -->
@@ -191,11 +260,41 @@ onMounted(() => {
 .custom-progress {
   background-image: url('/images/navBar/Battery.png');
   background-size: cover;
+  background-color: transparent;
+  border-radius: unset;
 }
 
-.custom-progress-bar {
-  background-image: url('/images/navBar/Battery light.png');
+.experience-bar {
+  background-image: url('/images/navBar/Battery EXP light.png');
   background-size: cover;
+  background-color: transparent;
   transition: width 0.9s ease;
+}
+
+.environment-bar {
+  background-image: url('/images/navBar/Battery ENV light.png');
+  background-size: cover;
+  background-color: transparent;
+  transition: width 0.9s ease;
+}
+
+.level-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.level-display img {
+  margin-right: 10px;
+}
+
+.getGift {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.getGift img {
+  margin-right: 10px;
 }
 </style>
