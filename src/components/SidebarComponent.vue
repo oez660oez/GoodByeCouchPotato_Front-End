@@ -172,7 +172,7 @@ onMounted(() => {
 </template>
 
 <style lang="css" scoped>
-@import 'src/assets/btnBorder.css';
+@import '/src/assets/btnBorder.css';
 @import '/public/navBar/navBtn.css';
 @import '/public/navBar/navProgress.css';
 

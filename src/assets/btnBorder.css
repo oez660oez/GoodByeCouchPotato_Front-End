@@ -16,8 +16,11 @@
 }
 
 .btn:hover {
-  border-image-source: url('/navBar/Btn hover.png'); /* hover 時更換邊框圖片 */
+  border-image-source: url('/navBar/Btn hover.png'); /* 觸發事件 時更換邊框圖片 */
 }
 .btn:active {
   border-image-source: url('/navBar/Btn after.png');
+}
+.btn:focus {
+  border-image-source: url('/navBar/Btn hover.png');
 }
