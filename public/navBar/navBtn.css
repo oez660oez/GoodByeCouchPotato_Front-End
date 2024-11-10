@@ -1,12 +1,12 @@
 .btn {
   width: 170px;
   height: 48px;
+  background-size: 170px 48px; /* 有設background-image的要設定大小 */
   font-size: 13px;
   display: flex;
   align-items: center;
   text-align: left;
   padding-left: 38px;
-  background-size: 170px 48px;
 }
 
 .btn-image-1 {

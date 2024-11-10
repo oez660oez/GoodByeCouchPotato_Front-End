@@ -1,26 +1,34 @@
-/* 使用時記得在style引入   */
-/* import 'src/assets/btnBorder.css'; */
+/* 1. 使用時記得在style引入   
+import 'src/assets/btnBorder.css'; */
+
+/* 2. 以下寫在至己的style裡
+------start
+.btn {
+width: 170px;
+height: 48px;
+background-size: 170px 48px; 
+}
+------end
+*/
 
 .btn {
-  /* width: 170px; */
-  /* height: 48px; */
   border-width: 15px;
-  border-style: solid;
-  border-image-source: url('/navBar/unhover.png'); /* 設定邊框圖片 */
   border-image-slice: 21;
-  border-image-repeat: stretch;
   transition: border-image-source 0.1s ease;
-  /* background-size: 170px 48px; */ /* 有設background-image的要設定大小 */
   background-clip: border-box;
-  background-position: center;
+  /* background-position: center; 至己斟酌*/
 }
 
+.btn {
+  border-image-source: url('/navBar/unhover.png'); /* 設定邊框圖片 */
+}
 .btn:hover {
   border-image-source: url('/navBar/Btn hover.png'); /* 觸發事件 時更換邊框圖片 */
 }
-.btn:active {
-  border-image-source: url('/navBar/Btn after.png');
-}
 .btn:focus {
   border-image-source: url('/navBar/Btn hover.png');
+  transition: none;
+}
+.btn:active {
+  border-image-source: url('/navBar/Btn active.png'); /* 觸發事件 時更換邊框圖片 */
 }

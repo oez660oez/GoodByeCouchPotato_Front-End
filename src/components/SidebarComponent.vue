@@ -36,7 +36,7 @@ onMounted(() => {
   <!-- 玩家資訊顯示區 -->
   <div id="player" class="player-info">
     <p>角色名稱: {{ characterName }}</p>
-
+    <img src="/navBar/Coins.png" alt="Coins" title="金幣" />{{ characterCoins }}
     <span class="level-display">
       <img
         v-if="characterLevel >= 1 && characterLevel <= 4"
@@ -121,43 +121,43 @@ onMounted(() => {
   <div class="collapse show" id="collapseExample">
     <div class="d-flex flex-column mt-3">
       <RouterLink class="nav-link" :to="{ name: 'out-daily' }">
-        <button type="button" class="btn btn-image-1">
+        <button type="button" class="btn btn-image-1 btnSide">
           <!-- <span class="button-text">健康紀錄</span> -->
           健康紀錄
         </button>
       </RouterLink>
       <RouterLink class="nav-link" :to="{ name: 'out-task' }">
-        <button type="button" class="btn btn-image-2">
+        <button type="button" class="btn btn-image-2 btnSide">
           <!-- <span class="button-text">任務</span> -->
           任務
         </button>
       </RouterLink>
       <RouterLink class="nav-link" :to="{ name: 'out-shop' }">
-        <button type="button" class="btn btn-image-3">
+        <button type="button" class="btn btn-image-3 btnSide">
           <!-- <span class="button-text">商店</span> -->
           商店
         </button>
       </RouterLink>
       <RouterLink class="nav-link" :to="{ name: 'out-dress' }">
-        <button type="button" class="btn btn-image-4">
+        <button type="button" class="btn btn-image-4 btnSide">
           <!-- <span class="button-text">裝扮</span> -->
           裝扮
         </button>
       </RouterLink>
       <RouterLink class="nav-link" :to="{ name: 'out-nowreport' }">
-        <button type="button" class="btn btn-image-5">
+        <button type="button" class="btn btn-image-5 btnSide">
           <!-- <span class="button-text">生活紀錄報表</span> -->
           生活紀錄報表
         </button>
       </RouterLink>
       <RouterLink class="nav-link" :to="{ name: 'out-report' }">
-        <button type="button" class="btn btn-image-6">
+        <button type="button" class="btn btn-image-6 btnSide">
           <!-- <span class="button-text">過往住客</span> -->
           過往住客
         </button>
       </RouterLink>
       <RouterLink class="nav-link" :to="{ name: 'out-system' }">
-        <button type="button" class="btn btn-image-7">
+        <button type="button" class="btn btn-image-7 btnSide">
           <!-- <span class="button-text">系統</span> -->
           系統
         </button>
@@ -171,10 +171,10 @@ onMounted(() => {
   <router-view></router-view>
 </template>
 
-<style lang="css" scoped>
-@import '/src/assets/btnBorder.css';
+<style scoped>
 @import '/public/navBar/navBtn.css';
 @import '/public/navBar/navProgress.css';
+@import 'src/assets/btnBorder.css';
 
 .level-display {
   display: flex;
