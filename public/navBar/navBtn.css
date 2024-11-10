@@ -1,0 +1,52 @@
+.btn {
+  width: 170px;
+  height: 48px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding-left: 38px;
+  background-size: 170px 48px;
+}
+
+.btn-image-1 {
+  background-image: url('/navBar/formBtn.png');
+}
+.btn-image-2 {
+  background-image: url('/navBar/missoinBtn.png');
+}
+.btn-image-3 {
+  background-image: url('/navBar/storeBtn.png');
+}
+.btn-image-4 {
+  background-image: url('/navBar/bagBtn.png');
+}
+.btn-image-5 {
+  background-image: url('/navBar/peopleBtn.png');
+}
+.btn-image-6 {
+  background-image: url('/navBar/reportBtn.png');
+}
+.btn-image-7 {
+  background-image: url('/navBar/settingBtn.png');
+}
+.btn-image-8 {
+  background-image: url('/navBar/navbarBtn.png');
+  background-size: 100% 100%;
+  background-color: transparent;
+  border: none;
+  width: 48px;
+  height: 48px;
+}
+
+.nav-link {
+  margin-left: 10px;
+  width: 170px;
+}
+
+.d-flex.flex-column {
+  gap: 2px;
+  width: 200px;
+  padding: 10px 0 10px 0;
+  background-image: url('/navbar background.png');
+}

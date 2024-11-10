@@ -1,6 +1,6 @@
 <script setup>
 import GameView from './GameView.vue';
-import SidebarView from './SidebarView.vue';
+import SidebarComponent from '@/components/SidebarComponent.vue';
 import { Playerinformation } from '@/Stores/PlayerCharacter';
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
@@ -35,12 +35,9 @@ const goToWeightTask = () => {
   <transition name="fade" v-show="transition" class="blacktransition">
     <div class="black"></div>
   </transition>
-  <RouterLink class="nav-link" :to="{ name: 'roommap' }">
-    <i class="fa-regular fa-map"></i>
-  </RouterLink>
 
   <div class="sidebarview" v-if="!GameOver || !PiniaPlayer.isnewcharacter">
-    <SidebarView></SidebarView>
+    <SidebarComponent></SidebarComponent>
   </div>
   <div class="weight-button" @click="goToWeightTask">
     <img src="/images/WeightButton.png" alt="Weight Button" hidden />
