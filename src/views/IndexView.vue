@@ -319,11 +319,11 @@ onMounted(() => {
       <div class="black"></div>
     </transition>
     <div class="introduce">
-      <h1>再見！沙發Potato</h1>
+      <h1 class="introducetitle">再見！沙發Potato</h1>
       <p>想要擺脫如同couch potato一般的生活，卻不知如何下手嗎？</p>
       <p>趕緊和角色一同搬進 再見！沙發Potato 小鎮</p>
       <p>
-        透過記錄每日生活累積金幣，換上喜歡的衣服與房間擺設，向couch potato說掰掰
+        透過記錄每日生活累積金幣，換上喜歡的衣服，向couch potato說掰掰
       </p>
     </div>
 
@@ -732,13 +732,18 @@ body {
 }
 
 .introduce {
-  color: rgb(1, 35, 62);
+  color: rgb(221, 224, 171);
   padding: 10px;
   text-align: center;
   max-width: 800px;
   width: 100%;
-  margin-top: 5%;
+  margin-top: 4%;
   margin-bottom: 10px;
+}
+
+.introducetitle {
+  color: rgb(254, 254, 39);
+  font-size: 55px;
 }
 
 .login-container {
