@@ -16,7 +16,7 @@ background-size: 170px 48px;
   border-image-slice: 21;
   transition: border-image-source 0.1s ease;
   background-clip: border-box;
-  /* background-position: center; 至己斟酌*/
+  background-position: center;
 }
 
 .btn {

@@ -9,5 +9,5 @@ import './assets/GoBack.css';
 import './assets/Transition.css';
 import './assets/global.css';
 const pinia = createPinia();
-createApp(App).use(pinia).use(router).mount('#app');
 pinia.use(piniaPluginPersistedstate);
+createApp(App).use(pinia).use(router).mount('#app');

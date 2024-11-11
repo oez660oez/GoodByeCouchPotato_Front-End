@@ -30,14 +30,6 @@
 .btn-image-7 {
   background-image: url('/navBar/settingBtn.png');
 }
-.btn-image-8 {
-  background-image: url('/navBar/navbarBtn.png');
-  background-size: 100% 100%;
-  background-color: transparent;
-  border: none;
-  width: 48px;
-  height: 48px;
-}
 
 .nav-link {
   margin-left: 10px;
@@ -45,8 +37,30 @@
 }
 
 .d-flex.flex-column {
+  margin-left: 10px;
   gap: 2px;
   width: 200px;
   padding: 10px 0 10px 0;
   background-image: url('/navBar/navbar background.png');
+}
+
+.btn-image-8 {
+  background-image: url('/navBar/navbarBtn2.png');
+  background-size: 100% 100%;
+  background-color: transparent;
+  border: none;
+  width: 16px;
+  height: 20px;
+  position: absolute;
+  top: 120px;
+  left: 225px;
+  transition: background-image 0.1s;
+  z-index: 15;
+}
+
+.btn-image-8.active {
+  background-image: url('/navBar/navbarBtn.png');
+  width: 20px;
+  height: 16px;
+  transition: background-image 0.1s;
 }

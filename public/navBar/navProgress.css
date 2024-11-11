@@ -1,6 +1,7 @@
 .progress {
   width: 228px;
   height: 24px;
+  margin-bottom: 5px;
 }
 
 .custom-progress {
