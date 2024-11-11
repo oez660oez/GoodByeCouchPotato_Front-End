@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { Playerinformation } from '@/Stores/PlayerCharacter';
 import { storeToRefs } from 'pinia';
-import Sprite from '@/Stores/Sprite New';
+import AvatarComponent from './AvatarComponent.vue';
 
 // 從 Pinia store 中引入玩家資訊
 const playerStore = Playerinformation();
@@ -18,16 +18,9 @@ const {
 } = storeToRefs(playerStore);
 
 // 相關變數宣告
-const canvasRef = ref(null);
-let ctx = null;
-const sprite = ref(null);
 const isActive = ref(false);
 // 用於追蹤當前選擇的按鈕
 const activeButton = ref('');
-
-// 載入圖片
-const spriteImage = new Image();
-spriteImage.src = '/src/assets/Avatar images/Avatar.png'; // 確保圖片路徑正確
 
 // 切換按鈕 active 狀態
 const toggleActive = () => {
@@ -38,59 +31,8 @@ const toggleNavActive = (buttonName) => {
   activeButton.value = buttonName;
 };
 
-// 初始化圖片和 Sprite
-const loadingImage = () => {
-  spriteImage.onload = () => {
-    const canvas = canvasRef.value;
-    if (!canvas) return;
-
-    // 獲取 Canvas 2D 上下文
-    ctx = canvas.getContext('2d');
-
-    // 初始化 Sprite
-    sprite.value = new Sprite({
-      position: { x: -22, y: -22 },
-      image: spriteImage,
-      frames: { max: 10 }
-    });
-
-    // 預先繪製第一幀
-    sprite.value.draw(ctx);
-  };
-};
-
-// 動畫函式
-const animate = () => {
-  const canvas = canvasRef.value;
-
-  const drawFrame = () => {
-    if (sprite.value.frames.val === sprite.value.frames.max - 1) {
-      sprite.value.frames.val = 0;
-      sprite.value.draw(ctx);
-      return; // 播放完畢後停止
-    }
-
-    // 清除畫布
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 繪製當前幀
-    sprite.value.draw(ctx);
-
-    requestAnimationFrame(drawFrame);
-  };
-
-  drawFrame();
-};
-
-// 按下按鈕播放動畫
-const startAnimation = () => {
-  loadingImage();
-  animate();
-};
-
 // onMounted 生命週期
 onMounted(() => {
-  loadingImage();
   const links = document.querySelectorAll('.nav-link');
   links.forEach((link) => {
     link.addEventListener('click', function () {
@@ -110,12 +52,7 @@ onMounted(() => {
       <div class="player-info">
         <!-- 頭像&名子 --------------start -->
         <div class="playerName">
-          <canvas
-            ref="canvasRef"
-            width="48"
-            height="48"
-            @click="startAnimation"
-          ></canvas>
+          <AvatarComponent></AvatarComponent>
           <div>
             <span class="name">{{ characterName }}</span>
           </div>
@@ -335,6 +272,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: start;
+  height: 50px;
 }
 
 .name {
@@ -347,7 +285,6 @@ onMounted(() => {
   justify-content: start;
   gap: 8px;
   margin-left: 10px;
-  margin-top: 2px;
 }
 
 .level-display img {
@@ -367,11 +304,12 @@ onMounted(() => {
 .ExpEnv {
   margin-top: 10px;
 }
+span {
+  color: white;
+}
 
 /* Canvas 相關樣式 */
-canvas {
+/* canvas {
   margin-right: 10px;
-  /* z-index: 10; */
-  /* border: 1px solid #000; */
-}
+} */
 </style>
