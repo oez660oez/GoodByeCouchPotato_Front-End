@@ -40,6 +40,13 @@ const showSuccessAlert = async (message) => {
 };
 //Alert樣式結束
 //-------------獲取每日任務--------------------
+// 新增添加響應式狀態來追蹤任務完成狀態Start
+const taskStatus = ref({
+  task1Completed: false,
+  task2Completed: false,
+  task3Completed: false
+});
+//新增End
 const API_URLgettask = `${Base_URL}/DailyTaskRecords/GetDailyTaskRecords`;
 var temreward = {
   t1Reward: 0,
@@ -56,19 +63,27 @@ const gettask = async (CId) => {
     const dailytaskData = await response.json(); // 解析 JSON 響應
     console.log(dailytaskData);
 
+    //新增更新任務完成狀態Start
+    taskStatus.value = {
+      task1Completed: dailytaskData.t1completed,
+      task2Completed: dailytaskData.t2completed,
+      task3Completed: dailytaskData.t3completed
+    };
+    //新增End
+    
     //放資料
     document.getElementById("task1lbl").textContent = dailytaskData.t1name;
     document.getElementById("task2lbl").textContent = dailytaskData.t2name;
     document.getElementById("task3lbl").textContent = dailytaskData.t3name;
     document.getElementById(
       "T1reward"
-    ).innerHTML = `任務獎勵<br> ${dailytaskData.t1Reward}金幣`;
+    ).innerHTML = `X ${dailytaskData.t1Reward}`;
     document.getElementById(
       "T2reward"
-    ).innerHTML = `任務獎勵<br> ${dailytaskData.t2Reward}金幣`;
+    ).innerHTML = `X ${dailytaskData.t2Reward}`;
     document.getElementById(
       "T3reward"
-    ).innerHTML = `任務獎勵<br> ${dailytaskData.t3Reward}金幣`;
+    ).innerHTML = `X ${dailytaskData.t3Reward}`;
 
     document.getElementById("task1").checked = dailytaskData.t1completed;
     document.getElementById("task2").checked = dailytaskData.t2completed;
@@ -174,6 +189,13 @@ onMounted(() => {
       // 執行對應的 alert
       if (feedbackresponseData.done > 0) {
         await showSuccessAlert(feedbackresponseData.returnword);
+        //新增更新任務完成狀態Start
+      taskStatus.value = {
+        task1Completed: document.getElementById("task1").checked,
+        task2Completed: document.getElementById("task2").checked,
+        task3Completed: document.getElementById("task3").checked
+      };
+      //新增End
       } else {
         await showErrorAlert(feedbackresponseData.returnword);
       }
@@ -292,55 +314,106 @@ const goBack = () => {
     <div id="Dailytaskblock">
       <form class="needs-validation" name="feedbackdata">
         <div>
-          <h4 style="padding-left: 100px">每日任務</h4>
+          <h4 class="vertical-title">每日任務</h4>
         </div>
         <div class="task-group">
           <div class="task-list">
             <div class="task-item">
-              <div class="card">
-                <div class="card-header">
-                  <input type="checkbox" id="task1" />
-                </div>
+              <div class="card" :class="{ 'completed-task': taskStatus.task1Completed }">
                 <div class="card-body">
-                  <blockquote class="blockquote mb-0" for="task1">
-                    <p id="task1lbl"></p>
-                    <footer class="blockquote-footer">
-                      <p id="T1reward"></p>
-                    </footer>
-                  </blockquote>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <input type="checkbox" id="task2" />
-                </div>
-                <div class="card-body">
-                  <blockquote class="blockquote mb-0" for="task2">
-                    <p id="task2lbl"></p>
-                    <footer class="blockquote-footer">
-                      <p id="T2reward"></p>
-                    </footer>
-                  </blockquote>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <input type="checkbox" id="task3" />
-                </div>
-                <div class="card-body">
-                  <blockquote class="blockquote mb-0" for="task3">
-                    <p id="task3lbl"></p>
+                  <blockquote class="blockquote mb-0">
+                    <label for="task1" id="task1lbl"></label>
                     <div class="footer">
-                      <p id="T3reward"></p>
+                      <p>任務獎勵：</p>
+                      <div class="reward-container">
+                        <div class="coin-image"></div>
+                        <div class="coin-count mt-2"><p id="T1reward"></p></div>
+
+    </div>
                     </div>
                   </blockquote>
+                </div>
+                <div class="task-footer">
+                  <div class="checkbox-wrapper-23">
+                    <input
+                      type="checkbox"
+                      class="check-23"
+                      id="task1"
+                    />
+                    <label for="task1" style="--size: 25px">
+                      <svg viewBox="0,0,50,50">
+                        <path d="M5 30 L 20 45 L 45 5"></path>
+                      </svg>
+                    </label>
+                  </div>
+                  <div v-if="taskStatus.task1Completed" class="stamp-image"></div>
+                </div>
+              </div>
+
+              <div class="card" :class="{ 'completed-task': taskStatus.task2Completed }">
+                <div class="card-body">
+                  <blockquote class="blockquote mb-0">
+                    <label for="task2" id="task2lbl"></label>
+                    <div class="footer">
+                      <p>任務獎勵：</p>
+                      <div class="reward-container">
+                        <div class="coin-image"></div>
+                        <div class="coin-count mt-2"><p id="T2reward"></p></div>
+
+    </div>
+                    </div>
+                  </blockquote>
+                </div>
+                <div class="task-footer">
+                  <div class="checkbox-wrapper-23">
+                    <input
+                      type="checkbox"
+                      class="check-23"
+                      id="task2"
+                    />
+                    <label for="task2" style="--size: 25px">
+                      <svg viewBox="0,0,50,50">
+                        <path d="M5 30 L 20 45 L 45 5"></path>
+                      </svg>
+                    </label>
+                  </div>
+                  <div v-if="taskStatus.task2Completed" class="stamp-image"></div>
+                </div>
+              </div>
+
+              <div class="card" :class="{ 'completed-task': taskStatus.task3Completed }">
+                <div class="card-body">
+                  <blockquote class="blockquote mb-0">
+                    <label for="task3" id="task3lbl"></label>
+                    <div class="footer">
+                      <p>任務獎勵：</p>
+                      <div class="reward-container">
+                        <div class="coin-image"></div>
+                        <div class="coin-count mt-2"><p id="T3reward"></p></div>
+
+    </div>
+                    </div>
+                  </blockquote>
+                </div>
+                <div class="task-footer">
+                  <div class="checkbox-wrapper-23">
+                    <input
+                      type="checkbox"
+                      class="check-23"
+                      id="task3"
+                    />
+                    <label for="task3" style="--size: 25px">
+                      <svg viewBox="0,0,50,50">
+                        <path d="M5 30 L 20 45 L 45 5"></path>
+                      </svg>
+                    </label>
+                  </div>
+                  <div v-if="taskStatus.task3Completed" class="stamp-image"></div>
                 </div>
               </div>
             </div>
           </div>
-          <button id="btndaily" class="update-btn"></button>
+          <button id="btndaily" class="update-btn">達成</button>
         </div>
       </form>
     </div>
@@ -352,13 +425,27 @@ const goBack = () => {
         class="needs-validation"
         name="feedbackdata"
       >
-        <h4 style="padding-left: 100px; margin-top: 3%">每週任務</h4>
+      <h4 class="vertical-title" id="week-title">每週任務</h4>
         <div class="weeklytask-group">
           <div class="task-list">
             <div class="task-item-week">
-              <div class="card-week">
+              <div class="card-week" :class="{ 'completed-task': tempSportStatus }">
                 <div class="card-header">
-                  <div class="checkbox-wrapper-23">
+                  <p>進度
+    <span :class="{ 'incomplete': sportdone < 3 }">{{ sportdone }}</span>/7 &nbsp;&nbsp;
+  </p>
+                </div>
+                <div class="card-body" for="sport">
+                  <blockquote class="blockquote mb-0">
+                    <label id="sportdonelbl" for="sport">運動</label>
+
+                    <div class="footer">
+                      <span>目標：每週三次</span>
+                    </div>
+                  </blockquote>
+                </div>
+                <div class="task-footer">
+                <div class="checkbox-wrapper-23">
                     <input
                       type="checkbox"
                       class="check-23"
@@ -372,35 +459,40 @@ const goBack = () => {
                       </svg>
                     </label>
                   </div>
-                </div>
-                <div class="card-body" for="sport">
-                  <blockquote class="blockquote mb-0">
-                    <label id="sportdonelbl" for="sport">運動</label>
-                    <p>本週累積：{{ sportdone }}/7 &nbsp;&nbsp;</p>
-                    <div class="footer">
-                      <span>目標：每週三次</span>
-                    </div>
-                  </blockquote>
+                  <div v-if="tempSportStatus" class="stamp-image"></div>
                 </div>
               </div>
 
-              <div class="card-week">
+              <div class="card-week" :class="{ 'completed-task': tempCleanStatus }">
                 <div class="card-header">
-                  <input
-                    type="checkbox"
-                    id="clean"
-                    v-model="todayclean"
-                    :disabled="isDisabledClean"
-                  />
+                  <p>進度
+    <span :class="{ 'incomplete': cleandone < 1 }">{{ cleandone }}</span>/7 &nbsp;&nbsp;
+  </p>
                 </div>
                 <div class="card-body">
-                  <blockquote class="blockquote mb-0" for="clean">
-                    <p id="cleandonelbl">整理環境</p>
-                    <p>本週累積：{{ cleandone }}/7 &nbsp;&nbsp;</p>
+                  <blockquote class="blockquote mb-0">
+                    <label id="cleandonelbl" for="clean">整理環境</label>
                     <div class="footer">
                       <span>目標：每週一次</span>
                     </div>
                   </blockquote>
+                </div>
+                <div class="task-footer">
+                <div class="checkbox-wrapper-23">
+                    <input
+                      type="checkbox"
+                      class="check-23"
+                      id="clean"
+                      v-model="todayclean"
+                      :disabled="isDisabledClean"
+                    />
+                    <label for="clean" style="--size: 25px">
+                      <svg viewBox="0,0,50,50">
+                        <path d="M5 30 L 20 45 L 45 5"></path>
+                      </svg>
+                    </label>
+                  </div>
+                  <div v-if="tempCleanStatus" class="stamp-image"></div>
                 </div>
               </div>
             </div>
@@ -410,7 +502,7 @@ const goBack = () => {
             id="btnweekly"
             class="update-btn"
             :disabled="isDisabledUpdate"
-          ></button>
+          >達成</button>
         </div>
       </form>
     </div>
@@ -438,12 +530,25 @@ const goBack = () => {
   left: 350px;
 }
 
+.vertical-title {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  padding-left: 0;  /* 移除原有的左邊距 */
+  margin: 20px;     /* 加入適當的邊距 */
+  height: 150px;    /* 設定高度以容納文字 */
+  position: absolute;
+  left: 70px;       /* 調整標題的左側位置 */
+}
+
+#week-title{
+margin-top: 60px;
+}
 #Dailytaskblock {
   margin-top: 80px;
 }
 
 #weeklytaskblock {
-  margin-top: 80px;
+  margin-top: 120px;
 }
 
 /* #back {
@@ -460,7 +565,22 @@ const goBack = () => {
   display: flex;
   justify-content: center;
 }
+.blockquote {
+  width: 100%;
+  max-width: 160px; /* 確保 blockquote 不會超出卡片寬度 */
+}
 
+.blockquote label {
+  display: block;
+  width: 100%;
+  word-break: break-word; /* 強制換行 */
+  white-space: pre-wrap; /* 保留空格並換行 */
+  line-height: 1.4;
+  margin-bottom: 8px;
+  font-size: 16px; /* 調整字體大小 */
+  overflow-wrap: break-word; /* 確保長單詞也會換行 */
+  max-width: 160px; /* 限制最大寬度 */
+}
 .task-group {
   display: flex;
   justify-content: space-between; /* 讓任務列表和按鈕在水平兩側 */
@@ -486,36 +606,82 @@ const goBack = () => {
   flex-direction: column;
 }
 .card {
-  margin-right: 10px !important;
-  min-width: 180px !important;
-  min-height: 180px !important;
-  max-height: 180px !important;
+  background-color: transparent;
+  background-image: url("/images/DailyTask.png");
+  border: none;
+  margin-right: 0px !important;
+  margin-top: 70px !important;
+  min-width: 192px !important;
+  max-width: 192px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+  position: relative;
+  padding: 10px;
 }
 .card-header {
   margin-left: 20px !important;
-  margin-top: 20px !important;
+  margin-top: 25px !important;
 }
 .card-body {
   min-width: 120px !important;
-  padding: 15px !important;
+  padding: 15px 15px 0 15px!important;
+  max-height: 120px !important;
+}
+.task-footer{
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  position: relative; /* 確保絕對定位的印章相對於這個元素定位 */
 }
 .footer {
   color: gray;
   font-size: 16px;
 }
-
+p{
+  margin: 0px !important;
+}
+.incomplete {
+  color: #CC0000; /* 未完成時的紅色 */
+}
 .card-week {
   background-color: transparent;
-  background-image: url("/images/DailyTask.png");
+  background-image: url("/images/DailyTask_2.png");
   border: none;
   margin-right: 25px !important;
-  margin-top: 60px !important;
-  min-width: 192px !important;
-  max-width: 192px !important;
-  min-height: 192px !important;
-  max-height: 192px !important;
+  margin-top: 100px !important;
+  min-width: 200px !important;
+  max-width: 200px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+  position: relative;
 }
-
+.reward-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 控制文字和圖示之間的間距 */
+    margin: 10px 0px 0px 20px;
+}
+.stamp-image {
+  background-color: transparent;
+  background-image: url("/images/Stamp.png");
+  width: 61px;
+  height: 62px;
+  position: absolute;
+  margin-left: 100px;
+  transform: translateY(-5px); /* 使用 transform 來向上移動印章 */
+  opacity: 1;
+  transition: opacity 0.3s ease; /* 添加淡入效果 */
+}
+.coin-image {
+  background-color: transparent;
+  background-image: url("/images/BigCoin.png");
+  background-size: contain; /* 確保圖片適當縮放 */
+  background-repeat: no-repeat; /* 防止圖片重複 */
+  background-position: center; /* 圖片置中 */
+  width: 51px;
+  height: 45px;
+  display: inline-block; /* 確保 div 會顯示出來 */
+}
 .task-item-week {
   display: flex;
   align-items: center;
@@ -558,24 +724,39 @@ const goBack = () => {
 }
 
 .update-btn {
-  background-image: url("/images/SweetAlert2_Confirm.png");
+  background-image: url("/images/ConfirmBtn.png");
   background-color: transparent !important;
   border: none !important;
   position: relative;
-  margin-right: 70px;
-  width: 48px !important;
+  margin-right: 50px;
+  width: 96px !important;
   height: 51px !important;
 }
+#btnweekly{
+  margin-top: 70px;
+}
+.completed-task {
+  filter: brightness(0.8) saturate(1.2);  /* 降低亮度並稍微提升飽和度 */
+  opacity: 0.9;  /* 稍微提高不透明度 */
+  transition: all 0.3s ease;
+}
 
+/* 懸停效果也可以相應調整 */
+.completed-task:hover {
+  filter: brightness(0.85) saturate(1.1);  /* 懸停時稍微提亮 */
+  opacity: 0.95;
+}
 .checkbox-wrapper-23 *,
 .checkbox-wrapper-23 *:after,
 .checkbox-wrapper-23 *:before {
   box-sizing: border-box;
+
 }
 
 .checkbox-wrapper-23 input {
   position: absolute;
   opacity: 0;
+  
 }
 
 .checkbox-wrapper-23 input:checked + label svg path {
