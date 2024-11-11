@@ -51,11 +51,8 @@
   border: none;
   width: 16px;
   height: 20px;
-  position: absolute;
-  top: 120px;
-  left: 225px;
+  margin-left: 8px;
   transition: background-image 0.1s;
-  z-index: 15;
 }
 
 .btn-image-8.active {
@@ -63,4 +60,14 @@
   width: 20px;
   height: 16px;
   transition: background-image 0.1s;
+}
+
+.btn-image-1.active,
+.btn-image-2.active,
+.btn-image-3.active,
+.btn-image-4.active,
+.btn-image-5.active,
+.btn-image-6.active,
+.btn-image-7.active {
+  border-image-source: url('/navBar/Btn hover.png');
 }
