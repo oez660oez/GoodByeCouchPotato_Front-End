@@ -1,0 +1,34 @@
+/* 1. 使用時記得在style引入   
+import 'src/assets/btnBorder.css'; */
+
+/* 2. 以下寫在至己的style裡
+------start
+.btn {
+width: 170px;
+height: 48px;
+background-size: 170px 48px; 
+}
+------end
+*/
+
+.btn {
+  border-width: 15px;
+  border-image-slice: 21;
+  transition: border-image-source 0.1s ease;
+  background-clip: border-box;
+  background-position: center;
+}
+
+.btn {
+  border-image-source: url('/navBar/unhover.png'); /* 設定邊框圖片 */
+}
+.btn:hover {
+  border-image-source: url('/navBar/Btn hover.png'); /* 觸發事件 時更換邊框圖片 */
+}
+.btn:focus {
+  border-image-source: url('/navBar/Btn hover.png');
+  transition: none;
+}
+.btn:active {
+  border-image-source: url('/navBar/Btn active.png'); /* 觸發事件 時更換邊框圖片 */
+}

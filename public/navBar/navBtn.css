@@ -1,0 +1,75 @@
+.btn {
+  width: 170px;
+  height: 48px;
+  background-size: 170px 48px; /* 有設background-image的要設定大小 */
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding-left: 38px;
+  font-size: 14px;
+  color: white;
+}
+
+.btn-image-1 {
+  background-image: url('/navBar/formBtn.png');
+}
+.btn-image-2 {
+  background-image: url('/navBar/missoinBtn.png');
+}
+.btn-image-3 {
+  background-image: url('/navBar/storeBtn.png');
+}
+.btn-image-4 {
+  background-image: url('/navBar/bagBtn.png');
+}
+.btn-image-5 {
+  background-image: url('/navBar/peopleBtn.png');
+}
+.btn-image-6 {
+  background-image: url('/navBar/reportBtn.png');
+}
+.btn-image-7 {
+  background-image: url('/navBar/settingBtn.png');
+}
+
+.nav-link {
+  margin-left: 10px;
+  width: 170px;
+}
+
+.d-flex.flex-column {
+  margin-left: 10px;
+  gap: 2px;
+  width: 200px;
+  padding: 10px 0 10px 0;
+  background-image: url('/navBar/navbar background.png');
+}
+
+.btn-image-8 {
+  background-image: url('/navBar/navbarBtn2.png');
+  background-size: 100% 100%;
+  background-color: transparent;
+  border: none;
+  width: 16px;
+  height: 20px;
+  margin-left: 8px;
+  transition: background-image 0.1s;
+}
+
+.btn-image-8.active {
+  background-image: url('/navBar/navbarBtn.png');
+  width: 20px;
+  height: 16px;
+  transition: background-image 0.1s;
+}
+
+.btn-image-1.active,
+.btn-image-2.active,
+.btn-image-3.active,
+.btn-image-4.active,
+.btn-image-5.active,
+.btn-image-6.active,
+.btn-image-7.active {
+  border-image-source: url('/navBar/Btn hover.png');
+}

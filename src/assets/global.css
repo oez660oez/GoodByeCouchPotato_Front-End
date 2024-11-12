@@ -1,0 +1,49 @@
+/* 全域預設游標 */
+* {
+  cursor: url('@/assets/hover-cursor.png'), auto !important;
+}
+
+*:hover {
+  cursor: url('@/assets/hover-cursor.png'), auto !important;
+}
+
+/* 元素獲得焦點時的游標 */
+*:focus {
+  cursor: url('@/assets/hover-cursor.png'), auto !important;
+}
+
+*:active {
+  cursor: url('@/assets/active-cursor.png'), auto !important;
+}
+
+/* 針對可點擊元素的游標 */
+a,
+button,
+input,
+textarea,
+select {
+  cursor: url('@/assets/hover-cursor.png'), auto !important;
+}
+
+/* 當瀏覽器自動填充時，強制應用自訂游標  沒用 */
+/* input:-webkit-autofill {
+  cursor: url('@/assets/hover-cursor.png'), pointer !important;
+} */
+
+a:hover,
+button:hover,
+input:hover,
+textarea:hover,
+select:hover {
+  cursor: url('@/assets/hover-cursor.png'), auto !important;
+}
+
+/* 按下時的游標 */
+
+a:active,
+button:active,
+input:active,
+textarea:active,
+select:active {
+  cursor: url('@/assets/active-cursor.png'), auto !important;
+}

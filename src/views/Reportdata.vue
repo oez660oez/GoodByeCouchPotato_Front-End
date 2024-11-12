@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import FullCalenderComponent from './FullCalenderComponent.vue';
-import ReportComponent from './ReportComponent.vue';
-import GoBackComponent from './GoBackComponent.vue';
+import FullCalenderComponent from '@/components/FullCalenderComponent.vue';
+import ReportComponent from '@/components/ReportComponent.vue';
+import GoBackComponent from '@/components/GoBackComponent.vue';
 import { useReportDataStore } from '@/Stores/reportDataStore';
 
 const router = useRouter();

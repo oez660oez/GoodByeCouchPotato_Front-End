@@ -1,0 +1,26 @@
+.progress {
+  width: 228px;
+  height: 24px;
+  margin-bottom: 5px;
+}
+
+.custom-progress {
+  background-image: url('/navBar/Battery.png');
+  background-size: cover;
+  background-color: transparent;
+  border-radius: unset;
+}
+
+.experience-bar {
+  background-image: url('/navBar/Battery EXP light.png');
+  background-size: cover;
+  background-color: transparent;
+  transition: width 0.9s ease;
+}
+
+.environment-bar {
+  background-image: url('/navBar/Battery ENV light.png');
+  background-size: cover;
+  background-color: transparent;
+  transition: width 0.9s ease;
+}
