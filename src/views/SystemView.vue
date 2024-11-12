@@ -123,21 +123,24 @@ const goBack = () => {
 
 .inside {
   /* border: 2px solid red; */
-  top: 350px;
+  top: 320px;
   height: 150px;
   width: 440px;
   left: 50px;
   position: absolute;
 }
 .inside button {
-  width: 430px;
+  width: 420px;
   height: 60px;
-  margin-top: 10px;
-  color: rgb(153, 42, 42);
-  background-color: rgb(255, 255, 255);
-  border: 1px solid rgb(12, 61, 70);
+  margin-top: 20px;
+  color: rgba(82, 50, 50, 0.847);
+  background-color: transparent;
+  /* background-color: rgb(255, 255, 255); */
   border-radius: 10px;
   border: none;
+  /* box-shadow: 5px 5px 5px 1px rgb(81, 52, 1); */
+  background-image: url("@/assets/systembutton.png");
+  background-size: cover;
 }
 h3 {
   position: absolute;

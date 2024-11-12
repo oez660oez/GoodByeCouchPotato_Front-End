@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute } from "vue-router";
 import { useGameStore } from "@/Stores/gameStore";
 import { useGameEvents } from "@/composables/useGameEvents";
-import InventoryCanvas from '@/components/game/InventoryCanvas.vue';
+import InventoryCanvas from "@/components/game/InventoryCanvas.vue";
 import GoBackComponent from "@/components/GoBackComponent.vue";
+import { onBeforeRouteLeave } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
@@ -18,14 +19,16 @@ const playerAccount = userAccount.playerAccount;
 
 // 遊戲事件處理
 const gameEventsRef = ref(null);
-const { setupEventListeners, cleanupEventListeners } = useGameEvents(inventoryCanvasRef, gameStore);
+const { setupEventListeners, cleanupEventListeners } = useGameEvents(
+  inventoryCanvasRef,
+  gameStore
+);
 
 // 初始化背包的函數
 const initializeInventory = async () => {
   try {
     await gameStore.initializeInventory(playerAccount);
     gameStore.inventoryOpen = true; // 確保背包是開啟的
-
 
     console.log("Inventory initialized successfully");
   } catch (error) {
@@ -43,15 +46,26 @@ onMounted(async () => {
   }
 });
 
-onUnmounted(async () => {
+//這段並沒有真的把資料存入Pinia
+// onUnmounted(async () => {
+//   try {
+//     await gameStore.saveInventoryState();
+//     await gameStore.syncEquipmentToPinia();
+//     gameStore.inventoryOpen = false;
+//     cleanupEventListeners();
+//     gameStore.grayImageCache.clear();
+//   } catch (error) {
+//     console.error("Failed to save inventory state:", error);
+//   }
+// });
+onBeforeRouteLeave(async (to, from, next) => {
   try {
     await gameStore.saveInventoryState();
     await gameStore.syncEquipmentToPinia();
-    gameStore.inventoryOpen = false;
-    cleanupEventListeners();
-    gameStore.grayImageCache.clear();
+    next(); // 完成同步後繼續路由切換
   } catch (error) {
     console.error("Failed to save inventory state:", error);
+    next(false); // 若同步失敗則阻止路由切換
   }
 });
 
@@ -75,13 +89,9 @@ const goBack = async () => {
   <div id="formborder">
     <div class="canvas-container">
       <div class="dress">
-      <GoBackComponent @goback="goBack"></GoBackComponent>
-    </div>
-      <InventoryCanvas
-        ref="inventoryCanvasRef"
-        :width="802"
-        :height="535"
-      />
+        <GoBackComponent @goback="goBack"></GoBackComponent>
+      </div>
+      <InventoryCanvas ref="inventoryCanvasRef" :width="802" :height="535" />
     </div>
   </div>
 </template>

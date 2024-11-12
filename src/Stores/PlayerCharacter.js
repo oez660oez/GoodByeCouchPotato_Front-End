@@ -23,6 +23,7 @@ export const Playerinformation = defineStore(
     const Lower = ref(""); //配件
     const isnewcharacter = ref(false); //是否是新角色，要不要觸發劇情,true為新角色
     const music = ref(false); //判斷音樂是否開啟
+    const musicvolume = ref(0.2);
 
     // 建立一個方法，把資料更新到狀態裡
     const updatePlayerData = (data) => {
@@ -93,6 +94,7 @@ export const Playerinformation = defineStore(
       Lower,
       isnewcharacter,
       music,
+      musicvolume,
       updatePlayerData,
       updateCharacterBody,
       logout,
@@ -100,14 +102,10 @@ export const Playerinformation = defineStore(
       logoutBody,
     };
   },
-  //   {
-  //     persist: true, //在這裡啟用pinia持久化
-  //   }
-  // );
   {
     persist: {
       enabled: true,
-      storage: sessionStorage, // 使用sessionStorage來存儲資料
+      storage: sessionStorage, // 使用 sessionStorage 來存儲資料
     },
   }
 );

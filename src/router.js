@@ -15,12 +15,9 @@ import ChangePassword from './components/ChangePassword.vue';
 import BodyＭerchandiseComponent from './components/BodyＭerchandiseComponent.vue';
 import CreateCharacter from './views/CreateCharacter.vue';
 import NowReport from './views/NowReport.vue';
-import Reportdata from './components/Reportdata.vue';
+import Reportdata from './views/Reportdata.vue';
 import WeighttaskView from './views/WeighttaskView.vue';
 import GameView from './views/GameView.vue';
-import ShadowCalendar from './views/ShadowCalendar.vue';
-import FullCalenderComponent from './components/FullCalenderComponent.vue';
-import ReportComponent from './components/ReportComponent.vue';
 import StartStory from './views/StartStory.vue';
 
 const routes = [
@@ -89,7 +86,7 @@ const routes = [
         name: 'out-report'
       },
       {
-        path: '/reportdata',
+        path: 'reportdata',
         component: Reportdata,
         name: 'out-reportdata'
       },
@@ -161,7 +158,7 @@ const routes = [
         name: 'in-report'
       },
       {
-        path: '/reportdata',
+        path: 'reportdata',
         component: Reportdata,
         name: 'in-reportdata'
       },
@@ -187,21 +184,6 @@ const routes = [
     path: '/gameview',
     component: GameView,
     name: 'gameview'
-  },
-  {
-    path: '/shadowcalendar',
-    component: ShadowCalendar,
-    name: 'shadowcalendar'
-  },
-  {
-    path: '/fullcalendarcomponent',
-    component: FullCalenderComponent,
-    name: 'fullcalendarcomponent'
-  },
-  {
-    path: '/reportcomponent',
-    component: ReportComponent,
-    name: 'reportcomponent'
   },
   {
     path: '/StartStory',

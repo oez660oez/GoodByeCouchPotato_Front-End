@@ -200,6 +200,8 @@ const handleSubmit = async () => {
 </script>
 
 <template>
+  <body>
+    
   <transition name="fade" v-show="transition" class="blacktransition">
     <div class="black"></div>
   </transition>
@@ -320,7 +322,7 @@ const handleSubmit = async () => {
       <div class="row mb-5 mt-4">
         <div class="col-12 text-center">
           <!-- input:submit -->
-          <button type="submit" class="button-62">創建</button>
+          <button type="submit" class="btn"></button>
           <div v-if="errors.general" class="row">
             <div class="col-12 text-center text-danger" id="buttonError">
               {{ errors.general }}
@@ -331,22 +333,36 @@ const handleSubmit = async () => {
       <!-- end -->
     </div>
   </form>
+</body>
 </template>
 
 <style lang="css" scoped>
+body{
+  background-image: url("/images/FormBackground.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  margin: 0; /* 改為 0 */
+  min-height: 100vh; /* 新增這行 */
+  width: 100%; /* 新增這行 */
+  position: relative; /* 新增這行 */
+  display: flex; /* 新增這行 */
+  flex-direction: column; /* 新增這行 */
+  justify-content: center; /* 新增這行 */
+}
 .container {
   /* 移除固定寬度 */
   max-width: 900px; /* 改用最大寬度 */
   min-width: 320px; /* 設定最小寬度避免過度壓縮 */
   height: auto;
-  min-height: 630px; /* 最小高度保持原來的大小 */
-  max-height: 630px;
+  min-height: 660px; /* 最小高度保持原來的大小 */
+  max-height: 660px;
   background-image: url("/images/CreateCharacterForm.png");
   background-size: 100% 100%; /* 確保背景圖片完整顯示 */
   background-repeat: no-repeat;
   /* margin: 30px auto; */
   position: relative;
   padding: 40px 15px; /* 增加左右內距 */
+  padding-left: 30px;
 }
 
 /* 在小螢幕時調整間距 */
@@ -357,7 +373,7 @@ const handleSubmit = async () => {
   }
 }
 #Frame {
-  padding-top: 40px;
+  padding-top: 60px;
 }
 
 #input-wrapper {
@@ -367,21 +383,8 @@ const handleSubmit = async () => {
   position: absolute;
 }
 #buttonError {
+  padding-right: 20px;
   position: absolute;
-}
-/* 修改後的 SweetAlert2 自訂樣式 */
-.swal2-popup.swal-custom-popup {
-  height: 300px !important;
-}
-
-/* 如果需要調整按鈕樣式 */
-.swal2-popup.swal-custom-popup .swal2-confirm {
-  background-image: url("/images/SweetAlert2_Button_test.png") !important;
-  background-color: transparent !important;
-  border: none;
-  border-radius: 12px;
-  width: 86px;
-  height: 40px;
 }
 
 .form-control.is-invalid {
@@ -392,40 +395,11 @@ const handleSubmit = async () => {
   background-position: right calc(0.375em + 0.1875rem) center;
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
-.button-62 {
-  width: 100px;
-  background: linear-gradient(to bottom right, #ef4765, #ff9a5a);
-  border: 0;
-  border-radius: 12px;
-  color: #ffffff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 2.5;
-  outline: transparent;
-  padding: 0 1rem;
-  text-align: center;
-  text-decoration: none;
-  transition: box-shadow 0.2s ease-in-out;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  white-space: nowrap;
-}
-
-.button-62:not([disabled]):focus {
-  box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5),
-    -0.125rem -0.125rem 1rem rgba(239, 71, 101, 0.5),
-    0.125rem 0.125rem 1rem rgba(255, 154, 90, 0.5);
-}
-
-.button-62:not([disabled]):hover {
-  box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5),
-    -0.125rem -0.125rem 1rem rgba(239, 71, 101, 0.5),
-    0.125rem 0.125rem 1rem rgba(255, 154, 90, 0.5);
+.btn {
+  background-image: url('/images/SweetAlert2_Confirm.png') !important;
+  background-color: transparent;
+  width: 48px !important;
+  height: 50px !important;
 }
 .CreateCharacterData {
   position: relative;
