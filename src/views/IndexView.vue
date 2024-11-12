@@ -116,19 +116,23 @@ const Login = async () => {
         await showSuccessAlert("登入成功");
         transition.value = true;
         PiniaPlayer.isnewcharacter = false;
+        PiniaPlayer.music = true;
         await new Promise((resolve) => setTimeout(resolve, 500)); //等候一秒才跳轉
+        console.log(PiniaPlayer);
         await router.push("/outdoor");
       } else {
         if (data.respond === "newcharacter") {
           console.log(data);
           await showSuccessAlert(data.message);
           PiniaPlayer.playerAccount = data.player;
+          PiniaPlayer.music = true;
           transition.value = true;
           await new Promise((resolve) => setTimeout(resolve, 500)); //等候一秒才跳轉
           await router.push("/createcharacter");
         } else if (data.respond === "gameover") {
           await showErrorAlert(data.message);
           updatePlayer(data);
+          PiniaPlayer.music = true;
           transition.value = true;
           await new Promise((resolve) => setTimeout(resolve, 500)); //等候一秒才跳轉
           await router.push("/outdoor");

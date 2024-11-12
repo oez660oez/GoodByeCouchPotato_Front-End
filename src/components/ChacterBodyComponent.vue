@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watchEffect } from "vue";
 import { Sprite } from "@/core/Player"; //裁切圖片並製作成動畫
 import { useGameLoop } from "@/composables/useGameLoop";
 import { Merchandiselist } from "@/Stores/Merchandiselist";
@@ -91,32 +91,51 @@ const GameLoop = async () => {
     const sessionplayer = JSON.parse(
       sessionStorage.getItem("UserAccount") || "{}"
     );
-    GetImageAllID.value.body = sessionplayer.Lower || "0";
-    GetImageAllID.value.head = sessionplayer.Upper || "0";
-    GetImageAllID.value.accessory = sessionplayer.Head || "0";
-    PiniaMerchandise.Getplaterclothes(GetImageAllID.value);
-    //取裝備的圖片名稱
-    console.log(typeof GetImageAllID.value.head);
-    console.log(GetImageAllID.value);
-    const GetNewbody = await fetch(API_URL_GetBody, {
-      method: "POST",
-      body: JSON.stringify(GetImageAllID.value),
-      headers: { "Content-Type": "application/json" },
+    watchEffect(() => {
+      if (PiniaPlayer.Head) {
+        console.log("Head 資料已更新，可以立即進行渲染或其他操作");
+        GetImageAllID.value.accessory = PiniaPlayer.Head || "0";
+      }
+      if (PiniaPlayer.Upper) {
+        console.log("Upper 資料已更新，可以立即進行渲染或其他操作");
+        GetImageAllID.value.head = PiniaPlayer.Upper || "0";
+      }
+      if (PiniaPlayer.Lower) {
+        console.log("Lower 資料已更新，可以立即進行渲染或其他操作");
+        GetImageAllID.value.body = PiniaPlayer.Lower || "0";
+      }
     });
+    await PiniaMerchandise.Getplaterclothes(GetImageAllID.value);
+    //取裝備的圖片名稱
+    // console.log(typeof GetImageAllID.value.head);
     console.log(GetImageAllID.value);
-    if (GetNewbody.ok) {
-      const data = await GetNewbody.json();
-      console.log(data);
-      if (data.body != "") {
-        GetImageAllname.value.GetMybody = Image_URL + data.body;
+    if (
+      GetImageAllID.value.body == 0 &&
+      GetImageAllID.value.head == 0 &&
+      GetImageAllID.value.accessory == 0
+    ) {
+      clear();
+    } else {
+      const GetNewbody = await fetch(API_URL_GetBody, {
+        method: "POST",
+        body: JSON.stringify(GetImageAllID.value),
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(GetImageAllID.value);
+      if (GetNewbody.ok) {
+        const data = await GetNewbody.json();
+        console.log(data);
+        if (data.body != "") {
+          GetImageAllname.value.GetMybody = Image_URL + data.body;
+        }
+        if (data.head != "") {
+          GetImageAllname.value.GetMyhead = Image_URL + data.head;
+        }
+        if (data.accessory != "") {
+          GetImageAllname.value.GetMyaccessory = Image_URL + data.accessory;
+        }
+        PiniaMerchandise.First = false;
       }
-      if (data.head != "") {
-        GetImageAllname.value.GetMyhead = Image_URL + data.head;
-      }
-      if (data.accessory != "") {
-        GetImageAllname.value.GetMyaccessory = Image_URL + data.accessory;
-      }
-      PiniaMerchandise.First = false;
     }
     //================繪製canvas================================
     if (GetImageAllname.value.GetMybody != "") {
@@ -235,8 +254,17 @@ const reset = () => {
 };
 
 //=====================事件end===============================
-
 onMounted(async () => {
+  const sessionplayer = JSON.parse(
+    sessionStorage.getItem("UserAccount") || "{}"
+  );
+  console.log(sessionplayer.Head);
+  console.log(sessionplayer.Lower);
+  console.log(sessionplayer.Upper);
+
+  // console.log(PiniaPlayer.Head);
+  // console.log(PiniaPlayer.Upper);
+  // console.log(PiniaPlayer.Lower);
   PiniaMerchandise.First = true;
   const canvas = canvasRef.value;
   if (!canvas) throw new Error("Canvas not found");
