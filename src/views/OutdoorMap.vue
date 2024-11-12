@@ -1,9 +1,9 @@
 <script setup>
-import GameView from "./GameView.vue";
-import SidebarComponent from "@/components/SidebarComponent.vue";
-import { Playerinformation } from "@/Stores/PlayerCharacter";
-import { useRouter } from "vue-router";
-import { ref, onMounted } from "vue";
+import GameView from './GameView.vue';
+import SidebarComponent from '@/components/SidebarComponent.vue';
+import { Playerinformation } from '@/Stores/PlayerCharacter';
+import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
 
 const router = useRouter();
 const PiniaPlayer = Playerinformation();
@@ -27,7 +27,7 @@ onMounted(() => {
 });
 
 const goToWeightTask = () => {
-  router.push({ name: "weighttask" });
+  router.push({ name: 'weighttask' });
 };
 </script>
 
@@ -72,7 +72,7 @@ const goToWeightTask = () => {
   z-index: 10;
   cursor: pointer;
   left: 300px; /* 調整按鈕位置 */
-  top: 70px; /* 調整按鈕位置 */
+  top: 75px; /* 調整按鈕位置 */
   transition: transform 0.2s;
   /* border: 2px solid red;
   width: 500px;

@@ -53,7 +53,9 @@
   border: none;
   width: 16px;
   height: 20px;
-  margin-left: 8px;
+  position: absolute;
+  top: 145px;
+  left: 265px;
   transition: background-image 0.1s;
 }
 
@@ -61,6 +63,7 @@
   background-image: url('/navBar/navbarBtn.png');
   width: 20px;
   height: 16px;
+  top: 150px;
   transition: background-image 0.1s;
 }
 

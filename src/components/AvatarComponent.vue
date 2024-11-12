@@ -1,23 +1,22 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { Playerinformation } from '@/Stores/PlayerCharacter';
 import { storeToRefs } from 'pinia';
 import Sprite from '@/Stores/Sprite New';
 
 // 從 Pinia store 中引入玩家資訊
 const playerStore = Playerinformation();
+// const getBody = playerStore.updateCharacterBody();
 const { Head, Upper } = storeToRefs(playerStore);
 
-// 相關變數宣告
 const canvasRef = ref(null);
 let ctx = null;
 const sprite = ref(null);
-const isActive = ref(false);
-// 用於追蹤當前選擇的按鈕
-const activeButton = ref('');
 
-// 圖片對應表：根據編號對應到圖片檔案
+const randomSlice = ref(0);
+// 定義圖片路徑
 const imagePaths = {
+  0: 'src/assets/Avatar images/none.png',
   1053: 'src/assets/Avatar images/PG_Hairstyle_01_48x48_1.png',
   1054: 'src/assets/Avatar images/PG_Hairstyle_01_48x48_2.png',
   1055: 'src/assets/Avatar images/PG_Hairstyle_01_48x48_3.png',
@@ -29,51 +28,83 @@ const imagePaths = {
   1064: 'src/assets/Avatar images/PG_Accessory_05_Dino_Snapback_48x48_3.png'
 };
 
-// 載入圖片
-const spriteImage = new Image();
-spriteImage.src = '/src/assets/Avatar images/Avatar.png'; // 確保圖片路徑正確
+watch(
+  [Head, Upper],
+  async () => {
+    console.log('監聽到 Head 或 Upper 變更');
+    // 增加 50ms 延遲，確保所有內容初始化完成
+    setTimeout(async () => {
+      await compositeAndCropImages();
+    }, 50);
+  },
+  { immediate: true }
+);
 
-const spriteImage3 = new Image();
-if (imagePaths[Upper.value]) {
-  spriteImage3.src = imagePaths[Upper.value];
-} else {
-  console.error(`未找到對應的圖片，編號: ${Upper.value}`);
-}
+// 非同步載入圖片的函數
+const loadImage = (src) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`無法載入圖片: ${src}`));
+  });
+};
 
-const spriteImage2 = new Image();
-if (imagePaths[Head.value]) {
-  spriteImage2.src = imagePaths[Head.value];
-} else {
-  console.error(`未找到對應的圖片，編號: ${Head.value}`);
-}
-
-// 初始化圖片和 Sprite
-const AvatarImage = () => {
-  spriteImage.onload = () => {
+// 合成和裁切圖片
+const compositeAndCropImages = async () => {
+  try {
+    // 檢查 Pinia 的值是否已經設置
+    if (Head.value == null || Upper.value == null) {
+      console.error('Head 或 Upper 尚未初始化');
+      return;
+    }
     const canvas = canvasRef.value;
-    if (!canvas) return;
-    // 獲取 Canvas 2D 上下文
+    if (!canvas) throw new Error('Canvas 未正確取得');
     ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas context 無法取得');
 
-    // 初始化 Sprite
+    const spriteImage = await loadImage('/src/assets/Avatar images/Avatar.png');
+    const headImagePath = imagePaths[Head.value];
+    const upperImagePath = imagePaths[Upper.value];
+
+    const headImage = headImagePath
+      ? await loadImage(headImagePath)
+      : await loadImage(imagePaths[0]);
+    const upperImage = upperImagePath
+      ? await loadImage(upperImagePath)
+      : await loadImage(imagePaths[0]);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    RandomValue();
+
     sprite.value = new Sprite({
-      position: { x: -15, y: -14 },
+      position: { x: -15, y: -8 },
       image: spriteImage,
-      image2: spriteImage2,
-      image3: spriteImage3,
-
-      frames: { max: 10 }
+      image2: headImage,
+      image3: upperImage,
+      frames: { max: 10 },
+      slice: randomSlice.value
     });
 
-    // 預先繪製第一幀
     sprite.value.draw(ctx);
-  };
+  } catch (error) {
+    console.error('初始化 Sprite 時發生錯誤:', error.message);
+  }
 };
+
+// 監聽 Pinia store 中 Head 和 Upper 的變化
+// watch(
+//   [Head, Upper],
+//   async () => {
+//     console.log('監聽到 Head 或 Upper 變更');
+//     await compositeAndCropImages();
+//   },
+//   { immediate: true }
+// );
 
 // 動畫函式
 const animate = () => {
-  const canvas = canvasRef.value;
-
   const drawFrame = () => {
     if (sprite.value.frames.val === sprite.value.frames.max - 1) {
       sprite.value.frames.val = 0;
@@ -81,25 +112,29 @@ const animate = () => {
       return; // 播放完畢後停止
     }
 
-    // 清除畫布
+    const canvas = canvasRef.value;
+    if (!canvas || !sprite.value) return;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 繪製當前幀
     sprite.value.draw(ctx);
-
     requestAnimationFrame(drawFrame);
   };
-
   drawFrame();
 };
 
-// 按下按鈕播放動畫
 const startAnimation = () => {
-  AvatarImage();
+  compositeAndCropImages();
   animate();
 };
+
+const RandomValue = () => {
+  randomSlice.value = Math.floor(Math.random() * 3);
+};
+
+// 在元件掛載時執行
 onMounted(() => {
-  AvatarImage();
+  console.log('元件掛載完成，執行初始繪製');
+  compositeAndCropImages();
 });
 </script>
 
@@ -107,15 +142,15 @@ onMounted(() => {
   <div>
     <canvas
       ref="canvasRef"
-      width="60"
-      height="60"
+      width="65"
+      height="70"
       @click="startAnimation"
     ></canvas>
   </div>
 </template>
 
 <style scoped>
-canvas {
-  margin-right: 10px;
-}
+/* canvas {
+  border: 1px solid #000;
+} */
 </style>
