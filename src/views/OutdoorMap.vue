@@ -1,9 +1,9 @@
 <script setup>
-import GameView from './GameView.vue';
-import SidebarComponent from '@/components/SidebarComponent.vue';
-import { Playerinformation } from '@/Stores/PlayerCharacter';
-import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import GameView from "./GameView.vue";
+import SidebarComponent from "@/components/SidebarComponent.vue";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
 
 const router = useRouter();
 const PiniaPlayer = Playerinformation();
@@ -27,7 +27,7 @@ onMounted(() => {
 });
 
 const goToWeightTask = () => {
-  router.push({ name: 'weighttask' });
+  router.push({ name: "weighttask" });
 };
 </script>
 
@@ -40,7 +40,7 @@ const goToWeightTask = () => {
     <SidebarComponent></SidebarComponent>
   </div>
   <div class="weight-button" @click="goToWeightTask">
-    <img src="/images/WeightButton.png" alt="Weight Button" hidden />
+    <img src="/images/WeightButton.png" alt="Weight Button" />
   </div>
   <div class="game-view">
     <GameView />
@@ -55,7 +55,7 @@ const goToWeightTask = () => {
 }
 .game-view {
   width: 100%;
-  height: 93vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,9 +71,12 @@ const goToWeightTask = () => {
   position: absolute;
   z-index: 10;
   cursor: pointer;
-  left: 80px; /* 調整按鈕位置 */
-  top: 32px; /* 調整按鈕位置 */
+  left: 300px; /* 調整按鈕位置 */
+  top: 70px; /* 調整按鈕位置 */
   transition: transform 0.2s;
+  /* border: 2px solid red;
+  width: 500px;
+  height: 500px; */
 }
 
 .weight-button:hover {
