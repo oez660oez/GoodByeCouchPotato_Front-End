@@ -134,6 +134,10 @@ const updateChart = (formattedData) => {
   if (!myChart || !formattedData) return;
 
   const option = {
+    title: {
+      text: '體重變化',
+      left: 'center'
+    },
     tooltip: {
       trigger: "axis",
       formatter: function (params) {

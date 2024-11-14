@@ -249,7 +249,8 @@ onMounted(() => {
 
 /* 設定整體日曆背景色 */
 :deep(.fc-theme-standard) {
-  background-color: #cbc3ab; 
+  background-color: #d4ad69;
+  border: #ffffff solid 1px;
 }
 
 /* 設定日期數字的顏色 */
