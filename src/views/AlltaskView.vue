@@ -70,7 +70,7 @@ const gettask = async (CId) => {
       task3Completed: dailytaskData.t3completed
     };
     //新增End
-    
+
     //放資料
     document.getElementById("task1lbl").textContent = dailytaskData.t1name;
     document.getElementById("task2lbl").textContent = dailytaskData.t2name;
@@ -660,6 +660,7 @@ p{
     align-items: center;
     gap: 10px; /* 控制文字和圖示之間的間距 */
     margin: 10px 0px 0px 20px;
+    position: absolute;
 }
 .stamp-image {
   background-color: transparent;
@@ -710,7 +711,6 @@ p{
 
 .task-item label {
   flex-shrink: 0; /* 防止 label 擠壓 checkbox */
-  width: 250px; /* 設定 label 固定寬度 */
 }
 
 #sportdonelbl,
@@ -756,7 +756,7 @@ p{
 .checkbox-wrapper-23 input {
   position: absolute;
   opacity: 0;
-  
+
 }
 
 .checkbox-wrapper-23 input:checked + label svg path {
