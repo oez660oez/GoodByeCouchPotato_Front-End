@@ -124,7 +124,10 @@ onMounted(() => {
     <div class="ExpEnv">
       <!-- 第一個進度條 - 環境值  -->
       <!-- <span>環境值</span> -->
-      <div class="progress custom-progress">
+      <div
+        class="progress custom-progress"
+        :title="'當前環境值: ' + characterEnvironment"
+      >
         <div
           class="progress-bar custom-progress-bar environment-bar"
           role="progressbar"
@@ -132,12 +135,14 @@ onMounted(() => {
           :aria-valuenow="Math.min(characterEnvironment, 100)"
           aria-valuemin="0"
           aria-valuemax="100"
-          :title="'當前環境值: ' + characterEnvironment"
         ></div>
       </div>
       <!-- 第二個進度條 - 經驗值-->
       <!-- <span>經驗值</span> -->
-      <div class="progress custom-progress">
+      <div
+        class="progress custom-progress"
+        :title="'當前經驗值: ' + characterExperience"
+      >
         <div
           class="progress-bar custom-progress-bar experience-bar"
           role="progressbar"
@@ -145,7 +150,6 @@ onMounted(() => {
           :aria-valuenow="Math.min(characterExperience, 100)"
           aria-valuemin="0"
           aria-valuemax="100"
-          :title="'當前經驗值: ' + characterExperience"
         ></div>
       </div>
     </div>

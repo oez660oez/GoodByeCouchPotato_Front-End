@@ -32,10 +32,10 @@ watch(
   [Head, Upper],
   async () => {
     console.log('監聽到 Head 或 Upper 變更');
-    // 增加 50ms 延遲，確保所有內容初始化完成
+    // 增加 100ms 延遲，確保所有內容初始化完成
     setTimeout(async () => {
       await compositeAndCropImages();
-    }, 50);
+    }, 100);
   },
   { immediate: true }
 );
@@ -81,8 +81,8 @@ const compositeAndCropImages = async () => {
     sprite.value = new Sprite({
       position: { x: -15, y: -8 },
       image: spriteImage,
-      image2: headImage,
-      image3: upperImage,
+      image2: upperImage,
+      image3: headImage,
       frames: { max: 10 },
       slice: randomSlice.value
     });

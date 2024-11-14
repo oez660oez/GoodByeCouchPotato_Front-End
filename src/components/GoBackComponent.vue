@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useMainStore } from '@/Stores/btnActiveCtrl';
+
 const btnActive = useMainStore();
 
 const canvasRef = ref(null);
@@ -71,7 +72,7 @@ const buttonup = () => {
 const buttonend = () => {
   buttonup();
   emit('goback');
-  btnActive.resetActiveButton();
+  btnActive.resetActiveButton(); //清除按鈕active狀態
 };
 
 //避免長按之後沒放開，移開滑鼠會一直卡再下去的畫面
