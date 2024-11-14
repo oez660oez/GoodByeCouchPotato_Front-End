@@ -122,7 +122,7 @@ const calendarOptions = {
           <img src="/images/V.png" alt="Good" class="event-icon"/>
           <img src="/images/V.png" alt="Bad" class="event-icon"/>
         </div>
-      `;
+      `; 
     }
     // 只有 good
     else if (sport == true) {
