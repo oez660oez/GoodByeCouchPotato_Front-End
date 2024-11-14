@@ -333,7 +333,7 @@ const moodOptions = ref([
               <span class="small-text">{{ dailyHealthData.sleep }}</span>
             </div>
             <div class="col-md-6 d-flex align-items-end">
-              <button type="button" @click="getCurrentTime">
+              <button type="button" @click="getCurrentTime" class="btn-get">
                 取得現在時間
               </button>
             </div>
@@ -420,7 +420,7 @@ const moodOptions = ref([
           >
             更新
           </button>
-          <button v-else type="submit" class="btn btn-primary w-100">
+          <button v-else type="submit" class="btn-done w-100 justify-content-center">
             Done
           </button>
         </form>
@@ -450,5 +450,26 @@ const moodOptions = ref([
 .inside {
   width: 800px;
   margin-left: 6%;
+}
+.btn-get{
+  background-image: url("/images/ConfirmBtn_2.png");
+  background-color: transparent !important;
+  border: none !important;
+  position: relative;
+  margin-right: 50px;
+  width: 144px !important;
+  height: 51px !important;
+}
+.btn-done{
+  background-image: url("@/assets/systembutton.png");
+  background-color: transparent !important;
+  border: none !important;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  margin: auto;
+  width: 432px !important;
+  height: 64px !important;
 }
 </style>

@@ -113,8 +113,8 @@ const changepassword = async () => {
         <input type="password" class="form-control checkpassword" required />
         <div class="text-danger checknewmatch"></div>
       </div>
-      <button @click="goBack" type="reset">取消</button>
-      <button type="submit">確定</button>
+      <button @click="goBack" type="reset" class="btn">取消</button>
+      <button type="submit" class="btn">確定</button>
     </form>
   </div>
 </template>
@@ -129,7 +129,15 @@ const changepassword = async () => {
   background-image: url("@/assets/border.png");
   background-size: cover;
 }
-
+.btn{
+  background-image: url("/images/ConfirmBtn.png");
+  background-color: transparent !important;
+  border: none !important;
+  position: relative;
+  margin-right: 50px;
+  width: 96px !important;
+  height: 51px !important;
+}
 #title {
   font-size: 30px;
   color: rgb(0, 0, 0);

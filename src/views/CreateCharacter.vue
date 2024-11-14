@@ -150,14 +150,14 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error("解析 UserAccount 失敗:", error);
-    await showErrorAlert();
+    await showErrorAlert("無法取得用戶");
     return;
   }
   try {
     //檢查現有角色狀態
     const livingStatus = await checkExistingCharacter(playerAccount);
     if (livingStatus === "居住") {
-      await showErrorAlert();
+      await showErrorAlert("該帳號已有活躍角色");
       return;
     }
     //傳出到後端api
@@ -189,19 +189,19 @@ const handleSubmit = async () => {
     } else {
       const errorData = await response.json();
       errors.value.general = errorData.message || "創建失敗，請稍後再試";
-      await showErrorAlert();
+      await showErrorAlert(error);
     }
   } catch (error) {
     console.error("發生錯誤:", error);
     errors.value.general = "發生錯誤，請稍後再試";
-    await showErrorAlert();
+    await showErrorAlert("發生錯誤，請稍後再試");
   }
 };
 </script>
 
 <template>
   <body>
-    
+
   <transition name="fade" v-show="transition" class="blacktransition">
     <div class="black"></div>
   </transition>

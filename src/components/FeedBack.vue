@@ -165,8 +165,8 @@ const feedbacksub = async (event) => {
         </div>
 
         <div class="modal-footer justify-content-center" style="margin-top: 5%">
-          <button type="button" class="btn button-71" @click="goBack"> 取消 </button>
-          <button type="submit" class="btn button-70">傳送</button>
+          <button type="button" class="btn" @click="goBack"> 取消 </button>
+          <button type="submit" class="btn">傳送</button>
         </div>
       </form>
     </div>
@@ -194,6 +194,15 @@ const feedbacksub = async (event) => {
   z-index: 1;
 } */
 
+.btn{
+  background-image: url("/images/ConfirmBtn.png");
+  background-color: transparent !important;
+  border: none !important;
+  position: relative;
+  margin-right: 50px;
+  width: 96px !important;
+  height: 51px !important;
+}
 #title {
   font-size: 30px;
   /* color: rgb(17, 63, 103); */
