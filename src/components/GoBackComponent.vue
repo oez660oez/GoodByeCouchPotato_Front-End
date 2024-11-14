@@ -1,12 +1,16 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue';
+import { useMainStore } from '@/Stores/btnActiveCtrl';
+
+const btnActive = useMainStore();
+
 const canvasRef = ref(null);
 const canvasWidth = 32;
 const canvasHeight = 42;
 const context = ref(null);
 const CutImage = ref([]);
 const frameIndex = ref(0); // 目前的索引位置
-const emit = defineEmits(["goback"]);
+const emit = defineEmits(['goback']);
 
 const LoadImage = (src) => {
   const img = new Image(); //創建一個新的圖片物件
@@ -19,19 +23,19 @@ const LoadImage = (src) => {
 };
 
 onMounted(async () => {
-  const canvas = document.querySelector("#goback");
-  if (!canvas) throw new Error("Canvas not found");
+  const canvas = document.querySelector('#goback');
+  if (!canvas) throw new Error('Canvas not found');
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
-  context.value = canvas.getContext("2d");
-  const chachaURL = "http://localhost:5173/src/assets/Xbutton.png";
+  context.value = canvas.getContext('2d');
+  const chachaURL = 'http://localhost:5173/src/assets/Xbutton.png';
 
   const ChachaImage = await LoadImage(chachaURL);
   for (let i = 0; i < 6; i++) {
     const sprite = {
       draw(ctx) {
         ctx.drawImage(ChachaImage, i * 32, 0, 32, 42, 0, 0, 32, 42);
-      },
+      }
     };
     CutImage.value.push(sprite);
   }
@@ -67,7 +71,8 @@ const buttonup = () => {
 
 const buttonend = () => {
   buttonup();
-  emit("goback");
+  emit('goback');
+  btnActive.resetActiveButton(); //清除按鈕active狀態
 };
 
 //避免長按之後沒放開，移開滑鼠會一直卡再下去的畫面

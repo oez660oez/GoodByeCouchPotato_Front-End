@@ -125,7 +125,7 @@ const initializeChart = () => {
         name: 'Water Intake (ml)',
         type: 'bar',
         data: waterData.value,
-        itemStyle: { color: '#82b1ff' }
+        itemStyle: { color: '#003D79' }
       }
     ],
     grid: {
@@ -142,7 +142,7 @@ const initializeChart = () => {
     chartOptions.yAxis.axisLabel.formatter = '{value} 步';
 
     chartOptions.series[0].data = stepsData.value;
-    chartOptions.series[0].itemStyle.color = '#ffae42';
+    chartOptions.series[0].itemStyle.color = '#003D79';
     chartOptions.tooltip.formatter = function (params) {
       const dataPoint = params[0];
       return `${dataPoint.name} ${chartOptions.title.text}: ${dataPoint.value} 步`;
@@ -167,7 +167,7 @@ const initializeChart = () => {
       {
         type: 'line',
         data: sleepData.value,
-        itemStyle: { color: '#4a6572' }
+        itemStyle: { color: '#003D79' }
       }
     ];
     chartOptions.tooltip.formatter = function (params) {
@@ -195,7 +195,7 @@ const initializeChart = () => {
       {
         type: 'line',
         data: moodData.value,
-        itemStyle: { color: '#a682ff' },
+        itemStyle: { color: '#003D79' },
         connectNulls: true
       }
     ];
