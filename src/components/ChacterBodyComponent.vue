@@ -30,7 +30,7 @@ const currentdirection = ref(3);
 // const Mybody = PiniaMerchandise.Mybody.value.pImageAll;
 // const Myaccessory = PiniaMerchandise.Myaccessory.value.pImageAll;
 
-//用來存放玩家穿的衣服，圖片來源
+//用來存放玩家包含試穿的服裝
 const equippedItems = ref({
   head: null,
   body: null,
@@ -88,27 +88,29 @@ const GameLoop = async () => {
   if (PiniaMerchandise.First) {
     //抓取已經穿著的衣服，如果在onMounted做，會因為加載未完成而抓不到，在這個方法內就一定能取到了
     //取得目前穿的編號，並且存入pinia，其實可以不存了但做個備用，設定沒值默認值為0
-    const sessionplayer = JSON.parse(
-      sessionStorage.getItem("UserAccount") || "{}"
-    );
-    watchEffect(() => {
-      if (PiniaPlayer.Head) {
-        console.log("Head 資料已更新，可以立即進行渲染或其他操作");
-        GetImageAllID.value.accessory = PiniaPlayer.Head || "0";
-      }
-      if (PiniaPlayer.Upper) {
-        console.log("Upper 資料已更新，可以立即進行渲染或其他操作");
-        GetImageAllID.value.head = PiniaPlayer.Upper || "0";
-      }
-      if (PiniaPlayer.Lower) {
-        console.log("Lower 資料已更新，可以立即進行渲染或其他操作");
-        GetImageAllID.value.body = PiniaPlayer.Lower || "0";
-      }
-    });
+    // const sessionplayer = JSON.parse(
+    //   sessionStorage.getItem("UserAccount") || "{}"
+    // );
+
+    if (PiniaPlayer.Head) {
+      GetImageAllID.value.accessory = PiniaPlayer.Head;
+    } else {
+      GetImageAllID.value.accessory = "0";
+    }
+    if (PiniaPlayer.Upper) {
+      GetImageAllID.value.head = PiniaPlayer.Upper;
+    } else {
+      GetImageAllID.value.head = "0";
+    }
+    if (PiniaPlayer.Lower) {
+      GetImageAllID.value.body = PiniaPlayer.Lower;
+    } else {
+      GetImageAllID.value.body = "0";
+    }
     await PiniaMerchandise.Getplaterclothes(GetImageAllID.value);
     //取裝備的圖片名稱
     // console.log(typeof GetImageAllID.value.head);
-    console.log(GetImageAllID.value);
+    // console.log(GetImageAllID.value);
     if (
       GetImageAllID.value.body == 0 &&
       GetImageAllID.value.head == 0 &&
@@ -151,7 +153,7 @@ const GameLoop = async () => {
       GetImage(equippedItems.value.accessory, playeraccessory);
     }
     PiniaMerchandise.First = false;
-    console.log(equippedItems.value);
+    // console.log(equippedItems.value);
   }
   if (PiniaMerchandise.Choosemerchandise) {
     ChooseMerchandise.value = PiniaMerchandise.Choose;
@@ -164,14 +166,14 @@ const GameLoop = async () => {
       equippedItems.value.accessory = first.pImageAll;
       accessory.value = first.pImageAll;
       await GetImage(equippedItems.value.accessory, playeraccessory);
-      // playeraccessory.value.setDirection(currentdirection.value); //設定裝扮方向
+      // playeraccessory.value.setDirection(currentdirection.value); //設定裝扮方向，放入旋轉邏輯了所以不需要了
     }
     if (first.pClass === "衣服") {
       const body = first.pImageAll;
       equippedItems.value.body = body;
       await GetImage(equippedItems.value.body, playerbody);
-      console.log(first.pImageAll);
-      console.log(equippedItems.value);
+      // console.log(first.pImageAll);
+      // console.log(equippedItems.value);
       // playerbody.value.setDirection(currentdirection.value);
     }
     if (first.pClass === "髮型") {
@@ -179,8 +181,8 @@ const GameLoop = async () => {
       equippedItems.value.head = head;
       await GetImage(equippedItems.value.head, playerhead);
       // playerhead.value.setDirection(currentdirection.value);
-      console.log(first.pImageAll);
-      console.log(equippedItems.value);
+      // console.log(first.pImageAll);
+      // console.log(equippedItems.value);
     }
   }
 
@@ -226,7 +228,7 @@ const handleRotate = (direction) => {
     playerhead.value.setDirection(dir);
   }
   currentdirection.value = dir;
-  console.log(currentdirection.value);
+  // console.log(currentdirection.value);
 };
 
 //清空
@@ -240,8 +242,8 @@ const clear = () => {
   playeraccessory.value = null;
   PiniaMerchandise.First = false;
   PiniaMerchandise.ChooseMerchandise = true;
-  console.log(equippedItems.value);
-  console.log("yes");
+  // console.log(equippedItems.value);
+  // console.log("yes");
 };
 
 //還原
@@ -251,6 +253,14 @@ const reset = () => {
   // console.log(PiniaMerchandise.Myaccessory.value[0]);
   // console.log(PiniaMerchandise.Myhead);
   // console.log(PiniaMerchandise.Mybody);
+  // console.log(GetImageAllID.value);
+  // console.log(GetImageAllname.value);
+  // console.log(equippedItems.value);
+
+  //儲存切割的圖要清空，否則會再畫出來，清空之後會重跑一次原始穿著，就會自己還原了
+  playerhead.value = null;
+  playerbody.value = null;
+  playeraccessory.value = null;
 };
 
 //=====================事件end===============================

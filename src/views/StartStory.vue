@@ -56,26 +56,26 @@ const collisionAreas = [
   {
     offsetx: canvasWidth / 2 - 288 / 8 - 390,
     offsety: canvasHeight / 2 - 80 / 2 + 165,
-    width: 235,
-    height: 100,
+    width: 225,
+    height: 90,
   }, //第一組
   {
-    offsetx: canvasWidth / 2 - 288 / 8 - 105,
+    offsetx: canvasWidth / 2 - 288 / 8 - 95,
     offsety: canvasHeight / 2 - 80 / 2 + 165,
-    width: 235,
-    height: 100,
+    width: 225,
+    height: 90,
   }, //第二組
   {
-    offsetx: canvasWidth / 2 - 288 / 8 - -185,
+    offsetx: canvasWidth / 2 - 288 / 8 - -190,
     offsety: canvasHeight / 2 - 80 / 2 + 165,
-    width: 230,
-    height: 100,
+    width: 225,
+    height: 90,
   }, //第三組
   {
     offsetx: canvasWidth / 2 - 288 / 8 - -475,
     offsety: canvasHeight / 2 - 80 / 2 + 165,
     width: 235,
-    height: 100,
+    height: 90,
   }, //第四組
 ];
 
@@ -308,6 +308,18 @@ const GameLoop = () => {
   );
   //繪製人物
   player.value.draw(ctx);
+
+  //繪製碰撞物視覺
+  // ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+  // for (let i = 0; i < collisionAreas.length; i++) {
+  //   // 從第0個開始迭代所有碰撞區域
+  //   ctx.fillRect(
+  //     collisionAreas[i].offsetx + Currentoffset.x,
+  //     collisionAreas[i].offsety + Currentoffset.y,
+  //     collisionAreas[i].width,
+  //     collisionAreas[i].height
+  //   );
+  // }
 };
 
 //=============方法end=================

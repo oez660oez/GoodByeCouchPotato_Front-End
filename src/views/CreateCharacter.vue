@@ -201,143 +201,145 @@ const handleSubmit = async () => {
 
 <template>
   <body>
-    
-  <transition name="fade" v-show="transition" class="blacktransition">
-    <div class="black"></div>
-  </transition>
-  <form @submit.prevent="handleSubmit" class="CreateCharacterData">
-    <!-- start -->
-    <!-- offset控制留白 -->
-    <!-- name其實是select最重要的屬性，沒有會無法傳資料 -->
-    <div class="block"></div>
-    <div class="container" id="Frame">
-      <div class="row">
-        <h2 class="col-12 mt-5 mb-5 text-center">創建角色</h2>
-      </div>
-      <!-- end -->
+    <transition name="fade" v-show="transition" class="blacktransition">
+      <div class="black"></div>
+    </transition>
+    <form @submit.prevent="handleSubmit" class="CreateCharacterData">
       <!-- start -->
-      <div class="row mb-5 d-flex align-items-center">
-        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
-          <label for="name" class="form-label">角色名稱</label>
+      <!-- offset控制留白 -->
+      <!-- name其實是select最重要的屬性，沒有會無法傳資料 -->
+      <div class="block"></div>
+      <div class="container" id="Frame">
+        <div class="row">
+          <h2 class="col-12 mt-5 mb-5 text-center">創建角色</h2>
         </div>
-        <div class="col-4 col-xl-3">
-          <input
-            v-model="form.name"
-            type="text"
-            id="name"
-            class="form-control"
-            minlength="2"
-            maxlength="16"
-            placeholder="請輸入角色名稱"
-            required
-          />
-        </div>
-      </div>
-      <!-- end -->
-      <!-- start -->
-      <div class="row mb-5 d-flex align-items-center">
-        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
-          <label for="height" class="form-label">身高</label>
-        </div>
-        <div class="col-4 col-xl-3" id="input-wrapper">
-          <!-- <input type="tel" id="tel" class="form-control" pattern="[A-Z]{1}[0-9]{9}" placeholder="請輸入身分證字號" required> -->
-          <input
-            v-model="form.height"
-            type="text"
-            id="height"
-            class="form-control"
-            :class="{ 'is-invalid': errors.height }"
-            pattern="^\d+(\.\d)?$"
-            minlength="2"
-            maxlength="5"
-            placeholder="請輸入身高/公分"
-            @input="validateHeight"
-            required
-          />
-          <div class="invalid-feedback" v-if="errors.height">
-            {{ errors.height }}
+        <!-- end -->
+        <!-- start -->
+        <div class="row mb-5 d-flex align-items-center">
+          <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
+            <label for="name" class="form-label">角色名稱</label>
+          </div>
+          <div class="col-4 col-xl-3">
+            <input
+              v-model="form.name"
+              type="text"
+              id="name"
+              class="form-control"
+              minlength="2"
+              maxlength="16"
+              placeholder="請輸入角色名稱"
+              required
+              autocomplete="off"
+            />
           </div>
         </div>
-        <div class="col-12 col-xl-1">
-          <label class="form-label d-none d-xl-block">公分</label>
-        </div>
-      </div>
-      <!-- end -->
-      <!-- start -->
-      <div class="row mb-5 d-flex align-items-center">
-        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
-          <label for="weight" class="form-label">體重</label>
-        </div>
-        <div class="col-4 col-xl-3" id="input-wrapper">
-          <input
-            v-model="form.weight"
-            type="text"
-            id="weight"
-            class="form-control"
-            :class="{ 'is-invalid': errors.weight }"
-            minlength="2"
-            maxlength="5"
-            pattern="^\d+(\.\d)?$"
-            placeholder="請輸入體重/公斤"
-            @input="validateWeight"
-            required
-          />
-          <div class="invalid-feedback" v-if="errors.weight">
-            {{ errors.weight }}
+        <!-- end -->
+        <!-- start -->
+        <div class="row mb-5 d-flex align-items-center">
+          <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
+            <label for="height" class="form-label">身高</label>
+          </div>
+          <div class="col-4 col-xl-3" id="input-wrapper">
+            <!-- <input type="tel" id="tel" class="form-control" pattern="[A-Z]{1}[0-9]{9}" placeholder="請輸入身分證字號" required> -->
+            <input
+              v-model="form.height"
+              type="text"
+              id="height"
+              class="form-control"
+              :class="{ 'is-invalid': errors.height }"
+              pattern="^\d+(\.\d)?$"
+              minlength="2"
+              maxlength="5"
+              placeholder="請輸入身高/公分"
+              @input="validateHeight"
+              required
+              autocomplete="off"
+            />
+            <div class="invalid-feedback" v-if="errors.height">
+              {{ errors.height }}
+            </div>
+          </div>
+          <div class="col-12 col-xl-1">
+            <label class="form-label d-none d-xl-block">公分</label>
           </div>
         </div>
-        <div class="col-12 col-xl-1">
-          <label class="form-label d-none d-xl-block">公斤</label>
+        <!-- end -->
+        <!-- start -->
+        <div class="row mb-5 d-flex align-items-center">
+          <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
+            <label for="weight" class="form-label">體重</label>
+          </div>
+          <div class="col-4 col-xl-3" id="input-wrapper">
+            <input
+              v-model="form.weight"
+              type="text"
+              id="weight"
+              class="form-control"
+              :class="{ 'is-invalid': errors.weight }"
+              minlength="2"
+              maxlength="5"
+              pattern="^\d+(\.\d)?$"
+              placeholder="請輸入體重/公斤"
+              @input="validateWeight"
+              required
+              autocomplete="off"
+            />
+            <div class="invalid-feedback" v-if="errors.weight">
+              {{ errors.weight }}
+            </div>
+          </div>
+          <div class="col-12 col-xl-1">
+            <label class="form-label d-none d-xl-block">公斤</label>
+          </div>
         </div>
-      </div>
-      <!-- end -->
-      <!-- start -->
-      <div class="row mb-5 d-flex align-items-center">
-        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
-          <label for="exercise" class="form-label">運動強度</label>
-        </div>
-        <div class="col-4 col-xl-3" id="input-wrapper">
-          <select
-            v-model="form.exerciseIntensity"
-            class="form-control"
-            :class="{ 'is-invalid': errors.exerciseIntensity }"
-            required
-            @change="validateExercise"
-          >
-            <option
-              v-for="exercise in exercises"
-              :key="exercise.name"
-              :value="exercise.name"
+        <!-- end -->
+        <!-- start -->
+        <div class="row mb-5 d-flex align-items-center">
+          <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
+            <label for="exercise" class="form-label">運動強度</label>
+          </div>
+          <div class="col-4 col-xl-3" id="input-wrapper">
+            <select
+              v-model="form.exerciseIntensity"
+              class="form-control"
+              :class="{ 'is-invalid': errors.exerciseIntensity }"
+              required
+              @change="validateExercise"
             >
-              {{ exercise.name }}
-            </option>
-          </select>
-          <div class="invalid-feedback" v-if="errors.exerciseIntensity">
-            {{ errors.exerciseIntensity }}
-          </div>
-        </div>
-      </div>
-      <!-- end -->
-      <!-- start -->
-      <div class="row mb-5 mt-4">
-        <div class="col-12 text-center">
-          <!-- input:submit -->
-          <button type="submit" class="btn"></button>
-          <div v-if="errors.general" class="row">
-            <div class="col-12 text-center text-danger" id="buttonError">
-              {{ errors.general }}
+              <option
+                v-for="exercise in exercises"
+                :key="exercise.name"
+                :value="exercise.name"
+              >
+                {{ exercise.name }}
+              </option>
+            </select>
+            <div class="invalid-feedback" v-if="errors.exerciseIntensity">
+              {{ errors.exerciseIntensity }}
             </div>
           </div>
         </div>
+        <!-- end -->
+        <!-- start -->
+        <div class="row mb-5 mt-4">
+          <div class="col-12 text-center">
+            <!-- input:submit -->
+            <button type="submit" class="btn"></button>
+            <div v-if="errors.general" class="row">
+              <div class="col-12 text-center text-danger" id="buttonError">
+                {{ errors.general }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- end -->
       </div>
-      <!-- end -->
-    </div>
-  </form>
-</body>
+    </form>
+  </body>
 </template>
 
 <style lang="css" scoped>
-body{
+body {
   background-image: url("/images/FormBackground.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -396,7 +398,7 @@ body{
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 .btn {
-  background-image: url('/images/SweetAlert2_Confirm.png') !important;
+  background-image: url("/images/SweetAlert2_Confirm.png") !important;
   background-color: transparent;
   width: 48px !important;
   height: 50px !important;

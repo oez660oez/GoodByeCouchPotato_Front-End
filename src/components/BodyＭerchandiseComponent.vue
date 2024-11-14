@@ -312,7 +312,7 @@ const changeselect = (type, value) => {
       <div class="row">
         <div
           class="photoborder"
-          @dblclick="MerchandiseOnBody(item.pCode)"
+          @click="MerchandiseOnBody(item.pCode)"
           v-for="item in GetItem.qualifiedItem"
         >
           <div class="playerhaveitem" v-if="item.ishaveitem"></div>

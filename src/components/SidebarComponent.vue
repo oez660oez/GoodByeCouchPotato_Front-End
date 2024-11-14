@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { Playerinformation } from '@/Stores/PlayerCharacter';
-import { storeToRefs } from 'pinia';
-import AvatarComponent from './AvatarComponent.vue';
+import { ref, onMounted } from "vue";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+import { storeToRefs } from "pinia";
+import AvatarComponent from "./AvatarComponent.vue";
 
 // 從 Pinia store 中引入玩家資訊
 const playerStore = Playerinformation();
@@ -14,13 +14,13 @@ const {
   characterEnvironment,
   characterGetEnvironment,
   characterGetExperience,
-  characterGetCoins
+  characterGetCoins,
 } = storeToRefs(playerStore);
 
 // 相關變數宣告
 const isActive = ref(false);
 // 用於追蹤當前選擇的按鈕
-const activeButton = ref('');
+const activeButton = ref("");
 
 // 切換按鈕 active 狀態
 const toggleActive = () => {
@@ -33,12 +33,12 @@ const toggleNavActive = (buttonName) => {
 
 // onMounted 生命週期
 onMounted(() => {
-  const links = document.querySelectorAll('.nav-link');
+  const links = document.querySelectorAll(".nav-link");
   links.forEach((link) => {
-    link.addEventListener('click', function () {
-      document.querySelector('.nav-link.active')?.classList.remove('active');
-      if (!this.classList.contains('disabled')) {
-        this.classList.add('active');
+    link.addEventListener("click", function () {
+      document.querySelector(".nav-link.active")?.classList.remove("active");
+      if (!this.classList.contains("disabled")) {
+        this.classList.add("active");
       }
     });
   });
@@ -234,18 +234,18 @@ onMounted(() => {
       </RouterLink>
     </div>
   </div>
-  <RouterLink class="nav-link header" :to="{ name: 'roommap' }">
+  <!-- <RouterLink class="nav-link header" :to="{ name: 'roommap' }">
     123
     <img src="/images/Bad.png" alt="" />
-  </RouterLink>
+  </RouterLink> -->
 
   <router-view></router-view>
 </template>
 
 <style scoped>
-@import '/public/navBar/navProgress.css';
-@import '@/assets/btnBorder.css';
-@import '/public/navBar/navBtn.css';
+@import "/public/navBar/navProgress.css";
+@import "@/assets/btnBorder.css";
+@import "/public/navBar/navBtn.css";
 
 .Player {
   display: flex;
@@ -254,7 +254,7 @@ onMounted(() => {
 
 /* Avatar 區域 */
 #Avatar {
-  background-image: url('/navBar/Avatar information.png');
+  background-image: url("/navBar/Avatar information.png");
   width: 286px;
   height: 170px;
   margin-top: 10px;

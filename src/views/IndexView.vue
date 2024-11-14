@@ -353,6 +353,7 @@ onMounted(() => {
             style="display: inline-block; margin-left: 5px; width: 80%"
             required
             v-model="LoginData.account"
+            autocomplete="off"
           />
         </div>
         <div style="margin-top: 10px">
@@ -365,6 +366,7 @@ onMounted(() => {
             style="display: inline-block; margin-left: 5px; width: 80%"
             required
             v-model="LoginData.password"
+            autocomplete="off"
           />
         </div>
         <div style="margin-top: 15px">
@@ -463,6 +465,7 @@ onMounted(() => {
                     pattern="[0-9a-zA-Z]+"
                     required
                     v-model.trim="UserData.Useraccount"
+                    autocomplete="off"
                   />
                   <div class="invalid-feedback">
                     請輸入英數字混合，30位以下字串
@@ -481,6 +484,7 @@ onMounted(() => {
                     placeholder="請輸入可收驗證信之信箱"
                     required
                     v-model.trim="UserData.UserEmail"
+                    autocomplete="off"
                   />
 
                   <div class="invalid-feedback">請輸入正確信箱</div>

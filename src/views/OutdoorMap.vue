@@ -39,7 +39,11 @@ const goToWeightTask = () => {
   <div class="sidebarview" v-if="!GameOver || !PiniaPlayer.isnewcharacter">
     <SidebarComponent></SidebarComponent>
   </div>
-  <div class="weight-button" @click="goToWeightTask">
+  <div
+    class="weight-button"
+    @click="goToWeightTask"
+    v-if="!GameOver || !PiniaPlayer.isnewcharacter"
+  >
     <img src="/images/WeightButton.png" alt="Weight Button" />
   </div>
   <div class="game-view">
