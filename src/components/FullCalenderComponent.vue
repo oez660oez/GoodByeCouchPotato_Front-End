@@ -1,11 +1,11 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
-import FullCalendar from '@fullcalendar/vue3';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import { useReportDataStore } from '@/Stores/reportDataStore';
+import { onMounted, ref, watch } from "vue";
+import FullCalendar from "@fullcalendar/vue3";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import { useReportDataStore } from "@/Stores/reportDataStore";
 
 const props = defineProps({
-  currentFullcalendar: String
+  currentFullcalendar: String,
 });
 
 const getreportData = useReportDataStore();
@@ -25,9 +25,9 @@ const lastMonth = ref();
 
 const calendarContainer = ref(null);
 
-const imageUrl1 = '/images/Good.png';
-const imageUrl2 = '/images/Bad.png';
-const imageUrl3 = '/images/V.png';
+const imageUrl1 = "/images/Good.png";
+const imageUrl2 = "/images/Bad.png";
+const imageUrl3 = "/images/V.png";
 
 // 獲取數據並篩選特殊日期
 const getData = () => {
@@ -57,94 +57,94 @@ const getData = () => {
 
 // 清除指定日曆格子中的所有圖片
 const clearImagesFromDayCell = (dayCell) => {
-  const images = dayCell.querySelectorAll('img');
+  const images = dayCell.querySelectorAll("img");
   images.forEach((img) => img.remove());
 };
 
 // 添加圖片到日期格子
 const addImageToDayCell = (dayCell, date, imageUrl, className, altText) => {
-  const existingImages = dayCell.querySelectorAll('img'); // 檢查已有圖片數量
-  const img = document.createElement('img');
+  const existingImages = dayCell.querySelectorAll("img"); // 檢查已有圖片數量
+  const img = document.createElement("img");
 
   img.src = imageUrl;
   img.alt = altText;
   img.className = className;
 
   // 應用基本樣式
-  img.style.position = 'absolute';
-  img.style.pointerEvents = 'none';
-  img.style.zIndex = '10';
+  img.style.position = "absolute";
+  img.style.pointerEvents = "none";
+  img.style.zIndex = "10";
 
   // 根據已有圖片的數量調整位置
   if (existingImages.length === 0) {
-    img.style.bottom = '4px';
-    img.style.left = '4px';
+    img.style.bottom = "4px";
+    img.style.left = "4px";
   } else if (existingImages.length === 1) {
-    img.style.bottom = '4px';
-    img.style.left = '36px';
+    img.style.bottom = "4px";
+    img.style.left = "36px";
   } else if (existingImages.length === 2) {
-    img.style.bottom = '24px';
-    img.style.right = '4px';
+    img.style.bottom = "24px";
+    img.style.right = "4px";
   } else if (existingImages.length === 3) {
-    img.style.bottom = '24px';
-    img.style.left = '4px';
+    img.style.bottom = "24px";
+    img.style.left = "4px";
   }
 
-  dayCell.style.position = 'relative'; // 確保格子成為定位參照
+  dayCell.style.position = "relative"; // 確保格子成為定位參照
   dayCell.appendChild(img);
 };
 
 // 根據條件在日曆上添加圖片
 const handleCalendarImages = () => {
-  const dayCells = document.querySelectorAll('.fc-daygrid-day');
+  const dayCells = document.querySelectorAll(".fc-daygrid-day");
   dayCells.forEach((dayCell) => {
     // 清除該格子中的所有圖片
     clearImagesFromDayCell(dayCell);
 
-    const date = dayCell.getAttribute('data-date');
-    if (props.currentFullcalendar === 'health') {
+    const date = dayCell.getAttribute("data-date");
+    if (props.currentFullcalendar === "health") {
       if (datesWithVegetables.value.includes(date)) {
-        addImageToDayCell(dayCell, date, imageUrl1, 'img1', 'Vegetables Image');
+        addImageToDayCell(dayCell, date, imageUrl1, "img1", "Vegetables Image");
       }
       if (datesWithSnacks.value.includes(date)) {
-        addImageToDayCell(dayCell, date, imageUrl2, 'img2', 'Snacks Image');
+        addImageToDayCell(dayCell, date, imageUrl2, "img2", "Snacks Image");
       }
-    } else if (props.currentFullcalendar === 'exercise') {
+    } else if (props.currentFullcalendar === "exercise") {
       if (datesWithExercise.value.includes(date)) {
-        addImageToDayCell(dayCell, date, imageUrl3, 'img3', 'Exercise Image');
+        addImageToDayCell(dayCell, date, imageUrl3, "img3", "Exercise Image");
       }
-    } else if (props.currentFullcalendar === 'cleaning') {
+    } else if (props.currentFullcalendar === "cleaning") {
       if (datesWithCleaning.value.includes(date)) {
-        addImageToDayCell(dayCell, date, imageUrl3, 'img4', 'Cleaning Image');
+        addImageToDayCell(dayCell, date, imageUrl3, "img4", "Cleaning Image");
       }
     }
   });
 };
 
 const goDate = () => {
-  if (calendarContainer.value) {
-    calendarContainer.value.getApi().gotoDate(lastMonth.value); // 使用 lastMonth 或其他指定日期
+  if (calendarContainer.value && lastMonth.value) {
+    calendarContainer.value.getApi().gotoDate(lastMonth.value);
   }
 };
 
 const calendarOptions = {
   plugins: [dayGridPlugin],
-  initialView: 'dayGridMonth',
+  initialView: "dayGridMonth",
   headerToolbar: {
-    left: 'prev',
-    center: 'title',
-    right: 'next'
+    left: "prev",
+    center: "title",
+    right: "next",
   },
-  height: 'auto',
+  height: "auto",
   contentHeight: 450,
   aspectRatio: 1.35,
   events: specialDates.value.map((date) => ({
     start: date,
-    display: 'background'
+    display: "background",
   })),
   datesSet() {
     handleCalendarImages();
-  }
+  },
 };
 
 // 初始化日曆
