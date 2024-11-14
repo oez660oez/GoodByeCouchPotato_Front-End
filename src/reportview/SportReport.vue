@@ -1,23 +1,22 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import FullCalendar from '@fullcalendar/vue3'
-import dayGridPlugin from '@fullcalendar/daygrid'
+import { ref, onMounted } from "vue";
+import FullCalendar from "@fullcalendar/vue3";
+import dayGridPlugin from "@fullcalendar/daygrid";
 
-
-const events = ref([])
-const fullCalendar = ref(null)
+const events = ref([]);
+const fullCalendar = ref(null);
 
 // 處理日期範圍變化
 async function handleDatesSet(dateInfo) {
-  const startDate = formatDate(dateInfo.start)
-  const endDate = formatDate(dateInfo.end)
-  await geteat(startDate, endDate)
+  const startDate = formatDate(dateInfo.start);
+  const endDate = formatDate(dateInfo.end);
+  await geteat(startDate, endDate);
 }
 
 function formatDate(date) {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -28,51 +27,58 @@ const geteat = async (startDate, endDate) => {
   try {
     const userAccountString = sessionStorage.getItem("UserAccount");
     const userAccount = JSON.parse(userAccountString);
-    
+
     const requestData = {
       CId: userAccount.characterID,
       StartDate: startDate,
-      EndDate: endDate
-    }
-    
-    console.log('Sending request:', requestData); // 添加日誌
+      EndDate: endDate,
+    };
+
+    console.log("Sending request:", requestData); // 添加日誌
 
     const response = await fetch(API_URLgetweekly, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestData),
     });
-    
+
     if (response.ok) {
       const result = await response.json();
-      console.log('API response:', result); // 添加日誌
-      
+      console.log("API response:", result); // 添加日誌
+
       // 將API回傳的數據轉換為日曆事件格式
-      const formattedEvents = result.map(item => {
+      const formattedEvents = result.map((item) => {
         // 確保日期格式正確
-        const eventDate = item.hrecordDate.split('T')[0]; // 處理可能的 ISO 格式
-        console.log('Processing date:', eventDate, 'sport:', item.sport, 'cleaning:', item.cleaning); // 添加日誌
-        
+        const eventDate = item.hrecordDate.split("T")[0]; // 處理可能的 ISO 格式
+        console.log(
+          "Processing date:",
+          eventDate,
+          "sport:",
+          item.sport,
+          "cleaning:",
+          item.cleaning
+        ); // 添加日誌
+
         return {
-        start: eventDate,
-        backgroundColor: 'transparent',
-        borderColor: 'transparent',
-        textColor: '#000000',
-        allDay: true,
-        display: 'block',
-        extendedProps: {
+          start: eventDate,
+          backgroundColor: "transparent",
+          borderColor: "transparent",
+          textColor: "#000000",
+          allDay: true,
+          display: "block",
+          extendedProps: {
             imagePath: getEventImage(item.sport, item.cleaning),
             sport: item.sport,
             // cleaning: item.cleaning
-          }
-  };
+          },
+        };
       });
-      
-      console.log('Formatted events:', formattedEvents); // 添加日誌
-      
+
+      console.log("Formatted events:", formattedEvents); // 添加日誌
+
       // 更新事件
       events.value = formattedEvents;
-      
+
       // 強制更新日曆顯示
       if (fullCalendar.value) {
         const calendarApi = fullCalendar.value.getApi();
@@ -81,32 +87,30 @@ const geteat = async (startDate, endDate) => {
       }
     }
   } catch (error) {
-    console.error('API call failed:', error);
+    console.error("API call failed:", error);
   }
-}
-
+};
 
 function getEventImage(sport, cleaning) {
   // if (sport == true && cleaning == true) return '/images/Good.png, /images/Bad.png';  // 如果都有就返回兩個圖片的路徑
-  if (sport == true) return '/images/V.png';
+  if (sport == true) return "/images/V.png";
   // if (cleaning == true) return '/images/Bad.png';
-  return '';
+  return "";
 }
-
 
 const calendarOptions = {
   plugins: [dayGridPlugin],
-  initialView: 'dayGridMonth',
+  initialView: "dayGridMonth",
   headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: ''
+    left: "prev,next today",
+    center: "title",
+    right: "",
   },
   events: events.value,
   datesSet: handleDatesSet,
-  eventDisplay: 'block',
+  eventDisplay: "block",
   displayEventTime: false,
-  height: 'auto',
+  height: "auto",
   contentHeight: 450,
   aspectRatio: 1.35,
   fixedWeekCount: false,
@@ -114,7 +118,7 @@ const calendarOptions = {
   eventContent: (arg) => {
     const { sport, cleaning } = arg.event.extendedProps;
     let html = '<div class="event-content-wrapper">'; // 添加一個包裝容器
-    
+
     // 如果同時有 good 和 bad
     if (sport == true && cleaning == true) {
       html += `
@@ -140,31 +144,41 @@ const calendarOptions = {
         </div>
       `;
     }
-    
-    html += '</div>';
-    
+
+    html += "</div>";
+
     return { html };
-  }
-}
+  },
+};
 
 onMounted(() => {
   // 獲取當前月份的第一天和最後一天
   const currentDate = new Date();
-  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  
-  console.log('Initial date range:', formatDate(firstDay), 'to', formatDate(lastDay)); // 添加日誌
+  const firstDay = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
+  const lastDay = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0
+  );
+
+  console.log(
+    "Initial date range:",
+    formatDate(firstDay),
+    "to",
+    formatDate(lastDay)
+  ); // 添加日誌
   geteat(formatDate(firstDay), formatDate(lastDay));
-})
+});
 </script>
 
 <template>
   <div class="calendar-container">
     <h5 class="calendar-title">運動</h5>
-    <FullCalendar 
-      ref="fullCalendar"
-      :options="calendarOptions"
-    />
+    <FullCalendar ref="fullCalendar" :options="calendarOptions" />
   </div>
 </template>
 
@@ -176,7 +190,7 @@ onMounted(() => {
   max-height: 500px;
   margin: 0 auto;
   padding: 0;
-  overflow:auto;
+  overflow: auto;
 }
 
 :deep(.fc) {
@@ -249,7 +263,9 @@ onMounted(() => {
 
 /* 設定整體日曆背景色 */
 :deep(.fc-theme-standard) {
-  background-color: #cbc3ab; 
+  /* background-color: #cbc3ab;  */
+  background-color: #d4ad69;
+  border: #ffffff solid 1px;
 }
 
 /* 設定日期數字的顏色 */
