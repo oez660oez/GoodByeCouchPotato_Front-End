@@ -416,12 +416,16 @@ const moodOptions = ref([
           <button
             v-if="isExistingRecord"
             type="submit"
-            class="btn btn-primary w-100"
+            class="btn-done w-100 justify-content-center"
           >
             更新
           </button>
-          <button v-else type="submit" class="btn-done w-100 justify-content-center">
-            Done
+          <button
+            v-else
+            type="submit"
+            class="btn-done w-100 justify-content-center"
+          >
+            更新
           </button>
         </form>
       </div>
@@ -451,7 +455,7 @@ const moodOptions = ref([
   width: 800px;
   margin-left: 6%;
 }
-.btn-get{
+.btn-get {
   background-image: url("/images/ConfirmBtn_2.png");
   background-color: transparent !important;
   border: none !important;
@@ -460,7 +464,7 @@ const moodOptions = ref([
   width: 144px !important;
   height: 51px !important;
 }
-.btn-done{
+.btn-done {
   background-image: url("@/assets/systembutton.png");
   background-color: transparent !important;
   border: none !important;

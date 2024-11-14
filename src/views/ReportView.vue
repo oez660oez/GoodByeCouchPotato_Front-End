@@ -35,9 +35,8 @@ const targetAccount = playerStore.playerAccount;
 const charactersData = ref([]);
 const charactersAllData = ref([]);
 
-// 使用 setReportData 保存數據
-
-// const test = ref([]);
+//目前無過往紀錄
+const noData = ref(false);
 
 onMounted(() => {
   // fetchCharacters();
@@ -86,6 +85,9 @@ const fetchPreviousCharacters = async () => {
       charactersAllData.value = charactersAll.filter(
         (character) => character.livingStatus === '搬離'
       );
+      if (charactersAll.value == {}) {
+        noData.value = true;
+      }
       console.log('抓取到的資料123:', charactersAllData.value);
     }
   } catch (error) {
@@ -100,6 +102,7 @@ const fetchPreviousCharacters = async () => {
       <GoBackComponent @goback="goBack"></GoBackComponent>
     </div>
     <div class="accordion">
+      <h3 v-if="noData">目前無過往紀錄~~~</h3>
       <!-- 使用 v-for 生成每個角色的 Accordion 項目 -->
       <div
         class="accordion-item"

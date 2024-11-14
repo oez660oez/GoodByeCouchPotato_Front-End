@@ -9,7 +9,7 @@ const context = ref(null);
 const CutImage = ref([]);
 const frameIndex = ref(0); // 目前的索引位置
 const emit = defineEmits(["goback"]);
-const volume = ref(PiniaPlayer.musicvolume * 100);
+const volume = ref(Math.round(PiniaPlayer.musicvolume * 100));
 
 const LoadImage = (src) => {
   const img = new Image(); //創建一個新的圖片物件
@@ -20,8 +20,13 @@ const LoadImage = (src) => {
     img.onerror = reject; //加載失敗則拒絕
   });
 };
+//調整顯示的音量
+const musicvolume = () => {
+  volume.value = Math.round(PiniaPlayer.musicvolume * 100);
+};
 
 onMounted(async () => {
+  console.log(volume.value);
   // if (!PiniaPlayer.music) {
   //   PiniaPlayer.musicvolume = 0;
   //   volume.value = PiniaPlayer.musicvolume;
@@ -86,12 +91,12 @@ const buttonend = () => {
       } else {
         endclosebutton(); //原本是關閉，現在要打開
         if (PiniaPlayer.musicvolume > 0) {
-          volume.value = Math.round(PiniaPlayer.musicvolume * 100);
+          musicvolume();
           PiniaPlayer.music = true;
         } else {
           PiniaPlayer.music = true;
           PiniaPlayer.musicvolume = 0.2;
-          volume.value = Math.round(PiniaPlayer.musicvolume * 100);
+          musicvolume();
         }
       }
     }
@@ -136,10 +141,10 @@ const down = () => {
   if (PiniaPlayer.musicvolume > 0) {
     PiniaPlayer.musicvolume -= 0.1;
     if (PiniaPlayer.musicvolume >= 0.1) {
-      volume.value = Math.round(PiniaPlayer.musicvolume * 100);
+      musicvolume();
     } else {
       PiniaPlayer.musicvolume = 0;
-      volume.value = Math.round(PiniaPlayer.musicvolume * 100);
+      musicvolume();
       PiniaPlayer.music = false;
       endopenbutton(); //如果音量為0就要關上
     }
@@ -151,12 +156,12 @@ const up = () => {
   if (PiniaPlayer.musicvolume <= 1) {
     PiniaPlayer.musicvolume += 0.1;
     if (PiniaPlayer.musicvolume > 0 && PiniaPlayer.musicvolume < 1) {
-      volume.value = Math.round(PiniaPlayer.musicvolume * 100);
+      musicvolume();
       PiniaPlayer.music = true;
       endclosebutton();
     } else {
       PiniaPlayer.musicvolume = 1;
-      volume.value = Math.round(PiniaPlayer.musicvolume * 100);
+      musicvolume();
     }
   }
 };

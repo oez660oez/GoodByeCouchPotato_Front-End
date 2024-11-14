@@ -187,6 +187,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   max-width: 720px;
+  max-height: 500px;
   margin: 0 auto;
   padding: 0;
   overflow: auto;
@@ -205,7 +206,7 @@ onMounted(() => {
 }
 
 :deep(.fc-toolbar-title) {
-  font-size: 1em !important;
+  font-size: 1.2em !important;
 }
 
 :deep(.fc-button) {

@@ -192,6 +192,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   max-width: 720px;
+  max-height: 500px;
   margin: 0 auto;
   padding: 0;
   overflow: auto;

@@ -2,9 +2,13 @@
 import { onMounted, ref } from "vue";
 import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+
 const router = useRouter();
 const Base_URL = import.meta.env.VITE_API_BASEURL;
 const API_URL = `${Base_URL}/WeightRecord`;
+const PiniaPlayer = Playerinformation(); //初始化
+
 //Alert樣式
 const showErrorAlert = async (message) => {
   await Swal.fire({
@@ -35,6 +39,19 @@ const showSuccessAlert = async (message) => {
   });
 };
 //Alert樣式結束
+
+//新增--start
+// 計算新的目標飲水量
+const calculateNewTargetWater = (weight) => {
+  // 根據後端的計算邏輯：weight * 30 並四捨五入到百位數
+  return Math.round((weight * 30) / 100) * 100;
+};
+// 更新 Pinia 中的 targetWater
+const updateTargetWater = (weight) => {
+  const newTargetWater = calculateNewTargetWater(Number(weight));
+  PiniaPlayer.characterTargetWater = newTargetWater;
+};
+//新增--end
 
 //玩家在input填入的資訊儲存在這裡
 const form = ref({
@@ -124,13 +141,14 @@ const handleSubmit = async () => {
         }),
       });
       if (response.ok) {
+        // 更新 store 中的 targetWater
+        updateTargetWater(form.value.weight);
         await showSuccessAlert("更新成功！");
         //重新載入上個月紀錄
         await loadLastMonthRecord();
         //清空表單
         form.value.weight = "";
         // 添加導航到其他頁面的邏輯
-        router.push({ name: "outdoor" });
         router.push({ name: "outdoor" });
       } else {
         const errorData = await response.json();
@@ -156,70 +174,70 @@ onMounted(() => {
 </script>
 
 <template>
-    <body>
-  <form @submit.prevent="handleSubmit" class="WeighttaskViewData">
-    <!-- start -->
-    <!-- offset控制留白 -->
-    <!-- name其實是select最重要的屬性，沒有會無法傳資料 -->
-    <div class="container">
-      <div class="row" id="Frame">
-        <h2 class="col-12 mt-5 mb-5 text-center">每月填寫體重</h2>
-      </div>
-      <!-- end -->
+  <body>
+    <form @submit.prevent="handleSubmit" class="WeighttaskViewData">
       <!-- start -->
-      <div class="row mb-3 d-flex align-items-center">
-        <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
-          <label for="weight" class="form-label">體重</label>
+      <!-- offset控制留白 -->
+      <!-- name其實是select最重要的屬性，沒有會無法傳資料 -->
+      <div class="container">
+        <div class="row" id="Frame">
+          <h2 class="col-12 mt-5 mb-5 text-center">每月填寫體重</h2>
         </div>
-        <div class="col-4 col-xl-3" id="input-wrapper">
-          <input
-            v-model="form.weight"
-            type="text"
-            id="weight"
-            class="form-control"
-            :class="{ 'is-invalid': errors.weight }"
-            minlength="2"
-            maxlength="5"
-            pattern="^\d+(\.\d)?$"
-            placeholder="請輸入體重/公斤"
-            @input="validateWeight"
-            required
-          />
-          <div class="invalid-feedback" v-if="errors.weight">
-            {{ errors.weight }}
+        <!-- end -->
+        <!-- start -->
+        <div class="row mb-3 d-flex align-items-center">
+          <div class="col-3 offset-2 col-xl-2 text-center p-0 offset-xl-3">
+            <label for="weight" class="form-label">體重</label>
+          </div>
+          <div class="col-4 col-xl-3" id="input-wrapper">
+            <input
+              v-model="form.weight"
+              type="text"
+              id="weight"
+              class="form-control"
+              :class="{ 'is-invalid': errors.weight }"
+              minlength="2"
+              maxlength="5"
+              pattern="^\d+(\.\d)?$"
+              placeholder="請輸入體重/公斤"
+              @input="validateWeight"
+              required
+            />
+            <div class="invalid-feedback" v-if="errors.weight">
+              {{ errors.weight }}
+            </div>
+          </div>
+          <div class="col-12 col-xl-1">
+            <label class="form-label d-none d-xl-block">公斤</label>
+          </div>
+          <div
+            class="row col-4 offset-4 col-xl-4 text-center p-0 offset-xl-4 mt-5"
+          >
+            <span>{{ LastMonthRecord }}</span>
           </div>
         </div>
-        <div class="col-12 col-xl-1">
-          <label class="form-label d-none d-xl-block">公斤</label>
-        </div>
-        <div
-          class="row col-4 offset-4 col-xl-4 text-center p-0 offset-xl-4 mt-5"
-        >
-          <span>{{ LastMonthRecord }}</span>
-        </div>
-      </div>
-      <!-- end -->
-      <!-- start -->
-      <div class="row mb-5 mt-3">
-        <div class="col-12 text-center">
-          <!-- input:submit -->
-          <button type="submit" class="btn"></button>
-          <div v-if="errors.general" class="row">
-            <div class="col-12 text-center text-danger" id="buttonError">
-              {{ errors.general }}
+        <!-- end -->
+        <!-- start -->
+        <div class="row mb-5 mt-3">
+          <div class="col-12 text-center">
+            <!-- input:submit -->
+            <button type="submit" class="btn"></button>
+            <div v-if="errors.general" class="row">
+              <div class="col-12 text-center text-danger" id="buttonError">
+                {{ errors.general }}
+              </div>
             </div>
           </div>
         </div>
+        <!-- end -->
+        <!-- 一般錯誤訊息 -->
       </div>
-      <!-- end -->
-      <!-- 一般錯誤訊息 -->
-    </div>
-  </form>
-</body>
+    </form>
+  </body>
 </template>
 
 <style lang="css" scoped>
-body{
+body {
   background-image: url("/images/FormBackground.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -236,7 +254,7 @@ body{
   min-width: 320px; /* 設定最小寬度避免過度壓縮 */
   height: auto; /* 高度自適應 */
   min-height: 450px;
-  max-height: 450px; 
+  max-height: 450px;
   background-image: url("/images/WeightForm.png");
   background-size: 100% 100%; /* 確保背景圖片完整顯示 */
   background-repeat: no-repeat;
@@ -273,7 +291,7 @@ body{
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 .btn {
-  background-image: url('/images/SweetAlert2_Confirm.png') !important;
+  background-image: url("/images/SweetAlert2_Confirm.png") !important;
   background-color: transparent;
   width: 48px !important;
   height: 50px !important;
