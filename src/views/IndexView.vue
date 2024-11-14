@@ -322,13 +322,19 @@ onMounted(() => {
     <transition name="fade" v-show="transition" class="blacktransition">
       <div class="black"></div>
     </transition>
-    <div class="introduce">
-      <h1>再見！沙發Potato</h1>
-      <p>想要擺脫如同couch potato一般的生活，卻不知如何下手嗎？</p>
-      <p>趕緊和角色一同搬進 再見！沙發Potato 小鎮</p>
-      <p>
-        透過記錄每日生活累積金幣，換上喜歡的衣服與房間擺設，向couch potato說掰掰
-      </p>
+    <div class="introduce-background">
+      <div class="introduce">
+        <h1>
+          <div class="logo"></div>
+          <span>再見！沙發Potato</span>
+        </h1>
+        <p>想要擺脫如同couch potato一般的生活，卻不知如何下手嗎？</p>
+        <p>趕緊和角色一同搬進 再見！沙發Potato 小鎮</p>
+        <p>
+          透過記錄每日生活累積金幣，換上喜歡的衣服與房間擺設，向couch
+          potato說掰掰
+        </p>
+      </div>
     </div>
 
     <div v-if="submitok" class="forgetpassword">
@@ -741,10 +747,35 @@ body {
   text-align: center;
   max-width: 800px;
   width: 100%;
-  margin-top: 5%;
+  margin-top: 7%;
   margin-bottom: 10px;
 }
 
+.introduce-background {
+  background-image: url("/images/index-title.png");
+  min-width: 719px;
+  max-width: 719px;
+  min-height: 288px;
+  max-height: 288px;
+  margin-bottom: 10px;
+  margin-top: 2%;
+  /* transform: translateX(36%); 可以調整這個數值來向左偏移 */
+}
+
+.logo {
+  background-image: url("/Logo.png");
+  height: 50px;
+  width: 50px;
+  align-items: center;
+  justify-items: center;
+  display: inline-block;
+}
+.introduce h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* 控制文字和 logo 之間的間距 */
+}
 .login-container {
   background-color: rgba(255, 255, 255);
   margin-left: auto;
