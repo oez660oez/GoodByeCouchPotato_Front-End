@@ -724,8 +724,8 @@ onMounted(() => {
 <style lang="css" scoped>
 body {
   background-image: linear-gradient(
-      rgba(255, 255, 255, 0.5),
-      rgba(255, 255, 255, 0.5)
+      rgba(79, 79, 79, 0.5),
+      rgba(79, 79, 79, 0.5)
     ),
     url("../components/image/index.png");
   height: 100vh;
@@ -740,7 +740,7 @@ body {
 }
 
 .introduce {
-  color: rgb(1, 35, 62);
+  color: rgb(255, 255, 255);
   padding: 10px;
   text-align: center;
   max-width: 800px;
