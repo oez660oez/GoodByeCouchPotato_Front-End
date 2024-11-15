@@ -1,11 +1,11 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
-import FullCalendar from '@fullcalendar/vue3';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import { useReportDataStore } from '@/Stores/reportDataStore';
+import { onMounted, ref, watch } from "vue";
+import FullCalendar from "@fullcalendar/vue3";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import { useReportDataStore } from "@/Stores/reportDataStore";
 
 const props = defineProps({
-  currentFullcalendar: String
+  currentFullcalendar: String,
 });
 
 const getreportData = useReportDataStore();
@@ -22,17 +22,22 @@ const datesWithExercise = ref([]);
 const datesWithCleaning = ref([]);
 
 const lastMonth = ref();
+
 const calendarContainer = ref(null);
 
-const imageUrl1 = '/images/Good.png';
-const imageUrl2 = '/images/Bad.png';
-const imageUrl3 = '/images/V.png';
+const imageUrl1 = "/images/Good.png";
+const imageUrl2 = "/images/Bad.png";
+const imageUrl3 = "/images/V.png";
 
-// 獲取資料
+// 獲取數據並篩選特殊日期
 const getData = () => {
-  dailyhealthData.value = getreportData.Data || [];
+  dailyhealthData.value = getreportData.Data;
+  console.log("1114", dailyhealthData.value);
 
-  if (dailyhealthData.value.length === 0) return;
+  // 如果資料為空則不繼續處理
+  if (!dailyhealthData.value || dailyhealthData.value.length === 0) {
+    return;
+  }
 
   specialDates.value = dailyhealthData.value.map((item) => item.hrecordDate);
   vegetables.value = dailyhealthData.value.map((item) => item.vegetables);
@@ -58,73 +63,72 @@ const getData = () => {
 
 // 清除指定日曆格子中的所有圖片
 const clearImagesFromDayCell = (dayCell) => {
-  const images = dayCell.querySelectorAll('img');
+  const images = dayCell.querySelectorAll("img");
   images.forEach((img) => img.remove());
 };
 
 // 添加圖片到日期格子
-const addImageToDayCell = (dayCell, imageUrl, className, altText) => {
-  const img = document.createElement('img');
+const addImageToDayCell = (dayCell, date, imageUrl, className, altText) => {
+  const existingImages = dayCell.querySelectorAll("img");
+  const img = document.createElement("img");
+
   img.src = imageUrl;
   img.alt = altText;
   img.className = className;
-  img.style.position = 'absolute';
-  img.style.pointerEvents = 'none';
-  img.style.zIndex = '10';
 
-  const existingImages = dayCell.querySelectorAll('img');
-  switch (existingImages.length) {
-    case 0:
-      img.style.bottom = '4px';
-      img.style.left = '4px';
-      break;
-    case 1:
-      img.style.bottom = '4px';
-      img.style.left = '36px';
-      break;
-    case 2:
-      img.style.bottom = '24px';
-      img.style.right = '4px';
-      break;
-    case 3:
-      img.style.bottom = '24px';
-      img.style.left = '4px';
-      break;
+  img.style.position = "absolute";
+  img.style.pointerEvents = "none";
+  img.style.zIndex = "10";
+  // 應用基本樣式
+  img.style.position = "absolute";
+  img.style.pointerEvents = "none";
+  img.style.zIndex = "10";
+
+  if (existingImages.length === 0) {
+    img.style.bottom = "4px";
+    img.style.left = "4px";
+  } else if (existingImages.length === 1) {
+    img.style.bottom = "4px";
+    img.style.left = "36px";
+  } else if (existingImages.length === 2) {
+    img.style.bottom = "24px";
+    img.style.right = "4px";
+  } else if (existingImages.length === 3) {
+    img.style.bottom = "24px";
+    img.style.left = "4px";
   }
 
-  dayCell.style.position = 'relative';
+  dayCell.style.position = "relative";
+  dayCell.style.position = "relative"; // 確保格子成為定位參照
   dayCell.appendChild(img);
 };
 
 // 根據條件在日曆上添加圖片
 const handleCalendarImages = () => {
-  const dayCells = document.querySelectorAll('.fc-daygrid-day');
+  const dayCells = document.querySelectorAll(".fc-daygrid-day");
   dayCells.forEach((dayCell) => {
     clearImagesFromDayCell(dayCell);
-    const date = dayCell.getAttribute('data-date');
 
-    if (props.currentFullcalendar === 'health') {
+    const date = dayCell.getAttribute("data-date");
+    if (props.currentFullcalendar === "health") {
       if (datesWithVegetables.value.includes(date)) {
-        addImageToDayCell(dayCell, imageUrl1, 'img1', 'Vegetables');
+        addImageToDayCell(dayCell, date, imageUrl1, "img1", "Vegetables Image");
       }
       if (datesWithSnacks.value.includes(date)) {
-        addImageToDayCell(dayCell, imageUrl2, 'img2', 'Snacks');
+        addImageToDayCell(dayCell, date, imageUrl2, "img2", "Snacks Image");
       }
-    } else if (
-      props.currentFullcalendar === 'exercise' &&
-      datesWithExercise.value.includes(date)
-    ) {
-      addImageToDayCell(dayCell, imageUrl3, 'img3', 'Exercise');
-    } else if (
-      props.currentFullcalendar === 'cleaning' &&
-      datesWithCleaning.value.includes(date)
-    ) {
-      addImageToDayCell(dayCell, imageUrl3, 'img4', 'Cleaning');
+    } else if (props.currentFullcalendar === "exercise") {
+      if (datesWithExercise.value.includes(date)) {
+        addImageToDayCell(dayCell, date, imageUrl3, "img3", "Exercise Image");
+      }
+    } else if (props.currentFullcalendar === "cleaning") {
+      if (datesWithCleaning.value.includes(date)) {
+        addImageToDayCell(dayCell, date, imageUrl3, "img4", "Cleaning Image");
+      }
     }
   });
 };
 
-// 初始化日曆
 const goDate = () => {
   if (calendarContainer.value && lastMonth.value) {
     calendarContainer.value.getApi().gotoDate(lastMonth.value);
@@ -133,22 +137,25 @@ const goDate = () => {
 
 const calendarOptions = {
   plugins: [dayGridPlugin],
-  initialView: 'dayGridMonth',
+  initialView: "dayGridMonth",
   headerToolbar: {
-    left: 'prev',
-    center: 'title',
-    right: 'next'
+    left: "prev",
+    center: "title",
+    right: "next",
   },
+  height: "auto",
+  contentHeight: 450,
+  aspectRatio: 1.35,
   events: specialDates.value.map((date) => ({
     start: date,
-    display: 'background'
+    display: "background",
   })),
   datesSet() {
     handleCalendarImages();
-  }
+  },
 };
 
-// 初始化
+// 初始化日曆
 onMounted(() => {
   getData();
   if (dailyhealthData.value.length > 0) {
@@ -157,7 +164,18 @@ onMounted(() => {
   }
 });
 
-// 監聽資料變化
+// 監聽 currentFullcalendar 變化並重新渲染日曆
+watch(
+  () => props.currentFullcalendar,
+  () => {
+    if (dailyhealthData.value.length > 0) {
+      handleCalendarImages();
+      goDate();
+    }
+    // console.log('props.currentFullcalendar', props.currentFullcalendar);
+  }
+);
+
 watch(
   () => getreportData.Data,
   () => {

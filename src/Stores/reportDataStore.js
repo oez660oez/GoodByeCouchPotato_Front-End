@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
 export const useReportDataStore = defineStore(
-  'reportData',
+  "reportData",
   () => {
     const Data = ref([]);
 
@@ -11,9 +11,12 @@ export const useReportDataStore = defineStore(
       Data.value = data;
     };
 
-    return { Data, setReportData };
+    const resetReportData = () => {
+      Data.value = [];
+    };
+    return { Data, setReportData, resetReportData };
   },
   {
-    persist: true //在這裡啟用pinia持久化
+    persist: true, //在這裡啟用pinia持久化
   }
 );

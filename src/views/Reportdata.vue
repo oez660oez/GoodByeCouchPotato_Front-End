@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import FullCalenderComponent from '@/components/FullCalenderComponent.vue';
-import ReportComponent from '@/components/ReportComponent.vue';
-import GoBackComponent from '@/components/GoBackComponent.vue';
-import { useReportDataStore } from '@/Stores/reportDataStore';
+import { ref, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import FullCalenderComponent from "@/components/FullCalenderComponent.vue";
+import ReportComponent from "@/components/ReportComponent.vue";
+import GoBackComponent from "@/components/GoBackComponent.vue";
+import { useReportDataStore } from "@/Stores/reportDataStore";
 
 const router = useRouter();
 const route = useRoute();
@@ -12,8 +12,8 @@ const route = useRoute();
 const reportData = useReportDataStore();
 
 const test = ref([]);
-const maxDate = ref('');
-const minDate = ref('');
+const maxDate = ref("");
+const minDate = ref("");
 
 const isCalendarVisible = ref(true);
 
@@ -21,9 +21,9 @@ const toggleVisibility = () => {
   isCalendarVisible.value = !isCalendarVisible.value;
 };
 
-const currentChart = ref('water');
-const currentFullcalendar = ref('health');
-const selectedMonth = ref('');
+const currentChart = ref("water");
+const currentFullcalendar = ref("health");
+const selectedMonth = ref("");
 
 // 設定為資料中的最新月份
 const setDefaultMonth = () => {
@@ -36,14 +36,33 @@ const setDefaultMonth = () => {
       selectedMonth.value = maxDate.value;
     }
   } else {
-    console.error('無可用資料');
+    console.error("無可用資料");
   }
 };
 
 // 驗證月份是否在有效範圍內
-const validateMonth = () => {
-  if (selectedMonth.value < minDate.value) {
-    selectedMonth.value = minDate.value;
+// const validateMonth = () => {
+//   if (selectedMonth.value < minDate.value) {
+//     selectedMonth.value = minDate.value;
+//   }
+// };
+
+const handleMonthChange = (event) => {
+  const newMonth = event.target.value;
+
+  // 驗證輸入的月份是否在允許範圍內
+  if (newMonth && newMonth >= minDate.value && newMonth <= maxDate.value) {
+    selectedMonth.value = newMonth;
+  } else {
+    // 如果輸入的月份不在範圍內，重置為上一次有效的值
+    event.target.value = selectedMonth.value;
+  }
+};
+
+const validateMonth = (event) => {
+  // 當輸入框失去焦點時，檢查是否為空值
+  if (!event.target.value) {
+    event.target.value = selectedMonth.value;
   }
 };
 
@@ -86,39 +105,39 @@ const goBack = () => {
 
 // 右移效果
 const moveRight = (event) => {
-  const image = event.target.querySelector('.button-icon'); // 找到圖片
-  const text = event.target.querySelector('.button-text'); // 找到文字
+  const image = event.target.querySelector(".button-icon"); // 找到圖片
+  const text = event.target.querySelector(".button-text"); // 找到文字
 
-  event.target.style.transform = 'translateX(50px)';
-  event.target.style.transition = 'transform 0.3s ease';
+  event.target.style.transform = "translateX(50px)";
+  event.target.style.transition = "transform 0.3s ease";
 
-  image.style.opacity = '0';
+  image.style.opacity = "0";
 
-  text.style.display = 'inline';
-  text.style.transform = 'translateX(50px)';
-  text.style.transition = 'transform 0.3s ease';
+  text.style.display = "inline";
+  text.style.transform = "translateX(50px)";
+  text.style.transition = "transform 0.3s ease";
 };
 
 // 恢復原位效果
 const moveBack = (event) => {
-  const image = event.target.querySelector('.button-icon'); // 找到圖片
-  const text = event.target.querySelector('.button-text'); // 找到文字
+  const image = event.target.querySelector(".button-icon"); // 找到圖片
+  const text = event.target.querySelector(".button-text"); // 找到文字
 
-  event.target.style.transform = 'translateX(0px)';
-  event.target.style.transition = 'transform 0.3s ease';
+  event.target.style.transform = "translateX(0px)";
+  event.target.style.transition = "transform 0.3s ease";
 
-  image.style.opacity = '1';
-  image.style.transform = 'translateX(0px)';
-  image.style.transition = 'transform 0.3s ease';
+  image.style.opacity = "1";
+  image.style.transform = "translateX(0px)";
+  image.style.transition = "transform 0.3s ease";
 
-  text.style.display = 'none';
-  text.style.transform = 'translateX(0px)';
-  text.style.transition = 'transform 0.3s ease';
+  text.style.display = "none";
+  text.style.transform = "translateX(0px)";
+  text.style.transition = "transform 0.3s ease";
 };
 
 // 監聽 selectedMonth 的變更
 watch(selectedMonth, (newMonth) => {
-  console.log('選擇的月份已更新:', newMonth);
+  console.log("選擇的月份已更新:", newMonth);
 });
 
 watch(
@@ -135,7 +154,7 @@ watch(
     <div class="reportGoback2">
       <RouterLink
         :to="{
-          name: $route.name.startsWith('in-') ? 'in-report' : 'out-report'
+          name: $route.name.startsWith('in-') ? 'in-report' : 'out-report',
         }"
       >
         <GoBackComponent></GoBackComponent>
@@ -146,9 +165,11 @@ watch(
       <label for="monthPicker" class="month-picker-label">搜尋月份：</label>
       <input
         type="month"
-        :value="selectedMonth"
         :min="minDate"
         :max="maxDate"
+        @blur="validateMonth"
+        v-model="selectedMonth"
+        required
       />
     </div>
 
@@ -234,14 +255,14 @@ watch(
 
 <style lang="css" scoped>
 /* 禁止亂按 :) --start*/
-input[type='month']::-webkit-clear-button,
-input[type='month']::-webkit-calendar-picker-indicator {
+input[type="month"]::-webkit-clear-button,
+input[type="month"]::-webkit-calendar-picker-indicator {
   display: none;
 }
 /* 禁止亂按 :) --end*/
 
 /* 更改 input[type="month"] 背景顏色 */
-input[type='month'] {
+input[type="month"] {
   width: 100px;
   height: 30px;
   border-radius: 4px; /* 可選 - 圓角 */
@@ -256,7 +277,7 @@ input[type='month'] {
   position: fixed;
   top: 50px;
   left: 350px;
-  background-image: url('/images/border.png');
+  background-image: url("/images/border.png");
 }
 
 #button {
