@@ -10,7 +10,6 @@ const props = defineProps({
 });
 
 const getreportData = useReportDataStore();
-
 const chartRef = ref(null);
 let chartInstance = null;
 
@@ -18,56 +17,54 @@ const waterData = ref([]);
 const stepsData = ref([]);
 const sleepData = ref([]);
 const moodData = ref([]);
-const labels = ref([]);
 const allDates = ref([]);
+const hasData = ref(true);
 
 // 生成每兩天的日期
 const generateMonthDates = (selectedMonth) => {
   const [year, month] = selectedMonth.split('-').map(Number);
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0);
-  const allDates = eachDayOfInterval({ start: startDate, end: endDate }).map(
+  const dates = eachDayOfInterval({ start: startDate, end: endDate }).map(
     (date) => format(date, 'yyyy-MM-dd')
   );
-  return allDates.filter((_, index) => index % 2 === 0);
+  return dates.filter((_, index) => index % 2 === 0);
 };
 
 // 篩選並處理當月的資料
 const filterDataByMonth = () => {
   const allData = getreportData.Data;
+  hasData.value = allData && allData.length > 0;
+  if (!hasData.value) return;
+
   allDates.value = generateMonthDates(props.selectedMonth);
-
-  const filteredData = allData.filter((record) => {
-    const recordMonth = record.hrecordDate.slice(0, 7);
-    return recordMonth === props.selectedMonth;
-  });
-
   const dataMap = {};
-  filteredData.forEach((record) => {
+
+  allData.forEach((record) => {
     dataMap[record.hrecordDate] = record;
   });
 
-  waterData.value = allDates.value.map((date) =>
-    dataMap[date] ? dataMap[date].water : 0
-  );
-  stepsData.value = allDates.value.map((date) =>
-    dataMap[date] ? dataMap[date].steps : 0
-  );
+  waterData.value = allDates.value.map((date) => dataMap[date]?.water || 0);
+  stepsData.value = allDates.value.map((date) => dataMap[date]?.steps || 0);
   sleepData.value = allDates.value.map((date) =>
     dataMap[date] ? convertTimeToHourDecimal(dataMap[date].sleep) : 0
   );
   moodData.value = allDates.value.map((date) =>
     dataMap[date] ? moodToValue[dataMap[date].mood] : 0
   );
-  labels.value = filteredData.map((record) => record.hrecordDate);
+
+  // 更新圖表
+  updateChartOptions();
 };
 
 // 將時間轉換為小時的十進制格式
 const convertTimeToHourDecimal = (timeString) => {
+  if (!timeString || !timeString.includes(':')) return 0;
   const [hours, minutes] = timeString.split(':').map(Number);
   return hours + minutes / 60;
 };
 
+// 心情對應數值
 const moodToValue = {
   不透露: 0,
   不開心: 1,
@@ -79,40 +76,33 @@ const moodToValue = {
 
 // 初始化圖表
 const initializeChart = () => {
-  if (!chartInstance && chartRef.value) {
-    chartInstance = echarts.init(chartRef.value);
+  if (chartRef.value) {
+    if (!chartInstance) {
+      chartInstance = echarts.init(chartRef.value);
+    }
+    updateChartOptions();
   }
-  if (!chartInstance) return;
+};
+
+// 更新圖表選項
+const updateChartOptions = () => {
+  if (!hasData.value || !chartInstance) return;
 
   let chartOptions = {
     title: { text: '飲水量' },
     tooltip: {
       trigger: 'axis',
-      formatter: function (params) {
+      formatter: (params) => {
         const dataPoint = params[0];
-        if (!dataPoint) return '無數據';
-        return `${dataPoint.name} ${chartOptions.title.text}: ${dataPoint.value} ml`;
-      },
-      axisPointer: {
-        type: 'line',
-        lineStyle: {
-          color: 'black',
-          width: 1,
-          type: 'dashed'
-        }
+        return dataPoint
+          ? `${dataPoint.name}: ${dataPoint.value} ml`
+          : '無數據';
       }
     },
     xAxis: {
       type: 'category',
       data: allDates.value,
-      axisLabel: {
-        rotate: 45,
-        interval: 0,
-        margin: 15
-      },
-      axisTick: {
-        alignWithLabel: true
-      }
+      axisLabel: { rotate: 45, interval: 0 }
     },
     yAxis: {
       type: 'value',
@@ -121,150 +111,83 @@ const initializeChart = () => {
       axisLabel: { formatter: '{value} ml' }
     },
     series: [
-      {
-        name: 'Water Intake (ml)',
-        type: 'bar',
-        data: waterData.value,
-        itemStyle: { color: '#003D79' }
-      }
-    ],
-    grid: {
-      left: '3%',
-      right: '3%',
-      bottom: '10%',
-      containLabel: true
-    }
+      { type: 'bar', data: waterData.value, itemStyle: { color: '#003D79' } }
+    ]
   };
 
   if (props.currentChart === 'steps') {
     chartOptions.title.text = '步數';
-    chartOptions.yAxis.max = 10000;
-    chartOptions.yAxis.axisLabel.formatter = '{value} 步';
-
     chartOptions.series[0].data = stepsData.value;
-    chartOptions.series[0].itemStyle.color = '#003D79';
-    chartOptions.tooltip.formatter = function (params) {
-      const dataPoint = params[0];
-      return `${dataPoint.name} ${chartOptions.title.text}: ${dataPoint.value} 步`;
-    };
   } else if (props.currentChart === 'sleep') {
     chartOptions.title.text = '入睡時間';
-    chartOptions.yAxis = {
-      type: 'value',
-      min: 0,
-      max: 24,
-      axisLabel: {
-        formatter: (value) => {
-          const hours = Math.floor(value);
-          const minutes = Math.round((value - hours) * 60);
-          return `${hours.toString().padStart(2, '0')}:${minutes
-            .toString()
-            .padStart(2, '0')}`;
-        }
-      }
-    };
-    chartOptions.series = [
-      {
-        type: 'line',
-        data: sleepData.value,
-        itemStyle: { color: '#003D79' }
-      }
-    ];
-    chartOptions.tooltip.formatter = function (params) {
-      const dataPoint = params[0];
-      const hours = Math.floor(dataPoint.value);
-      const minutes = Math.round((dataPoint.value - hours) * 60);
-      return `${dataPoint.name} ${chartOptions.title.text}: ${hours
-        .toString()
-        .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    };
+    chartOptions.series[0] = { type: 'line', data: sleepData.value };
   } else if (props.currentChart === 'mood') {
     chartOptions.title.text = '心情';
-    chartOptions.yAxis = {
-      type: 'value',
-      min: 0,
-      max: 5,
-      axisLabel: {
-        formatter: (value) =>
-          ['不透露', '不開心', '有點不開心', '普通', '開心', '非常開心'][
-            value
-          ] || '不透露'
-      }
-    };
-    chartOptions.series = [
-      {
-        type: 'line',
-        data: moodData.value,
-        itemStyle: { color: '#003D79' },
-        connectNulls: true
-      }
-    ];
-    chartOptions.tooltip.formatter = function (params) {
-      const dataPoint = params[0];
-      return `${dataPoint.name} ${chartOptions.title.text}: ${
-        ['不透露', '不開心', '有點不開心', '普通', '開心', '非常開心'][
-          dataPoint.value
-        ] || '不透露'
-      }`;
-    };
+    chartOptions.series[0] = { type: 'line', data: moodData.value };
   }
 
-  chartInstance.setOption(chartOptions);
+  chartInstance.setOption(chartOptions, true);
 };
-// 掛載時初始化圖表和數據
+
+// 初始化
 onMounted(() => {
   filterDataByMonth();
   initializeChart();
 });
 
-// 監聽 currentChart 和 selectedMonth 的變更
+// 監聽屬性變化
 watch(
-  () => props.currentChart,
+  () => props.selectedMonth,
   () => {
-    initializeChart();
+    filterDataByMonth();
   }
 );
 
 watch(
-  () => props.selectedMonth,
-  (newMonth) => {
-    console.log('選擇的月份已更新:', newMonth);
+  () => props.currentChart,
+  () => {
     filterDataByMonth();
-    initializeChart();
   }
 );
 </script>
 
 <template>
   <div id="formborder">
-    <div ref="chartRef" class="chart-container"></div>
+    <template v-if="hasData">
+      <div ref="chartRef" class="chart-container"></div>
+    </template>
+    <template v-else>
+      <h2>數據圖目前無資料</h2>
+    </template>
   </div>
 </template>
 
-<style lang="css" scoped>
+<style scoped>
 .chart-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   width: 95%;
   height: 489px;
-  margin-top: auto;
-  margin-bottom: 20px;
 }
 
 #formborder {
   display: flex;
-  justify-content: flex-end;
-  width: 912px;
-  height: 489px;
-  position: fixed;
-  top: 50px;
-  left: 350px;
-  background-image: url('@/components/image/form.png');
-}
-
-#form {
-  display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 489px;
+}
+
+h2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ff4d4d;
+  text-align: center;
+  font-size: 50px;
+  margin: 0;
+  z-index: 10;
 }
 </style>
