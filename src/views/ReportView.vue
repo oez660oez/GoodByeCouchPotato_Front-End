@@ -1,9 +1,9 @@
 <script setup>
-import { useRouter, useRoute } from 'vue-router';
-import { onMounted, ref, watch } from 'vue';
-import { Playerinformation } from '@/Stores/PlayerCharacter';
-import { useReportDataStore } from '@/Stores/reportDataStore';
-import GoBackComponent from '@/components/GoBackComponent.vue';
+import { useRouter, useRoute } from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { Playerinformation } from "@/Stores/PlayerCharacter";
+import { useReportDataStore } from "@/Stores/reportDataStore";
+import GoBackComponent from "@/components/GoBackComponent.vue";
 const router = useRouter();
 const route = useRoute();
 
@@ -52,21 +52,21 @@ const firstload = () => {
 const fetchCharacters = async (cId) => {
   try {
     const response = await fetch(`${DAILYHEALTHRECORDS_API_URL}/${cId}`, {
-      method: 'GET'
+      method: "GET",
     });
     if (response.ok) {
       const data = await response.json();
       charactersData.value = data;
       reportData.setReportData(data); // 將 apiData 保存到 Pinia
 
-      console.log('抓取到的資料:', charactersData.value);
+      console.log("抓取到的資料:", charactersData.value);
 
       // test.value = reportData.Data;
       // console.log('000', test.value);
       // console.log('抓取到的資料:', charactersData.value);
     }
   } catch (error) {
-    console.error('Error fetching data:', error.message);
+    console.error("Error fetching data:", error.message);
   }
 };
 
@@ -76,22 +76,22 @@ const fetchPreviousCharacters = async () => {
     const response = await fetch(
       `${PREVIOUSCHARACTERS_API_URL}/${targetAccount}`,
       {
-        method: 'GET'
+        method: "GET",
       }
     );
     if (response.ok) {
       const data = await response.json();
       const charactersAll = data;
       charactersAllData.value = charactersAll.filter(
-        (character) => character.livingStatus === '搬離'
+        (character) => character.livingStatus === "搬離"
       );
       if (charactersAll.value == {}) {
         noData.value = true;
       }
-      console.log('抓取到的資料123:', charactersAllData.value);
+      console.log("抓取到的資料123:", charactersAllData.value);
     }
   } catch (error) {
-    console.error('Error fetching data:', error.message);
+    console.error("Error fetching data:", error.message);
   }
 };
 </script>
@@ -102,7 +102,7 @@ const fetchPreviousCharacters = async () => {
       <GoBackComponent @goback="goBack"></GoBackComponent>
     </div>
     <div class="accordion">
-      <h3 v-if="noData">目前無過往紀錄~~~</h3>
+      <h3 v-if="noData">目前無過往紀錄</h3>
       <!-- 使用 v-for 生成每個角色的 Accordion 項目 -->
       <div
         class="accordion-item"
@@ -151,7 +151,7 @@ const fetchPreviousCharacters = async () => {
               :to="{
                 name: $route.name.startsWith('in-')
                   ? 'in-reportdata'
-                  : 'out-reportdata'
+                  : 'out-reportdata',
               }"
             >
               <button @click="fetchCharacters(character.cId)">
@@ -179,7 +179,7 @@ const fetchPreviousCharacters = async () => {
   position: fixed;
   top: 50px;
   left: 350px;
-  background-image: url('/images/border.png');
+  background-image: url("/images/border.png");
 }
 
 /* Accordion 主體樣式 */
@@ -204,7 +204,7 @@ const fetchPreviousCharacters = async () => {
 .accordion-button {
   padding: 12px 15px;
   background-color: transparent;
-  background-image: url('/images/accordion btn.png'); /* 自訂按鈕圖片 */
+  background-image: url("/images/accordion btn.png"); /* 自訂按鈕圖片 */
   background-size: 100% 100%;
   border: none;
   color: inherit; /* 保持文字顏色不變 */
@@ -213,17 +213,17 @@ const fetchPreviousCharacters = async () => {
 }
 
 .accordion-button.collapsed::after {
-  content: '';
+  content: "";
   display: inline-block;
-  background-image: url('/images/accordion.png');
+  background-image: url("/images/accordion.png");
   background-size: contain;
   transform: rotate(180deg);
 }
 
 .accordion-button::after {
-  content: '';
+  content: "";
   display: inline-block;
-  background-image: url('/images/accoridion2.png');
+  background-image: url("/images/accoridion2.png");
   background-size: contain;
 }
 
@@ -242,12 +242,12 @@ const fetchPreviousCharacters = async () => {
 /* 自訂滾動條樣式 */
 .accordion::-webkit-scrollbar {
   width: 15px;
-  background: url('/images/scroll bar.png');
+  background: url("/images/scroll bar.png");
   background-size: 100% 100%; /* 確保圖片填滿滑道 */
 }
 
 .accordion::-webkit-scrollbar-thumb {
-  background-image: url('/images/scroll bar hover.png');
+  background-image: url("/images/scroll bar hover.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: bottom; /* 圖片靠下對齊 */
@@ -256,7 +256,7 @@ const fetchPreviousCharacters = async () => {
 }
 
 .accordion::-webkit-scrollbar-thumb:hover {
-  background-image: url('/images/scroll bar nohover.png');
+  background-image: url("/images/scroll bar nohover.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: bottom;
@@ -264,7 +264,7 @@ const fetchPreviousCharacters = async () => {
 }
 
 .accordion::-webkit-scrollbar-track {
-  background: url('/images/scroll bar.png');
+  background: url("/images/scroll bar.png");
   background-size: 100% 100%; /* 確保圖片填滿滑道 */
   border-radius: 10px;
 }

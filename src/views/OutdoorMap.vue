@@ -73,7 +73,7 @@ const goToWeightTask = () => {
 }
 .weight-button {
   position: absolute;
-  z-index: 5;
+  z-index: 11;
   cursor: pointer;
   left: 300px; /* 調整按鈕位置 */
   top: 75px; /* 調整按鈕位置 */
