@@ -49,31 +49,31 @@ const collisionAreas = [
   //這裡的xy是偏移量而不是絕對定位，因為是用玩家行走的數據去測量的
   {
     offsetx: canvasWidth / 2 - 288 / 8 - 670,
-    offsety: canvasHeight / 2 - 80 / 2 + 200,
+    offsety: canvasHeight / 2 - 80 / 2 + 150,
     width: 200,
     height: 65,
   }, //第一個椅子
   {
     offsetx: canvasWidth / 2 - 288 / 8 - 390,
-    offsety: canvasHeight / 2 - 80 / 2 + 165,
+    offsety: canvasHeight / 2 - 80 / 2 + 120,
     width: 225,
     height: 90,
   }, //第一組
   {
     offsetx: canvasWidth / 2 - 288 / 8 - 95,
-    offsety: canvasHeight / 2 - 80 / 2 + 165,
+    offsety: canvasHeight / 2 - 80 / 2 + 120,
     width: 225,
     height: 90,
   }, //第二組
   {
     offsetx: canvasWidth / 2 - 288 / 8 - -190,
-    offsety: canvasHeight / 2 - 80 / 2 + 165,
+    offsety: canvasHeight / 2 - 80 / 2 + 120,
     width: 225,
     height: 90,
   }, //第三組
   {
     offsetx: canvasWidth / 2 - 288 / 8 - -475,
-    offsety: canvasHeight / 2 - 80 / 2 + 165,
+    offsety: canvasHeight / 2 - 80 / 2 + 120,
     width: 235,
     height: 90,
   }, //第四組
@@ -83,7 +83,7 @@ const collisionAreas = [
 const GoInGame = [
   {
     offsetx: canvasWidth / 2 - 288 / 8 - 5,
-    offsety: canvasHeight / 2 - 80 / 2 + 327,
+    offsety: canvasHeight / 2 - 80 / 2 + 275,
     width: 48,
     height: 48,
   },
