@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, nextTick } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { useReportDataStore } from "@/Stores/reportDataStore";
@@ -130,8 +130,11 @@ const handleCalendarImages = () => {
 };
 
 const goDate = () => {
-  if (calendarContainer.value && lastMonth.value) {
-    calendarContainer.value.getApi().gotoDate(lastMonth.value);
+  if (calendarContainer.value) {
+    const calendarApi = calendarContainer.value.getApi();
+    if (calendarApi && lastMonth.value) {
+      calendarApi.gotoDate(lastMonth.value);
+    }
   }
 };
 
@@ -158,16 +161,24 @@ const calendarOptions = {
 // 初始化日曆
 onMounted(() => {
   getData();
-  if (dailyhealthData.value.length > 0) {
-    handleCalendarImages();
-    goDate();
-  }
 });
+
+watch(
+  () => calendarContainer.value,
+  async (newValue) => {
+    if (newValue && dailyhealthData.value.length > 0) {
+      await nextTick(); // 確保 DOM 已更新
+      handleCalendarImages();
+      goDate();
+    }
+  }
+);
 
 // 監聽 currentFullcalendar 變化並重新渲染日曆
 watch(
   () => props.currentFullcalendar,
   () => {
+    getData();
     if (dailyhealthData.value.length > 0) {
       handleCalendarImages();
       goDate();

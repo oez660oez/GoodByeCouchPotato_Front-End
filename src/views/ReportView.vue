@@ -154,7 +154,7 @@ const fetchPreviousCharacters = async () => {
                   : 'out-reportdata',
               }"
             >
-              <button @click="fetchCharacters(character.cId)">
+              <button class="goData" @click="fetchCharacters(character.cId)">
                 前往報告數據頁面
               </button>
             </RouterLink>
@@ -269,6 +269,14 @@ const fetchPreviousCharacters = async () => {
   border-radius: 10px;
 }
 
+.goData {
+  width: 160px;
+  height: 51px;
+  background-image: url("/images/ConfirmBtn_2.png");
+  background-color: transparent;
+  background-size: 100% 100%;
+  border: none;
+}
 /* .movein {
   margin-left: auto;
 } */

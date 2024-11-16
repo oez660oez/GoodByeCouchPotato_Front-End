@@ -11,7 +11,7 @@ import { watch } from "vue";
 const audio = new Audio(
   new URL("@/assets/Music/Waltz_for_flute.mp3", import.meta.url)
 );
-PiniaPlayer.musicvolume = 0.2;
+PiniaPlayer.musicvolume = 0.1;
 audio.volume = PiniaPlayer.musicvolume;
 
 const openMusic = () => {

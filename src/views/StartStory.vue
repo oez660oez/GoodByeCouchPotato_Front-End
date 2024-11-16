@@ -23,7 +23,7 @@ const typename = "Startstory"; //用來識別對話框使用哪一段對話
 //設定畫布
 const canvasRef = ref(null);
 const canvasWidth = 1550;
-const canvasHeight = 800;
+const canvasHeight = 900;
 const context = ref(null);
 const { startGameLoop, stopGameLoop } = useGameLoop();
 const movables = ref([]); //用來儲存要隨著玩家移動而改變的物件
@@ -411,17 +411,19 @@ onUnmounted(() => {
 .nav-link {
   z-index: 2;
   position: relative;
-  background-color: white;
+  background-color: rgb(58, 58, 80);
 }
 .game-view {
-  width: 100%;
-  height: 92vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   /* background-color: #3a3a50; */
   z-index: 1;
-  position: fixed;
 }
 
 .storyborder {

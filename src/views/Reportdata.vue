@@ -35,6 +35,7 @@ const setDefaultMonth = () => {
     if (!selectedMonth.value) {
       selectedMonth.value = maxDate.value;
     }
+    console.log("new", selectedMonth.value);
   } else {
     console.error("無可用資料");
   }
@@ -46,18 +47,6 @@ const setDefaultMonth = () => {
 //     selectedMonth.value = minDate.value;
 //   }
 // };
-
-const handleMonthChange = (event) => {
-  const newMonth = event.target.value;
-
-  // 驗證輸入的月份是否在允許範圍內
-  if (newMonth && newMonth >= minDate.value && newMonth <= maxDate.value) {
-    selectedMonth.value = newMonth;
-  } else {
-    // 如果輸入的月份不在範圍內，重置為上一次有效的值
-    event.target.value = selectedMonth.value;
-  }
-};
 
 const validateMonth = (event) => {
   // 當輸入框失去焦點時，檢查是否為空值
