@@ -13,6 +13,7 @@ const transition = ref(true);
 let GameOver = false;
 if (PiniaPlayer.characterEnvironment <= 0) {
   GameOver = true;
+  PiniaPlayer.isnewcharacter = true;
 } else {
   GameOver = false;
 }
