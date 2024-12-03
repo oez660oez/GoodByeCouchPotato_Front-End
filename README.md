@@ -83,5 +83,7 @@ npm run dev
 
 ## 使用工具
 - Vue.js 3 + Pinia
+- Bootstrap
 - SweetAlert2
-- MSSQL
+- Visual Studio Code
+- [SQL Server 2022](https://www.microsoft.com/zh-tw/sql-server/sql-server-downloads)
